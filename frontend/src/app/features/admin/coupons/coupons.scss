@@ -1,0 +1,80 @@
+@use '../../../../styles/breakpoints' as *;
+
+.cp__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
+  flex-wrap: wrap;
+}
+.cp__title { font-size: var(--fs-2xl); text-transform: uppercase; }
+
+.cp__form {
+  padding: var(--sp-5);
+  background: var(--card-bg);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
+  max-width: 640px;
+}
+.cp__form-title { font-size: var(--fs-base); text-transform: uppercase; }
+.cp__grid {
+  display: grid;
+  gap: var(--sp-4);
+  grid-template-columns: 1fr;
+  @include bp(xs) { grid-template-columns: 1fr 1fr; }
+}
+.cp__form-actions { display: flex; gap: var(--sp-3); }
+
+.cp__filters {
+  display: flex;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+  flex-wrap: wrap;
+}
+.cp__search { max-width: 260px; flex: 1; }
+
+.cp__table {
+  overflow-x: auto;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+}
+.cp__table table { width: 100%; border-collapse: collapse; min-width: 760px; }
+.cp__table th, .cp__table td {
+  text-align: start;
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--fs-sm);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.cp__table th {
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.cp__table tbody tr:last-child td { border-bottom: 0; }
+.cp__table tbody tr:hover { background: var(--surface-inset); }
+.cp__code { font-family: var(--font-display); letter-spacing: var(--tracking-wide); }
+
+.cp__actions { display: flex; gap: var(--sp-3); white-space: nowrap; }
+.cp__actions button { font-size: var(--fs-xs); color: var(--text-muted); text-decoration: underline; }
+.cp__actions button:hover { color: var(--accent); }
+.cp__delete:hover { color: var(--status-error) !important; }
+
+.pill {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: var(--radius-xs);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+.pill--delivered { background: var(--status-success-bg); color: var(--status-success); }
+.pill--cancelled { background: var(--status-error-bg); color: var(--status-error); }

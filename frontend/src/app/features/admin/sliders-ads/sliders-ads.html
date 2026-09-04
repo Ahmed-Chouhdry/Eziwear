@@ -1,0 +1,289 @@
+<div class="sa">
+  <header class="sa__head">
+    <h1 class="sa__title">Sliders &amp; Ads</h1>
+  </header>
+
+  <div class="sa__tabs" role="tablist">
+    <button class="sa__tab" [class.is-active]="tab() === 'sliders'" (click)="tab.set('sliders')">
+      Homepage Sliders
+    </button>
+    <button class="sa__tab" [class.is-active]="tab() === 'ads'" (click)="tab.set('ads')">
+      Advertisements
+    </button>
+    <button class="sa__tab" [class.is-active]="tab() === 'social'" (click)="tab.set('social')">
+      Social Links
+    </button>
+  </div>
+
+  <!-- ===================== SLIDERS ===================== -->
+  @if (tab() === 'sliders') {
+    <div class="sa__panel">
+      @if (editingSliderId() === null) {
+        <button class="btn btn--primary btn--sm sa__add" type="button" (click)="startAddSlider()">+ Add Slider</button>
+      }
+
+      @if (editingSliderId() !== null) {
+        <form class="sa__form" [formGroup]="sliderForm" (ngSubmit)="saveSlider()">
+          <h2 class="sa__form-title">{{ editingSliderId() === 'new' ? 'New slider' : 'Edit slider' }}</h2>
+          <div class="field">
+            <label class="field__label" for="s-title">Title <span class="field__hint">(use a new line for a 2-line headline)</span></label>
+            <textarea class="textarea" id="s-title" formControlName="title" rows="2"></textarea>
+          </div>
+          <div class="field">
+            <label class="field__label" for="s-subtitle">Subtitle</label>
+            <input class="input" id="s-subtitle" formControlName="subtitle" />
+          </div>
+          <div class="sa__grid">
+            <div class="field" [class.field--error]="sliderForm.controls.imageUrl.touched && sliderForm.controls.imageUrl.invalid">
+              <label class="field__label">Image</label>
+              <ui-image-upload
+                [value]="sliderForm.controls.imageUrl.value"
+                folder="sliders"
+                label="Slider image"
+                (valueChange)="sliderForm.controls.imageUrl.setValue($event)"
+              />
+            </div>
+            <div class="field">
+              <label class="field__label">Mobile image <span class="field__hint">(optional)</span></label>
+              <ui-image-upload
+                [value]="sliderForm.controls.imageUrlMobile.value"
+                folder="sliders"
+                label="Mobile slider image"
+                (valueChange)="sliderForm.controls.imageUrlMobile.setValue($event)"
+              />
+            </div>
+          </div>
+          <div class="sa__grid">
+            <div class="field">
+              <label class="field__label" for="s-btn-text">Button text</label>
+              <input class="input" id="s-btn-text" formControlName="buttonText" placeholder="Shop Now" />
+            </div>
+            <div class="field">
+              <label class="field__label" for="s-btn-link">Button link</label>
+              <input class="input" id="s-btn-link" formControlName="buttonLink" placeholder="/shop" />
+            </div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="s-status">Status</label>
+            <select class="select" id="s-status" formControlName="status">
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="sa__form-actions">
+            <button class="btn btn--primary" type="submit" [disabled]="savingSlider()">
+              {{ savingSlider() ? 'Saving…' : 'Save' }}
+            </button>
+            <button class="btn btn--ghost" type="button" (click)="cancelSlider()">Cancel</button>
+          </div>
+        </form>
+      }
+
+      <div class="sa__list">
+        @if (slidersLoading()) {
+          @for (i of [1,2]; track i) { <ui-skeleton shape="img" height="140px" /> }
+        } @else {
+          @for (s of sliders(); track s.id; let i = $index) {
+            <article class="sa__card">
+              <div class="sa__card-media">
+                <img [src]="s.imageUrl" [alt]="s.title || 'Slider'" loading="lazy" />
+              </div>
+              <div class="sa__card-body">
+                <div class="sa__card-head">
+                  <strong class="sa__card-title">{{ s.title || '(no title)' }}</strong>
+                  <button class="sa__status sa__status--{{ s.status }}" type="button" (click)="toggleSliderStatus(s)">
+                    {{ s.status }}
+                  </button>
+                </div>
+                @if (s.subtitle) { <p class="text-muted sa__card-sub">{{ s.subtitle }}</p> }
+                @if (s.buttonText) { <span class="badge badge--muted">{{ s.buttonText }} → {{ s.buttonLink }}</span> }
+                <div class="sa__card-actions">
+                  <button type="button" (click)="moveSlider(s.id, 'up')" [disabled]="i === 0 || movingSliderId() === s.id">↑</button>
+                  <button type="button" (click)="moveSlider(s.id, 'down')" [disabled]="i === sliders().length - 1 || movingSliderId() === s.id">↓</button>
+                  <button type="button" (click)="startEditSlider(s)">Edit</button>
+                  <button type="button" class="sa__delete" (click)="removeSlider(s)">Delete</button>
+                </div>
+              </div>
+            </article>
+          } @empty {
+            <p class="text-muted">No sliders yet.</p>
+          }
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ===================== ADVERTISEMENTS ===================== -->
+  @if (tab() === 'ads') {
+    <div class="sa__panel">
+      @if (editingAdId() === null) {
+        <button class="btn btn--primary btn--sm sa__add" type="button" (click)="startAddAd()">+ Add Advertisement</button>
+      }
+
+      @if (editingAdId() !== null) {
+        <form class="sa__form" [formGroup]="adForm" (ngSubmit)="saveAd()">
+          <h2 class="sa__form-title">{{ editingAdId() === 'new' ? 'New advertisement' : 'Edit advertisement' }}</h2>
+          <div class="sa__grid">
+            <div class="field">
+              <label class="field__label" for="a-title">Title</label>
+              <input class="input" id="a-title" formControlName="title" />
+            </div>
+            <div class="field">
+              <label class="field__label" for="a-position">Placement</label>
+              <select class="select" id="a-position" formControlName="position">
+                <option value="hero">Hero</option>
+                <option value="homepage_banner">Homepage banner</option>
+                <option value="popup">Popup</option>
+                <option value="category">Category page</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="a-desc">Description</label>
+            <textarea class="textarea" id="a-desc" formControlName="description" rows="2"></textarea>
+          </div>
+          <div class="field" [class.field--error]="adForm.controls.mediaUrl.touched && adForm.controls.mediaUrl.invalid">
+            <label class="field__label">Media <span class="field__hint">(upload an image, or paste a video URL below)</span></label>
+            <ui-image-upload
+              [value]="adForm.controls.mediaUrl.value"
+              folder="ads"
+              label="Advertisement media"
+              (valueChange)="adForm.controls.mediaUrl.setValue($event)"
+            />
+          </div>
+          <div class="sa__grid">
+            <div class="field">
+              <label class="field__label" for="a-cta-text">CTA text</label>
+              <input class="input" id="a-cta-text" formControlName="ctaText" placeholder="Shop the drop" />
+            </div>
+            <div class="field">
+              <label class="field__label" for="a-cta-link">CTA link</label>
+              <input class="input" id="a-cta-link" formControlName="ctaLink" placeholder="/shop/new-arrivals" />
+            </div>
+          </div>
+          <div class="sa__grid">
+            <div class="field">
+              <label class="field__label" for="a-start">Starts <span class="field__hint">(optional)</span></label>
+              <input class="input" id="a-start" type="date" formControlName="startAt" />
+            </div>
+            <div class="field">
+              <label class="field__label" for="a-end">Ends <span class="field__hint">(optional)</span></label>
+              <input class="input" id="a-end" type="date" formControlName="endAt" />
+            </div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="a-status">Status</label>
+            <select class="select" id="a-status" formControlName="status">
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="sa__form-actions">
+            <button class="btn btn--primary" type="submit" [disabled]="savingAd()">
+              {{ savingAd() ? 'Saving…' : 'Save' }}
+            </button>
+            <button class="btn btn--ghost" type="button" (click)="cancelAd()">Cancel</button>
+          </div>
+        </form>
+      }
+
+      <div class="sa__list">
+        @if (adsLoading()) {
+          @for (i of [1,2]; track i) { <ui-skeleton shape="img" height="100px" /> }
+        } @else {
+          @for (a of ads(); track a.id) {
+            <article class="sa__card">
+              <div class="sa__card-media sa__card-media--wide">
+                <img [src]="a.mediaUrl" [alt]="a.title || 'Advertisement'" loading="lazy" />
+              </div>
+              <div class="sa__card-body">
+                <div class="sa__card-head">
+                  <strong class="sa__card-title">{{ a.title || '(no title)' }}</strong>
+                  <button class="sa__status sa__status--{{ a.status }}" type="button" (click)="toggleAdStatus(a)">
+                    {{ a.status }}
+                  </button>
+                </div>
+                <span class="badge badge--muted">{{ a.position }}</span>
+                @if (a.startAt || a.endAt) {
+                  <p class="text-muted sa__card-sub">
+                    {{ a.startAt ? (a.startAt | slice: 0:10) : 'Always' }} – {{ a.endAt ? (a.endAt | slice: 0:10) : 'No end' }}
+                  </p>
+                }
+                <div class="sa__card-actions">
+                  <button type="button" (click)="startEditAd(a)">Edit</button>
+                  <button type="button" class="sa__delete" (click)="removeAd(a)">Delete</button>
+                </div>
+              </div>
+            </article>
+          } @empty {
+            <p class="text-muted">No advertisements yet.</p>
+          }
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ===================== SOCIAL LINKS ===================== -->
+  @if (tab() === 'social') {
+    <div class="sa__panel">
+      @if (editingSocialId() === null) {
+        <button class="btn btn--primary btn--sm sa__add" type="button" (click)="startAddSocial()">+ Add Social Link</button>
+      }
+
+      @if (editingSocialId() !== null) {
+        <form class="sa__form" [formGroup]="socialForm" (ngSubmit)="saveSocial()">
+          <h2 class="sa__form-title">{{ editingSocialId() === 'new' ? 'New social link' : 'Edit social link' }}</h2>
+          <div class="sa__grid">
+            <div class="field" [class.field--error]="socialForm.controls.platform.touched && socialForm.controls.platform.invalid">
+              <label class="field__label" for="so-platform">Platform</label>
+              <input class="input" id="so-platform" formControlName="platform" placeholder="Instagram" />
+            </div>
+            <div class="field" [class.field--error]="socialForm.controls.url.touched && socialForm.controls.url.invalid">
+              <label class="field__label" for="so-url">URL</label>
+              <input class="input" id="so-url" type="url" formControlName="url" placeholder="https://…" />
+            </div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="so-status">Status</label>
+            <select class="select" id="so-status" formControlName="status">
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="sa__form-actions">
+            <button class="btn btn--primary" type="submit" [disabled]="savingSocial()">
+              {{ savingSocial() ? 'Saving…' : 'Save' }}
+            </button>
+            <button class="btn btn--ghost" type="button" (click)="cancelSocial()">Cancel</button>
+          </div>
+        </form>
+      }
+
+      <div class="sa__list sa__list--rows">
+        @if (socialLoading()) {
+          @for (i of [1,2,3]; track i) { <ui-skeleton shape="img" height="56px" /> }
+        } @else {
+          @for (s of socialLinks(); track s.id; let i = $index) {
+            <article class="sa__row">
+              <div class="sa__row-body">
+                <strong class="sa__card-title">{{ s.platform }}</strong>
+                <span class="text-muted sa__card-sub">{{ s.url }}</span>
+              </div>
+              <button class="sa__status sa__status--{{ s.status }}" type="button" (click)="toggleSocialStatus(s)">
+                {{ s.status }}
+              </button>
+              <div class="sa__card-actions">
+                <button type="button" (click)="moveSocial(s.id, 'up')" [disabled]="i === 0 || movingSocialId() === s.id">↑</button>
+                <button type="button" (click)="moveSocial(s.id, 'down')" [disabled]="i === socialLinks().length - 1 || movingSocialId() === s.id">↓</button>
+                <button type="button" (click)="startEditSocial(s)">Edit</button>
+                <button type="button" class="sa__delete" (click)="removeSocial(s)">Delete</button>
+              </div>
+            </article>
+          } @empty {
+            <p class="text-muted">No social links yet.</p>
+          }
+        }
+      </div>
+    </div>
+  }
+</div>

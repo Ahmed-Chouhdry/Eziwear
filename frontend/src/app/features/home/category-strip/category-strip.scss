@@ -1,0 +1,65 @@
+@use '../../../../styles/breakpoints' as *;
+
+.cs__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-5);
+}
+.cs__title {
+  font-size: var(--fs-2xl);
+  text-transform: uppercase;
+}
+
+.cs__grid {
+  display: grid;
+  gap: var(--sp-3);
+  grid-template-columns: repeat(2, 1fr);
+
+  @include bp(sm) { grid-template-columns: repeat(3, 1fr); }
+  @include bp(md) { grid-template-columns: repeat(5, 1fr); gap: var(--sp-4); }
+}
+
+.cs__card {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--card-border);
+  transition:
+    border-color var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-out);
+}
+.cs__card:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-3px);
+}
+
+.cs__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+.cs__card:hover .cs__img { transform: scale(1.06); }
+
+.cs__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(11, 11, 13, 0.75) 0%, rgba(11, 11, 13, 0) 60%);
+}
+
+.cs__name {
+  position: absolute;
+  inset-block-end: var(--sp-3);
+  inset-inline: var(--sp-3);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--ezi-ivory);
+}

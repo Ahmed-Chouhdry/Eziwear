@@ -1,0 +1,112 @@
+<div class="aod">
+  @if (loading()) {
+    <div class="aod__loading"><ui-spinner [size]="28" [accent]="true" /></div>
+  } @else if (!order()) {
+    <div class="aod__missing">
+      <h1>Order not found</h1>
+      <a class="btn btn--primary" routerLink="/admin/orders">Back to orders</a>
+    </div>
+  } @else {
+    <nav class="aod__crumbs"><a routerLink="/admin/orders">Orders</a> <span aria-hidden="true">/</span> <span>{{ order()!.orderNumber }}</span></nav>
+
+    <div class="aod__head">
+      <div>
+        <h1 class="aod__number">{{ order()!.orderNumber }}</h1>
+        <p class="text-muted">Placed {{ order()!.createdAt | date: 'medium' }}</p>
+      </div>
+      <span class="badge" [class.badge--in-stock]="order()!.orderStatus === 'delivered'" [class.badge--sale]="order()!.orderStatus !== 'delivered' && order()!.orderStatus !== 'cancelled' && order()!.orderStatus !== 'returned'" [class.badge--out-stock]="order()!.orderStatus === 'cancelled' || order()!.orderStatus === 'returned'">
+        {{ statusLabel[order()!.orderStatus] }}
+      </span>
+    </div>
+
+    <!-- Status actions -->
+    <section class="aod__panel">
+      <h2 class="aod__panel-title">Order status</h2>
+      <order-timeline [status]="order()!.orderStatus" />
+      @if (nextStatuses().length) {
+        <div class="aod__transition-actions">
+          @for (s of nextStatuses(); track s) {
+            <button
+              class="btn btn--sm"
+              [class.btn--primary]="s !== 'cancelled' && s !== 'returned'"
+              [class.btn--danger]="s === 'cancelled' || s === 'returned'"
+              type="button"
+              [disabled]="updating()"
+              (click)="setStatus(s)"
+            >
+              Mark {{ statusLabel[s] }}
+            </button>
+          }
+        </div>
+      } @else {
+        <p class="text-muted aod__final">This order is in a final state.</p>
+      }
+    </section>
+
+    <div class="aod__grid">
+      <section class="aod__panel">
+        <h2 class="aod__panel-title">Items</h2>
+        <ul class="aod__items" role="list">
+          @for (item of order()!.items; track $index) {
+            <li class="aod__item">
+              <div class="aod__thumb">
+                @if (item.image) { <img [src]="item.image" [alt]="item.productName" loading="lazy" /> }
+                @else { <span aria-hidden="true">EZi</span> }
+              </div>
+              <div class="aod__item-info">
+                <span class="aod__item-name">{{ item.productName }}</span>
+                <span class="text-muted">{{ item.size }} · {{ item.color }} · Qty {{ item.quantity }}</span>
+              </div>
+              <span class="price">{{ item.subtotal | price }}</span>
+            </li>
+          }
+        </ul>
+      </section>
+
+      <div class="aod__side">
+        <section class="aod__panel">
+          <h2 class="aod__panel-title">Customer &amp; delivery</h2>
+          <address class="aod__address">
+            <strong>{{ order()!.ship.name }}</strong>
+            {{ order()!.ship.address }}<br />
+            {{ order()!.ship.city }}@if (order()!.ship.area) {, {{ order()!.ship.area }}}
+            @if (order()!.ship.postalCode) { {{ order()!.ship.postalCode }} }<br />
+            {{ order()!.ship.phone }}
+          </address>
+          @if (order()!.notes) { <p class="text-muted aod__notes">"{{ order()!.notes }}"</p> }
+        </section>
+
+        <section class="aod__panel">
+          <h2 class="aod__panel-title">Payment</h2>
+          <p class="aod__payment-method">{{ order()!.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Card' }}</p>
+          <div class="field">
+            <label class="field__label" for="pay-status">Payment status</label>
+            <select
+              class="select"
+              id="pay-status"
+              [value]="order()!.paymentStatus"
+              [disabled]="updating()"
+              (change)="setPaymentStatus($any($event.target).value)"
+            >
+              <option value="pending">Pending</option>
+              <option value="paid">Paid</option>
+              <option value="failed">Failed</option>
+              <option value="refunded">Refunded</option>
+            </select>
+          </div>
+          <div class="aod__totals">
+            <div class="aod__row"><span>Subtotal</span><span class="price">{{ order()!.subtotal | price }}</span></div>
+            @if (order()!.discount > 0) {
+              <div class="aod__row aod__row--discount">
+                <span>Discount @if (order()!.couponCode) { ({{ order()!.couponCode }}) }</span>
+                <span>−{{ order()!.discount | price }}</span>
+              </div>
+            }
+            <div class="aod__row text-muted"><span>Shipping</span><span>{{ order()!.shippingFee === 0 ? 'Free' : (order()!.shippingFee | price) }}</span></div>
+            <div class="aod__row aod__row--total"><span>Total</span><span class="price">{{ order()!.total | price }}</span></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  }
+</div>

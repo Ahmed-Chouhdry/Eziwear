@@ -1,0 +1,57 @@
+<div class="rv">
+  <header class="rv__head">
+    <h1 class="rv__title">Reviews</h1>
+    <p class="text-muted">{{ loading() ? 'Loading…' : total() + ' review' + (total() === 1 ? '' : 's') }}</p>
+  </header>
+
+  <div class="rv__filters">
+    <input
+      class="input rv__search"
+      type="search"
+      placeholder="Search customer or product…"
+      [value]="search()"
+      (input)="setSearch($any($event.target).value)"
+    />
+    <select class="select" [value]="status()" (change)="setStatus($any($event.target).value)">
+      <option value="">All statuses</option>
+      <option value="pending">Pending</option>
+      <option value="approved">Approved</option>
+      <option value="rejected">Rejected</option>
+    </select>
+  </div>
+
+  <div class="rv__list">
+    @if (loading()) {
+      @for (i of skeletons; track i) { <ui-skeleton shape="text" height="72px" /> }
+    } @else if (items().length === 0) {
+      <ui-empty-state icon="★" title="No reviews found" message="Try a different search or filter." />
+    } @else {
+      @for (r of items(); track r.id) {
+        <article class="rv__card">
+          <div class="rv__card-main">
+            <div class="rv__card-head">
+              <a class="rv__product" [routerLink]="['/product', r.productSlug]" target="_blank">{{ r.productName }}</a>
+              <span class="pill" [class.pill--pending]="r.status === 'pending'" [class.pill--approved]="r.status === 'approved'" [class.pill--rejected]="r.status === 'rejected'">
+                {{ r.status }}
+              </span>
+            </div>
+            <div class="rv__stars" aria-hidden="true">{{ stars(r.rating) }}</div>
+            @if (r.comment) { <p class="rv__comment">"{{ r.comment }}"</p> }
+            <p class="text-muted rv__meta">{{ r.customerName }} · {{ r.createdAt | date: 'mediumDate' }}</p>
+          </div>
+          <div class="rv__actions">
+            @if (r.status !== 'approved') {
+              <button class="btn btn--primary btn--sm" type="button" [disabled]="busyId() === r.id" (click)="approve(r)">Approve</button>
+            }
+            @if (r.status !== 'rejected') {
+              <button class="btn btn--secondary btn--sm" type="button" [disabled]="busyId() === r.id" (click)="reject(r)">Reject</button>
+            }
+            <button class="rv__delete" type="button" [disabled]="busyId() === r.id" (click)="remove(r)">Delete</button>
+          </div>
+        </article>
+      }
+    }
+  </div>
+
+  <ui-pagination [page]="page()" [totalPages]="totalPages()" (pageChange)="goToPage($event)" />
+</div>

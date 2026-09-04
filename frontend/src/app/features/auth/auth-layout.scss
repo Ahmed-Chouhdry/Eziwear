@@ -1,0 +1,53 @@
+@use '../../../styles/breakpoints' as *;
+
+.auth {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 1fr;
+
+  @include bp(md) { grid-template-columns: 1fr 1fr; }
+}
+
+.auth__brand {
+  display: none;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--sp-3);
+  padding: var(--sp-8);
+  background: var(--ezi-black);
+  color: var(--ezi-ivory);
+  background-image:
+    linear-gradient(0deg, rgba(11, 11, 13, 0.85), rgba(11, 11, 13, 0.4)),
+    url('https://picsum.photos/seed/ezi-auth/1000/1400');
+  background-size: cover;
+  background-position: center;
+
+  @include bp(md) { display: flex; }
+}
+.auth__logo {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-2xl);
+  text-transform: uppercase;
+  color: var(--ezi-ivory);
+}
+.auth__logo span { color: var(--accent); }
+.auth__tagline {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  font-size: var(--fs-sm);
+}
+.auth__copy { color: var(--ezi-silver); font-size: var(--fs-sm); }
+
+.auth__panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-6) var(--container-pad);
+  background: var(--bg);
+}
+.auth__card {
+  width: 100%;
+  max-width: 400px;
+}

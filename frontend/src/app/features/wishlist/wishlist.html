@@ -1,0 +1,49 @@
+<div class="container section">
+  <header class="wl__head">
+    <h1 class="wl__title">Wishlist</h1>
+    @if (wishlist.count() > 0) {
+      <button class="wl__clear" type="button" (click)="wishlist.clear()">Clear all</button>
+    }
+  </header>
+
+  @if (wishlist.count() === 0) {
+    <ui-empty-state icon="♡" title="Your wishlist is empty" message="Tap the heart on any product to save it here.">
+      <a class="btn btn--primary" routerLink="/shop">Browse products</a>
+    </ui-empty-state>
+  } @else {
+    <div class="product-grid">
+      @for (item of wishlist.items(); track item.productId) {
+        <article class="wl__card">
+          <a class="wl__media" [routerLink]="['/product', item.slug]">
+            @if (item.image) {
+              <img [src]="item.image" [alt]="item.name" loading="lazy" />
+            } @else {
+              <span class="wl__ph" aria-hidden="true">EZiWear</span>
+            }
+          </a>
+          <button
+            class="wl__remove"
+            type="button"
+            aria-label="Remove from wishlist"
+            (click)="wishlist.remove(item.productId)"
+          >&times;</button>
+
+          <div class="wl__body">
+            <a class="wl__name line-clamp-2" [routerLink]="['/product', item.slug]">{{ item.name }}</a>
+            <div class="wl__price">
+              @if (item.salePrice && item.salePrice < item.price) {
+                <span class="price price--sale">{{ item.salePrice | price }}</span>
+                <span class="price price--old">{{ item.price | price }}</span>
+              } @else {
+                <span class="price">{{ item.price | price }}</span>
+              }
+            </div>
+            <a class="btn btn--secondary btn--sm btn--block" [routerLink]="['/product', item.slug]">
+              View product
+            </a>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</div>

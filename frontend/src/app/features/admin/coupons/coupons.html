@@ -1,0 +1,125 @@
+<div class="cp">
+  <header class="cp__head">
+    <div>
+      <h1 class="cp__title">Coupons</h1>
+      <p class="text-muted">{{ loading() ? 'Loading…' : total() + ' coupon' + (total() === 1 ? '' : 's') }}</p>
+    </div>
+    @if (editingId() === null) {
+      <button class="btn btn--primary btn--sm" type="button" (click)="startAdd()">+ Add Coupon</button>
+    }
+  </header>
+
+  @if (editingId() !== null) {
+    <form class="cp__form" [formGroup]="form" (ngSubmit)="save()">
+      <h2 class="cp__form-title">{{ editingId() === 'new' ? 'New coupon' : 'Edit coupon' }}</h2>
+      <div class="cp__grid">
+        <div class="field" [class.field--error]="form.controls.code.touched && form.controls.code.invalid">
+          <label class="field__label" for="c-code">Code</label>
+          <input class="input" id="c-code" formControlName="code" placeholder="WELCOME10" style="text-transform: uppercase;" />
+        </div>
+        <div class="field">
+          <label class="field__label" for="c-type">Type</label>
+          <select class="select" id="c-type" formControlName="type">
+            <option value="percentage">Percentage (%)</option>
+            <option value="fixed">Fixed amount (Rs)</option>
+          </select>
+        </div>
+      </div>
+      <div class="cp__grid">
+        <div class="field" [class.field--error]="form.controls.value.touched && form.controls.value.invalid">
+          <label class="field__label" for="c-value">
+            Value {{ form.controls.type.value === 'percentage' ? '(%)' : '(Rs)' }}
+          </label>
+          <input class="input" id="c-value" type="number" formControlName="value" min="0.01" step="0.01" />
+        </div>
+        <div class="field">
+          <label class="field__label" for="c-max">Max discount (Rs) <span class="field__hint">(optional cap)</span></label>
+          <input class="input" id="c-max" type="number" formControlName="maxDiscount" min="0" />
+        </div>
+      </div>
+      <div class="cp__grid">
+        <div class="field">
+          <label class="field__label" for="c-min">Min order (Rs) <span class="field__hint">(optional)</span></label>
+          <input class="input" id="c-min" type="number" formControlName="minOrder" min="0" />
+        </div>
+        <div class="field">
+          <label class="field__label" for="c-limit">Usage limit <span class="field__hint">(optional)</span></label>
+          <input class="input" id="c-limit" type="number" formControlName="usageLimit" min="0" />
+        </div>
+      </div>
+      <div class="cp__grid">
+        <div class="field">
+          <label class="field__label" for="c-start">Starts <span class="field__hint">(optional)</span></label>
+          <input class="input" id="c-start" type="date" formControlName="startAt" />
+        </div>
+        <div class="field">
+          <label class="field__label" for="c-end">Ends <span class="field__hint">(optional)</span></label>
+          <input class="input" id="c-end" type="date" formControlName="endAt" />
+        </div>
+      </div>
+      <div class="field">
+        <label class="field__label" for="c-status">Status</label>
+        <select class="select" id="c-status" formControlName="status">
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+      <div class="cp__form-actions">
+        <button class="btn btn--primary" type="submit" [disabled]="saving()">{{ saving() ? 'Saving…' : 'Save' }}</button>
+        <button class="btn btn--ghost" type="button" (click)="cancel()">Cancel</button>
+      </div>
+    </form>
+  }
+
+  <div class="cp__filters">
+    <input
+      class="input cp__search"
+      type="search"
+      placeholder="Search code…"
+      [value]="search()"
+      (input)="setSearch($any($event.target).value)"
+    />
+    <select class="select" [value]="status()" (change)="setStatus($any($event.target).value)">
+      <option value="">All statuses</option>
+      <option value="active">Active</option>
+      <option value="inactive">Inactive</option>
+    </select>
+  </div>
+
+  <div class="cp__table">
+    <table>
+      <thead>
+        <tr><th>Code</th><th>Type</th><th>Value</th><th>Min order</th><th>Usage</th><th>Status</th><th>Created</th><th></th></tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          @for (i of skeletons; track i) { <tr><td colspan="8"><ui-skeleton shape="text" /></td></tr> }
+        } @else if (items().length === 0) {
+          <tr><td colspan="8"><ui-empty-state icon="⬡" title="No coupons found" message="Try a different search or filter." /></td></tr>
+        } @else {
+          @for (c of items(); track c.id) {
+            <tr>
+              <td class="mono cp__code">{{ c.code }}</td>
+              <td class="text-muted">{{ c.type === 'percentage' ? 'Percentage' : 'Fixed' }}</td>
+              <td>{{ c.type === 'percentage' ? c.value + '%' : (c.value | price) }}</td>
+              <td class="text-muted">{{ c.minOrder ? (c.minOrder | price) : '—' }}</td>
+              <td class="text-muted">{{ c.usedCount }}@if (c.usageLimit) { / {{ c.usageLimit }} }</td>
+              <td>
+                <button class="pill" [class.pill--delivered]="c.status === 'active'" [class.pill--cancelled]="c.status === 'inactive'" type="button" (click)="toggleStatus(c)">
+                  {{ c.status }}
+                </button>
+              </td>
+              <td class="text-muted">{{ c.createdAt | date: 'mediumDate' }}</td>
+              <td class="cp__actions">
+                <button type="button" (click)="startEdit(c)">Edit</button>
+                <button type="button" class="cp__delete" (click)="remove(c)">Delete</button>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <ui-pagination [page]="page()" [totalPages]="totalPages()" (pageChange)="goToPage($event)" />
+</div>

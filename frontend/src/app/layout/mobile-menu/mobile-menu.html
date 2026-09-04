@@ -1,0 +1,46 @@
+@if (ui.mobileMenuOpen()) {
+  <div class="mm" role="dialog" aria-modal="true" aria-label="Menu">
+    <button class="mm__backdrop" type="button" aria-label="Close menu" (click)="close()"></button>
+
+    <div class="mm__panel">
+      <header class="mm__head">
+        <a class="mm__logo" routerLink="/" (click)="close()">EZi<span>Wear</span></a>
+        <button class="mm__close" type="button" aria-label="Close" (click)="close()">&times;</button>
+      </header>
+
+      <nav class="mm__nav" aria-label="Categories">
+        <span class="mm__label">Shop</span>
+        @for (c of categories; track c.slug) {
+          <a class="mm__link" [routerLink]="['/shop', c.slug]" (click)="close()">{{ c.label }}</a>
+        }
+        <a class="mm__link mm__link--vip" [routerLink]="['/shop', 'vip']" (click)="close()">
+          VIP Collection
+        </a>
+      </nav>
+
+      <nav class="mm__nav" aria-label="Collections">
+        <span class="mm__label">Collections</span>
+        @for (c of collections; track c.slug) {
+          <a class="mm__link" [routerLink]="['/shop', c.slug]" (click)="close()">{{ c.label }}</a>
+        }
+      </nav>
+
+      <nav class="mm__nav" aria-label="Account">
+        <span class="mm__label">Account</span>
+        @if (auth.isAuthenticated()) {
+          <a class="mm__link" routerLink="/account" (click)="close()">My Account</a>
+          <a class="mm__link" routerLink="/account/orders" (click)="close()">My Orders</a>
+          <a class="mm__link" routerLink="/wishlist" (click)="close()">Wishlist</a>
+          <button class="mm__link" type="button" (click)="auth.logout(); close()">Log out</button>
+        } @else {
+          <a class="mm__link" routerLink="/auth/login" (click)="close()">Sign in</a>
+          <a class="mm__link" routerLink="/auth/register" (click)="close()">Create account</a>
+        }
+      </nav>
+
+      <button class="mm__theme" type="button" (click)="theme.toggle()">
+        {{ theme.isDark() ? 'Switch to light mode' : 'Switch to dark mode' }}
+      </button>
+    </div>
+  </div>
+}

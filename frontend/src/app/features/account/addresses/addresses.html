@@ -1,0 +1,81 @@
+<div class="ad">
+  <header class="ad__head">
+    <h2 class="ad__title">Addresses</h2>
+    @if (editingId() === null) {
+      <button class="btn btn--primary btn--sm" type="button" (click)="startAdd()">+ Add address</button>
+    }
+  </header>
+
+  @if (editingId() !== null) {
+    <form class="ad__form" [formGroup]="form" (ngSubmit)="save()">
+      <h3 class="ad__form-title">{{ editingId() === 'new' ? 'New address' : 'Edit address' }}</h3>
+
+      <div class="ad__grid">
+        <div class="field" [class.field--error]="form.controls.name.touched && form.controls.name.invalid">
+          <label class="field__label" for="ad-name">Full name</label>
+          <input class="input" id="ad-name" formControlName="name" autocomplete="name" />
+        </div>
+        <div class="field" [class.field--error]="form.controls.phone.touched && form.controls.phone.invalid">
+          <label class="field__label" for="ad-phone">Phone</label>
+          <input class="input" id="ad-phone" formControlName="phone" autocomplete="tel" inputmode="tel" />
+        </div>
+      </div>
+      <div class="field" [class.field--error]="form.controls.address.touched && form.controls.address.invalid">
+        <label class="field__label" for="ad-address">Address</label>
+        <input class="input" id="ad-address" formControlName="address" autocomplete="street-address" />
+      </div>
+      <div class="ad__grid">
+        <div class="field" [class.field--error]="form.controls.city.touched && form.controls.city.invalid">
+          <label class="field__label" for="ad-city">City</label>
+          <input class="input" id="ad-city" formControlName="city" autocomplete="address-level2" />
+        </div>
+        <div class="field">
+          <label class="field__label" for="ad-area">Area <span class="field__hint">(optional)</span></label>
+          <input class="input" id="ad-area" formControlName="area" />
+        </div>
+      </div>
+      <div class="ad__grid">
+        <div class="field">
+          <label class="field__label" for="ad-postal">Postal code <span class="field__hint">(optional)</span></label>
+          <input class="input" id="ad-postal" formControlName="postalCode" inputmode="numeric" />
+        </div>
+      </div>
+      <label class="ad__check">
+        <input type="checkbox" formControlName="isDefault" /> Set as default address
+      </label>
+
+      <div class="ad__form-actions">
+        <button class="btn btn--primary" type="submit" [disabled]="saving()">
+          {{ saving() ? 'Saving…' : 'Save address' }}
+        </button>
+        <button class="btn btn--ghost" type="button" (click)="cancel()">Cancel</button>
+      </div>
+    </form>
+  }
+
+  @if (!addresses.addresses().length && editingId() === null) {
+    <ui-empty-state icon="⌂" title="No addresses yet" message="Add an address to speed up checkout.">
+      <button class="btn btn--primary" type="button" (click)="startAdd()">Add address</button>
+    </ui-empty-state>
+  } @else if (addresses.addresses().length) {
+    <div class="ad__list">
+      @for (a of addresses.addresses(); track a.id) {
+        <article class="ad__card" [class.is-default]="a.isDefault" [class.is-hidden]="editingId() === a.id">
+          <div class="ad__card-body">
+            <strong>{{ a.name }}</strong>
+            @if (a.isDefault) { <span class="badge badge--muted">Default</span> }
+            <span>{{ a.address }}, {{ a.city }}@if (a.area) {, {{ a.area }}}@if (a.postalCode) { · {{ a.postalCode }}}</span>
+            <span class="text-muted">{{ a.phone }}</span>
+          </div>
+          <div class="ad__card-actions">
+            @if (!a.isDefault) {
+              <button type="button" (click)="makeDefault(a)">Set default</button>
+            }
+            <button type="button" (click)="startEdit(a)">Edit</button>
+            <button type="button" class="ad__delete" (click)="remove(a)">Delete</button>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</div>

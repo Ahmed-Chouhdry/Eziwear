@@ -1,0 +1,87 @@
+.so {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+}
+.so__backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  background: var(--overlay);
+  backdrop-filter: blur(3px);
+  animation: ezi-fade-in var(--dur-fast) var(--ease-out);
+}
+.so__panel {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+  padding: var(--sp-5) var(--container-pad) var(--sp-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  animation: ezi-fade-up var(--dur-base) var(--ease-out);
+}
+
+.so__form {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  max-width: var(--container-max);
+  margin-inline: auto;
+  width: 100%;
+  border-bottom: 2px solid var(--border-strong);
+  padding-bottom: var(--sp-3);
+}
+.so__form:focus-within { border-color: var(--accent); }
+.so__icon {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: var(--text-muted);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  flex-shrink: 0;
+}
+.so__input {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  color: var(--text);
+}
+.so__input::placeholder { color: var(--text-faint); }
+.so__close { font-size: 26px; line-height: 1; color: var(--text-faint); }
+.so__close:hover { color: var(--text); }
+
+.so__section {
+  max-width: var(--container-max);
+  margin-inline: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.so__label {
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.so__tags, .so__cats { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.so__tag, .so__cat {
+  padding: 8px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+.so__tag:hover, .so__cat:hover { border-color: var(--accent); color: var(--accent); }

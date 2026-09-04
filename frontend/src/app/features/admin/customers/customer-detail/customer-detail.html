@@ -1,0 +1,87 @@
+<div class="cd">
+  @if (loading()) {
+    <div class="cd__loading"><ui-spinner [size]="28" [accent]="true" /></div>
+  } @else if (!customer()) {
+    <div class="cd__missing">
+      <h1>Customer not found</h1>
+      <a class="btn btn--primary" routerLink="/admin/customers">Back to customers</a>
+    </div>
+  } @else {
+    <nav class="cd__crumbs"><a routerLink="/admin/customers">Customers</a> <span aria-hidden="true">/</span> <span>{{ customer()!.name }}</span></nav>
+
+    <div class="cd__head">
+      <div>
+        <h1 class="cd__name">{{ customer()!.name }}</h1>
+        <p class="text-muted">{{ customer()!.email }}@if (customer()!.phone) { · {{ customer()!.phone }} }</p>
+        <p class="text-muted">Joined {{ customer()!.createdAt | date: 'mediumDate' }}</p>
+      </div>
+      <button
+        class="btn"
+        [class.btn--danger]="customer()!.status === 'active'"
+        [class.btn--secondary]="customer()!.status === 'suspended'"
+        type="button"
+        [disabled]="updating()"
+        (click)="toggleStatus()"
+      >
+        {{ customer()!.status === 'active' ? 'Suspend account' : 'Reactivate account' }}
+      </button>
+    </div>
+
+    <div class="cd__stats">
+      <div class="stat stat--accent">
+        <span class="stat__label">Orders</span>
+        <span class="stat__value">{{ customer()!.orderCount }}</span>
+      </div>
+      <div class="stat stat--accent">
+        <span class="stat__label">Total spent</span>
+        <span class="stat__value">{{ customer()!.totalSpent | price }}</span>
+      </div>
+      <div class="stat" [class.stat--silver]="customer()!.status === 'active'">
+        <span class="stat__label">Status</span>
+        <span class="stat__value">{{ customer()!.status }}</span>
+      </div>
+    </div>
+
+    <div class="cd__grid">
+      <section class="cd__panel">
+        <h2 class="cd__panel-title">Order history</h2>
+        @if (customer()!.orders.length) {
+          <div class="cd__table">
+            <table>
+              <thead><tr><th>Order</th><th>Total</th><th>Status</th><th>Payment</th><th>Placed</th></tr></thead>
+              <tbody>
+                @for (o of customer()!.orders; track o.orderNumber) {
+                  <tr>
+                    <td><a class="cd__order-link" [routerLink]="['/admin/orders', o.orderNumber]">{{ o.orderNumber }}</a></td>
+                    <td>{{ o.total | price }}</td>
+                    <td>{{ o.orderStatus }}</td>
+                    <td>{{ o.paymentStatus }}</td>
+                    <td class="text-muted">{{ o.createdAt | date: 'mediumDate' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <p class="text-muted">No orders yet.</p>
+        }
+      </section>
+
+      <section class="cd__panel">
+        <h2 class="cd__panel-title">Addresses</h2>
+        @if (customer()!.addresses.length) {
+          <ul class="cd__addresses" role="list">
+            @for (a of customer()!.addresses; track a.id) {
+              <li>
+                {{ a.name }} — {{ a.city }}
+                @if (a.isDefault) { <span class="badge badge--muted">Default</span> }
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="text-muted">No saved addresses.</p>
+        }
+      </section>
+    </div>
+  }
+</div>

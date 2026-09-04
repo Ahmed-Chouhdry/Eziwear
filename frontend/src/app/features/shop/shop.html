@@ -1,0 +1,107 @@
+<div class="container section">
+  <nav class="shop__crumbs" aria-label="Breadcrumb">
+    <a routerLink="/">Home</a> <span aria-hidden="true">/</span> <span>{{ heading() }}</span>
+  </nav>
+
+  <header class="shop__head">
+    <div>
+      <h1 class="shop__title" [class.text-vip]="isVip()">{{ heading() }}</h1>
+      <p class="shop__count text-muted">
+        {{ loading() ? 'Loading…' : total() + ' item' + (total() === 1 ? '' : 's') }}
+      </p>
+    </div>
+
+    <div class="shop__controls">
+      <button class="shop__filter-btn hide-desktop" type="button" (click)="filtersOpen.set(true)">
+        Filters
+        @if (activeChips().length) { <span class="shop__filter-count">{{ activeChips().length }}</span> }
+      </button>
+
+      <label class="shop__sort">
+        <span class="visually-hidden">Sort by</span>
+        <select class="select" [ngModel]="sort()" (ngModelChange)="setSort($event)" name="sort">
+          @for (s of sorts; track s.value) {
+            <option [value]="s.value">{{ s.label }}</option>
+          }
+        </select>
+      </label>
+    </div>
+  </header>
+
+  <!-- Category quick nav -->
+  <div class="shop__cats">
+    <a routerLink="/shop" [class.is-active]="!category()">All</a>
+    @for (c of categories; track c.slug) {
+      <a [routerLink]="['/shop', c.slug]" [class.is-active]="category() === c.slug">{{ c.label }}</a>
+    }
+    <a [routerLink]="['/shop', 'vip']" class="shop__cat--vip" [class.is-active]="isVip()">VIP</a>
+  </div>
+
+  <!-- Active filter chips -->
+  @if (activeChips().length) {
+    <div class="shop__chips">
+      @for (chip of activeChips(); track chip.key) {
+        <button class="shop__chip" type="button" (click)="removeChip(chip.key)">
+          {{ chip.label }} <span aria-hidden="true">&times;</span>
+        </button>
+      }
+      <button class="shop__chip shop__chip--clear" type="button" (click)="clearAll()">Clear all</button>
+    </div>
+  }
+
+  <div class="shop__layout">
+    <!-- Desktop sidebar -->
+    <aside class="shop__sidebar hide-mobile">
+      <shop-filters
+        [options]="options()"
+        [state]="filterState()"
+        (filtersChange)="applyFilters($event)"
+      />
+    </aside>
+
+    <!-- Results -->
+    <div class="shop__results">
+      @if (loading()) {
+        <div class="product-grid">
+          @for (i of skeletons; track i) {
+            <div class="shop__sk">
+              <ui-skeleton shape="img" />
+              <ui-skeleton shape="text" width="80%" />
+              <ui-skeleton shape="text" width="40%" />
+            </div>
+          }
+        </div>
+      } @else if (products().length) {
+        <div class="product-grid">
+          @for (p of products(); track p.id) {
+            <product-card [product]="p" (addToCart)="onAdd($event)" />
+          }
+        </div>
+        <ui-pagination [page]="page()" [totalPages]="totalPages()" (pageChange)="goToPage($event)" />
+      } @else {
+        <ui-empty-state
+          icon="⌕"
+          title="No products found"
+          message="Try removing a filter or searching for something else."
+        >
+          <button class="btn btn--primary" type="button" (click)="clearAll()">Clear filters</button>
+        </ui-empty-state>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Mobile filter drawer -->
+@if (filtersOpen()) {
+  <div class="shop__drawer hide-desktop" role="dialog" aria-modal="true" aria-label="Filters">
+    <button class="shop__drawer-backdrop" type="button" aria-label="Close" (click)="filtersOpen.set(false)"></button>
+    <div class="shop__drawer-panel">
+      <shop-filters
+        [options]="options()"
+        [state]="filterState()"
+        (filtersChange)="applyFilters($event)"
+        (closeRequested)="filtersOpen.set(false)"
+      />
+    </div>
+  </div>
+}

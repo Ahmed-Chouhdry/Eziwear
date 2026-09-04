@@ -1,0 +1,70 @@
+<article class="pc" [class.pc--vip]="product().isVip" [class.pc--soldout]="!inStock()">
+  <a class="pc__media" [routerLink]="link()" [attr.aria-label]="product().name">
+    @if (primaryImage()) {
+      <img
+        class="pc__img pc__img--primary"
+        [src]="primaryImage()"
+        [alt]="product().name"
+        loading="lazy"
+        decoding="async"
+      />
+      @if (hoverImage()) {
+        <img class="pc__img pc__img--hover" [src]="hoverImage()" alt="" loading="lazy" decoding="async" />
+      }
+    } @else {
+      <span class="pc__img pc__img--placeholder" aria-hidden="true">EZiWear</span>
+    }
+
+    <div class="pc__badges">
+      @if (product().isVip) { <ui-badge kind="vip">VIP</ui-badge> }
+      @if (onSale()) { <ui-badge kind="sale">Sale · {{ discountPct() }}%</ui-badge> }
+      @else if (product().isNewArrival) { <ui-badge kind="new">New</ui-badge> }
+    </div>
+
+    @if (!inStock()) { <span class="pc__soldout">Sold out</span> }
+  </a>
+
+  <button
+    class="pc__wish"
+    type="button"
+    [class.is-saved]="wishlist.has(product().id)"
+    [attr.aria-pressed]="wishlist.has(product().id)"
+    [attr.aria-label]="wishlist.has(product().id) ? 'Remove from wishlist' : 'Save to wishlist'"
+    (click)="wishlist.toggle(product())"
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 20s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 5c-2.5 4.5-9.5 9-9.5 9Z" />
+    </svg>
+  </button>
+
+  <div class="pc__body">
+    <a class="pc__name line-clamp-2" [routerLink]="link()">{{ product().name }}</a>
+
+    <div class="pc__meta">
+      @if (product().rating) {
+        <span class="pc__rating" aria-label="Rated {{ product().rating }} out of 5">
+          ★ {{ product().rating | number: '1.1-1' }}
+          <span class="pc__reviews">({{ product().reviewCount ?? 0 }})</span>
+        </span>
+      }
+    </div>
+
+    <div class="pc__price">
+      @if (onSale()) {
+        <span class="price price--sale">{{ product().salePrice | price }}</span>
+        <span class="price price--old">{{ product().price | price }}</span>
+      } @else {
+        <span class="price">{{ product().price | price }}</span>
+      }
+    </div>
+  </div>
+
+  <button
+    class="pc__add"
+    type="button"
+    [disabled]="!inStock()"
+    (click)="addToCart.emit(product())"
+  >
+    {{ inStock() ? 'Add to cart' : 'Sold out' }}
+  </button>
+</article>

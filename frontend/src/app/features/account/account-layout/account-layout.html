@@ -1,0 +1,27 @@
+<div class="container section">
+  <header class="acc__head">
+    <h1 class="acc__title">My Account</h1>
+    <p class="text-muted">{{ auth.user()?.name }} · {{ auth.user()?.email }}</p>
+  </header>
+
+  <div class="acc__layout">
+    <nav class="acc__nav" aria-label="Account">
+      @for (l of links; track l.path) {
+        <a class="acc__link" [routerLink]="l.path" routerLinkActive="is-active">
+          <span class="acc__link-icon" aria-hidden="true">{{ l.icon }}</span>
+          {{ l.label }}
+          @if (l.label === 'Wishlist' && wishlist.count() > 0) {
+            <span class="acc__link-badge">{{ wishlist.count() }}</span>
+          }
+        </a>
+      }
+      <button class="acc__link acc__link--logout" type="button" (click)="logout()">
+        <span class="acc__link-icon" aria-hidden="true">⏻</span> Sign out
+      </button>
+    </nav>
+
+    <div class="acc__content">
+      <router-outlet />
+    </div>
+  </div>
+</div>

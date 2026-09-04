@@ -1,0 +1,73 @@
+<div class="topbar">
+  <div class="container topbar__inner">
+    <span>Free shipping on orders over Rs 5,000</span>
+    <span class="hide-mobile">Cash on Delivery across Pakistan</span>
+  </div>
+</div>
+
+<header class="hdr" [class.hdr--scrolled]="scrolled()">
+  <div class="container hdr__inner">
+    <button
+      class="hdr__icon hide-desktop"
+      type="button"
+      aria-label="Open menu"
+      (click)="ui.toggleMobileMenu(true)"
+    >
+      <span class="burger" aria-hidden="true"></span>
+    </button>
+
+    <a class="hdr__logo" routerLink="/" aria-label="EZiWear home">EZi<span>Wear</span></a>
+
+    <nav class="hdr__nav hide-mobile" aria-label="Primary">
+      @for (c of categories; track c.slug) {
+        <a
+          class="hdr__link"
+          [routerLink]="['/shop', c.slug]"
+          routerLinkActive="is-active"
+        >{{ c.label }}</a>
+      }
+      <a class="hdr__link hdr__link--vip" [routerLink]="['/shop', 'vip']" routerLinkActive="is-active">
+        VIP
+      </a>
+    </nav>
+
+    <div class="hdr__actions">
+      <button class="hdr__icon" type="button" aria-label="Search" (click)="ui.toggleSearch(true)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+      </button>
+
+      <button
+        class="hdr__icon"
+        type="button"
+        [attr.aria-label]="theme.isDark() ? 'Switch to light mode' : 'Switch to dark mode'"
+        (click)="theme.toggle()"
+      >
+        @if (theme.isDark()) {
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2 2M17.1 17.1l2 2M19.1 4.9l-2 2M6.9 17.1l-2 2" /></svg>
+        } @else {
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z" /></svg>
+        }
+      </button>
+
+      <a
+        class="hdr__icon hide-mobile"
+        [routerLink]="auth.isAuthenticated() ? '/account' : '/auth/login'"
+        [attr.aria-label]="auth.isAuthenticated() ? 'My account' : 'Sign in'"
+        [attr.title]="auth.user()?.name || null"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" /></svg>
+        @if (auth.isAuthenticated()) { <span class="hdr__dot" aria-hidden="true"></span> }
+      </a>
+
+      <a class="hdr__icon hdr__cart hide-mobile" routerLink="/wishlist" aria-label="Wishlist">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 5c-2.5 4.5-9.5 9-9.5 9Z" /></svg>
+        @if (wishlist.count() > 0) { <span class="hdr__badge">{{ wishlist.count() }}</span> }
+      </a>
+
+      <button class="hdr__icon hdr__cart" type="button" aria-label="Cart" (click)="ui.toggleCartDrawer(true)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7Z" /><path d="M9 7a3 3 0 0 1 6 0" /></svg>
+        @if (cart.count() > 0) { <span class="hdr__badge">{{ cart.count() }}</span> }
+      </button>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,67 @@
+<div class="ol">
+  <header class="ol__head">
+    <div>
+      <h1 class="ol__title">Orders</h1>
+      <p class="text-muted">{{ loading() ? 'Loading…' : total() + ' order' + (total() === 1 ? '' : 's') }}</p>
+    </div>
+  </header>
+
+  <div class="ol__filters">
+    <input
+      class="input ol__search"
+      type="search"
+      placeholder="Search order #, customer name or email…"
+      [value]="search()"
+      (input)="setSearch($any($event.target).value)"
+    />
+    <select class="select" [value]="status()" (change)="setStatus($any($event.target).value)">
+      <option value="">All statuses</option>
+      <option value="pending">Pending</option>
+      <option value="confirmed">Confirmed</option>
+      <option value="processing">Processing</option>
+      <option value="shipped">Shipped</option>
+      <option value="delivered">Delivered</option>
+      <option value="cancelled">Cancelled</option>
+      <option value="returned">Returned</option>
+    </select>
+    <select class="select" [value]="paymentStatus()" (change)="setPaymentStatus($any($event.target).value)">
+      <option value="">All payments</option>
+      <option value="pending">Pending</option>
+      <option value="paid">Paid</option>
+      <option value="failed">Failed</option>
+      <option value="refunded">Refunded</option>
+    </select>
+  </div>
+
+  <div class="ol__table">
+    <table>
+      <thead>
+        <tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Payment</th><th>Placed</th></tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          @for (i of skeletons; track i) { <tr><td colspan="7"><ui-skeleton shape="text" /></td></tr> }
+        } @else if (items().length === 0) {
+          <tr><td colspan="7"><ui-empty-state icon="▧" title="No orders found" message="Try a different search or filter." /></td></tr>
+        } @else {
+          @for (o of items(); track o.orderNumber) {
+            <tr>
+              <td><a class="ol__link mono" [routerLink]="['/admin/orders', o.orderNumber]">{{ o.orderNumber }}</a></td>
+              <td>
+                {{ o.customer }}
+                <div class="text-muted ol__email">{{ o.customerEmail }}</div>
+              </td>
+              <td>{{ o.itemCount }}</td>
+              <td>{{ o.total | price }}</td>
+              <td><span class="pill {{ statusClass(o.orderStatus) }}">{{ statusLabel[o.orderStatus] }}</span></td>
+              <td><span class="pill" [class.pill--delivered]="o.paymentStatus === 'paid'" [class.pill--cancelled]="o.paymentStatus === 'failed'" [class.pill--confirmed]="o.paymentStatus !== 'paid' && o.paymentStatus !== 'failed'">{{ o.paymentStatus }}</span></td>
+              <td class="text-muted">{{ o.createdAt | date: 'MMM d, HH:mm' }}</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <ui-pagination [page]="page()" [totalPages]="totalPages()" (pageChange)="goToPage($event)" />
+</div>

@@ -1,0 +1,103 @@
+<div class="dash">
+  <header class="dash__head">
+    <h1 class="dash__title">Dashboard</h1>
+  </header>
+
+  <!-- Stat cards -->
+  <div class="dash__stats">
+    @if (loading()) {
+      @for (i of [1,2,3,4,5]; track i) {
+        <div class="stat"><ui-skeleton shape="text" width="50%" /><ui-skeleton shape="title" /></div>
+      }
+    } @else {
+      @for (c of cards(); track c.label) {
+        <div class="stat stat--{{ c.tone }}">
+          <span class="stat__label">{{ c.label }}</span>
+          <span class="stat__value">{{ c.value }}</span>
+          @if (c.sub) { <span class="stat__delta">{{ c.sub }}</span> }
+        </div>
+      }
+    }
+  </div>
+
+  <div class="dash__grid">
+    <section class="panel">
+      <header class="panel__head">
+        <h2 class="panel__title">Sales · last 14 days</h2>
+      </header>
+      <div class="panel__body">
+        <admin-sales-chart [data]="sales()" />
+      </div>
+    </section>
+
+    <section class="panel">
+      <header class="panel__head">
+        <h2 class="panel__title">Quick Actions</h2>
+      </header>
+      <div class="panel__actions">
+        <a class="btn btn--primary btn--block" routerLink="/admin/products">Add Product</a>
+        <a class="btn btn--secondary btn--block" routerLink="/admin/categories">Add Category</a>
+        <a class="btn btn--secondary btn--block" routerLink="/admin/sliders">Manage Sliders</a>
+        <a class="btn btn--vip btn--block" routerLink="/admin/coupons">Create Coupon</a>
+      </div>
+    </section>
+
+    <section class="panel panel--wide">
+      <header class="panel__head">
+        <h2 class="panel__title">Recent Orders</h2>
+        <a class="panel__link" routerLink="/admin/orders">View all</a>
+      </header>
+      <div class="panel__table">
+        <table>
+          <thead>
+            <tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Placed</th></tr>
+          </thead>
+          <tbody>
+            @for (o of recentOrders(); track o.orderNumber) {
+              <tr>
+                <td class="mono">{{ o.orderNumber }}</td>
+                <td>{{ o.customer }}</td>
+                <td>{{ o.itemCount }}</td>
+                <td>{{ o.total | price }}</td>
+                <td><span class="pill {{ statusClass(o.orderStatus) }}">{{ label(o.orderStatus) }}</span></td>
+                <td class="text-muted">{{ o.createdAt | date: 'MMM d, HH:mm' }}</td>
+              </tr>
+            } @empty {
+              <tr><td colspan="6" class="text-muted">No orders yet.</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel panel--wide">
+      <header class="panel__head">
+        <h2 class="panel__title">Low Stock Alerts</h2>
+        <a class="panel__link" routerLink="/admin/products">Manage inventory</a>
+      </header>
+      <div class="panel__table">
+        <table>
+          <thead>
+            <tr><th>Product</th><th>Variant</th><th>SKU</th><th>Stock</th></tr>
+          </thead>
+          <tbody>
+            @for (v of lowStock(); track v.sku) {
+              <tr>
+                <td>{{ v.productName }}</td>
+                <td>{{ v.size }} · {{ v.color }}</td>
+                <td class="mono">{{ v.sku }}</td>
+                <td>
+                  <span class="pill" [class.pill--cancelled]="v.stock === 0" [class.pill--processing]="v.stock > 0">
+                    {{ v.stock === 0 ? 'Out' : v.stock + ' left' }}
+                  </span>
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="4" class="text-muted">Everything's well stocked.</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>

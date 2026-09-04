@@ -1,0 +1,167 @@
+<div class="container section">
+  <nav class="co__crumbs" aria-label="Breadcrumb">
+    <a routerLink="/cart">Cart</a> <span aria-hidden="true">/</span> <span>Checkout</span>
+  </nav>
+  <h1 class="co__title">Checkout</h1>
+
+  @if (loading()) {
+    <div class="co__loading"><ui-spinner [size]="28" [accent]="true" /> <span>Preparing your order…</span></div>
+  } @else {
+    <div class="co__layout">
+      <div class="co__main">
+        <!-- 1 · Shipping address -->
+        <section class="co__step">
+          <header class="co__step-head">
+            <span class="co__step-num">1</span>
+            <h2>Shipping address</h2>
+          </header>
+
+          @if (addresses.addresses().length) {
+            <div class="co__addresses">
+              @for (a of addresses.addresses(); track a.id) {
+                <label class="co__addr" [class.is-selected]="!addingNew() && selectedAddressId() === a.id">
+                  <input
+                    type="radio"
+                    name="addr"
+                    [checked]="!addingNew() && selectedAddressId() === a.id"
+                    (change)="selectAddress(a.id)"
+                  />
+                  <span class="co__addr-body">
+                    <strong>{{ a.name }}</strong>
+                    <span>{{ a.address }}, {{ a.city }}@if (a.area) {, {{ a.area }}}</span>
+                    <span class="text-muted">{{ a.phone }}</span>
+                  </span>
+                  @if (a.isDefault) { <span class="badge badge--muted">Default</span> }
+                </label>
+              }
+            </div>
+          }
+
+          @if (!addingNew()) {
+            <button class="co__add-toggle" type="button" (click)="startAddNew()">+ Add a new address</button>
+          } @else {
+            <form class="co__form" [formGroup]="form">
+              @if (addresses.addresses().length) {
+                <button class="co__add-toggle" type="button" (click)="cancelAddNew()">← Use a saved address</button>
+              }
+              <div class="co__grid">
+                <div class="field" [class.field--error]="form.controls.name.touched && form.controls.name.invalid">
+                  <label class="field__label" for="co-name">Full name</label>
+                  <input class="input" id="co-name" formControlName="name" autocomplete="name" />
+                </div>
+                <div class="field" [class.field--error]="form.controls.phone.touched && form.controls.phone.invalid">
+                  <label class="field__label" for="co-phone">Phone</label>
+                  <input class="input" id="co-phone" formControlName="phone" autocomplete="tel" inputmode="tel" />
+                </div>
+              </div>
+              <div class="field" [class.field--error]="form.controls.address.touched && form.controls.address.invalid">
+                <label class="field__label" for="co-address">Address</label>
+                <input class="input" id="co-address" formControlName="address" autocomplete="street-address"
+                  placeholder="House / flat, street, area" />
+              </div>
+              <div class="co__grid">
+                <div class="field" [class.field--error]="form.controls.city.touched && form.controls.city.invalid">
+                  <label class="field__label" for="co-city">City</label>
+                  <input class="input" id="co-city" formControlName="city" autocomplete="address-level2" />
+                </div>
+                <div class="field">
+                  <label class="field__label" for="co-area">Area <span class="field__hint">(optional)</span></label>
+                  <input class="input" id="co-area" formControlName="area" />
+                </div>
+              </div>
+              <div class="co__grid">
+                <div class="field">
+                  <label class="field__label" for="co-postal">Postal code <span class="field__hint">(optional)</span></label>
+                  <input class="input" id="co-postal" formControlName="postalCode" autocomplete="postal-code" inputmode="numeric" />
+                </div>
+              </div>
+              <label class="co__check">
+                <input type="checkbox" formControlName="saveAddress" />
+                Save this address for next time
+              </label>
+            </form>
+          }
+        </section>
+
+        <!-- 2 · Shipping method -->
+        <section class="co__step">
+          <header class="co__step-head">
+            <span class="co__step-num">2</span>
+            <h2>Delivery</h2>
+          </header>
+          <label class="co__option is-selected">
+            <input type="radio" name="ship" checked />
+            <span class="co__option-body">
+              <strong>Standard delivery</strong>
+              <span class="text-muted">2–5 working days · nationwide</span>
+            </span>
+            <span class="price">
+              {{ cart.totals().shippingFee === 0 ? 'Free' : (cart.totals().shippingFee | price) }}
+            </span>
+          </label>
+        </section>
+
+        <!-- 3 · Payment -->
+        <section class="co__step">
+          <header class="co__step-head">
+            <span class="co__step-num">3</span>
+            <h2>Payment</h2>
+          </header>
+          <label class="co__option is-selected">
+            <input type="radio" name="pay" checked />
+            <span class="co__option-body">
+              <strong>Cash on Delivery</strong>
+              <span class="text-muted">Pay the courier when your order arrives</span>
+            </span>
+          </label>
+          <div class="field co__notes">
+            <label class="field__label" for="co-notes">Order notes <span class="field__hint">(optional)</span></label>
+            <textarea class="textarea" id="co-notes" [formControl]="notes" rows="2"
+              placeholder="Landmark, delivery instructions…"></textarea>
+          </div>
+        </section>
+      </div>
+
+      <!-- Summary -->
+      <aside class="co__summary">
+        <h2 class="co__summary-title">Your order</h2>
+        <ul class="co__items" role="list">
+          @for (item of cart.items(); track item.key) {
+            <li class="co__item">
+              <span class="co__item-qty">{{ item.quantity }}×</span>
+              <span class="co__item-name line-clamp-2">{{ item.name }}<br />
+                <span class="text-muted">{{ item.size }} · {{ item.color }}</span>
+              </span>
+              <span class="price">{{ item.unitPrice * item.quantity | price }}</span>
+            </li>
+          }
+        </ul>
+
+        <div class="co__row"><span>Subtotal</span><span class="price">{{ cart.totals().subtotal | price }}</span></div>
+        @if (cart.totals().discount > 0) {
+          <div class="co__row co__row--discount">
+            <span>Discount @if (cart.coupon(); as c) { ({{ c.code }}) }</span>
+            <span>−{{ cart.totals().discount | price }}</span>
+          </div>
+        }
+        <div class="co__row text-muted">
+          <span>Shipping</span>
+          <span>{{ cart.totals().shippingFee === 0 ? 'Free' : (cart.totals().shippingFee | price) }}</span>
+        </div>
+        <div class="co__row co__row--total"><span>Total</span><span class="price">{{ cart.totals().total | price }}</span></div>
+
+        <button
+          class="btn btn--primary btn--lg btn--block"
+          type="button"
+          [disabled]="!canPlace() || placing()"
+          (click)="placeOrder()"
+        >
+          {{ placing() ? 'Placing order…' : 'Place Order' }}
+        </button>
+        <p class="co__fineprint text-muted">
+          By placing this order you agree to EZiWear's <a routerLink="/legal/terms">terms</a>.
+        </p>
+      </aside>
+    </div>
+  }
+</div>

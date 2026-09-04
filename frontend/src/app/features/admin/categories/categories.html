@@ -1,0 +1,93 @@
+<div class="cat">
+  <header class="cat__head">
+    <div>
+      <h1 class="cat__title">Categories</h1>
+      <p class="text-muted">{{ loading() ? 'Loading…' : categories().length + ' categories' }}</p>
+    </div>
+    @if (editingId() === null) {
+      <button class="btn btn--primary" type="button" (click)="startAdd()">+ Add Category</button>
+    }
+  </header>
+
+  @if (editingId() !== null) {
+    <form class="cat__form" [formGroup]="form" (ngSubmit)="save()">
+      <h2 class="cat__form-title">{{ editingId() === 'new' ? 'New category' : 'Edit category' }}</h2>
+      <div class="cat__grid">
+        <div class="field" [class.field--error]="form.controls.name.touched && form.controls.name.invalid">
+          <label class="field__label" for="c-name">Name</label>
+          <input class="input" id="c-name" formControlName="name" />
+        </div>
+        <div class="field">
+          <label class="field__label" for="c-status">Status</label>
+          <select class="select" id="c-status" formControlName="status">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field__label">Category image <span class="field__hint">(optional)</span></label>
+        <ui-image-upload
+          [value]="form.controls.image.value"
+          folder="categories"
+          label="Category image"
+          (valueChange)="form.controls.image.setValue($event)"
+        />
+      </div>
+      <div class="field">
+        <label class="field__label" for="c-desc">Description</label>
+        <textarea class="textarea" id="c-desc" formControlName="description" rows="3"></textarea>
+      </div>
+      <div class="cat__form-actions">
+        <button class="btn btn--primary" type="submit" [disabled]="saving()">
+          {{ saving() ? 'Saving…' : 'Save' }}
+        </button>
+        <button class="btn btn--ghost" type="button" (click)="cancel()">Cancel</button>
+      </div>
+    </form>
+  }
+
+  <div class="cat__table">
+    <table>
+      <thead>
+        <tr><th></th><th>Category</th><th>Products</th><th>Status</th><th>Order</th><th></th></tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          @for (i of [1,2,3]; track i) { <tr><td colspan="6"><ui-skeleton shape="text" /></td></tr> }
+        } @else {
+          @for (c of categories(); track c.id; let i = $index) {
+            <tr>
+              <td class="cat__thumb-cell">
+                <div class="cat__thumb">
+                  @if (c.image) { <img [src]="c.image" [alt]="c.name" loading="lazy" /> }
+                  @else { <span aria-hidden="true">EZi</span> }
+                </div>
+              </td>
+              <td>
+                <strong>{{ c.name }}</strong>
+                <div class="text-muted cat__slug">/{{ c.slug }}</div>
+              </td>
+              <td>{{ c.productCount }}</td>
+              <td>
+                <button
+                  class="cat__status cat__status--{{ c.status }}"
+                  type="button"
+                  (click)="toggleStatus(c)"
+                >{{ c.status }}</button>
+              </td>
+              <td class="cat__order">
+                <button type="button" (click)="move(c.id, 'up')" [disabled]="i === 0 || movingId() === c.id" aria-label="Move up">↑</button>
+                <button type="button" (click)="move(c.id, 'down')" [disabled]="i === categories().length - 1 || movingId() === c.id" aria-label="Move down">↓</button>
+              </td>
+              <td class="cat__actions">
+                <button type="button" (click)="startEdit(c)">Edit</button>
+                <button type="button" class="cat__delete" (click)="remove(c)">Delete</button>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

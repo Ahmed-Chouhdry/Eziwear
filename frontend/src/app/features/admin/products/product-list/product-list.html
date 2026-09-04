@@ -1,0 +1,100 @@
+<div class="pl">
+  <header class="pl__head">
+    <div>
+      <h1 class="pl__title">Products</h1>
+      <p class="text-muted">{{ loading() ? 'Loading…' : total() + ' product' + (total() === 1 ? '' : 's') }}</p>
+    </div>
+    <a class="btn btn--primary" routerLink="/admin/products/new">+ Add Product</a>
+  </header>
+
+  <div class="pl__filters">
+    <input
+      class="input pl__search"
+      type="search"
+      placeholder="Search products…"
+      [value]="search()"
+      (input)="setSearch($any($event.target).value)"
+    />
+    <select class="select" [value]="status()" (change)="setStatus($any($event.target).value)">
+      <option value="">All statuses</option>
+      <option value="published">Published</option>
+      <option value="draft">Draft</option>
+      <option value="archived">Archived</option>
+    </select>
+  </div>
+
+  <div class="pl__table">
+    <table>
+      <thead>
+        <tr>
+          <th></th><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          @for (i of skeletons; track i) {
+            <tr><td colspan="7"><ui-skeleton shape="text" /></td></tr>
+          }
+        } @else if (items().length === 0) {
+          <tr><td colspan="7">
+            <ui-empty-state icon="▤" title="No products found" message="Try a different search or add a new product.">
+              <a class="btn btn--primary" routerLink="/admin/products/new">Add Product</a>
+            </ui-empty-state>
+          </td></tr>
+        } @else {
+          @for (p of items(); track p.id) {
+            <tr>
+              <td class="pl__thumb-cell">
+                <div class="pl__thumb">
+                  @if (p.image) { <img [src]="p.image" [alt]="p.name" loading="lazy" /> }
+                  @else { <span aria-hidden="true">EZi</span> }
+                </div>
+              </td>
+              <td>
+                <a class="pl__name" [routerLink]="['/admin/products', p.id, 'edit']">{{ p.name }}</a>
+                <div class="pl__meta text-muted">
+                  {{ p.sku }}
+                  @if (p.isVip) { <span class="badge badge--vip">VIP</span> }
+                  @if (p.isFeatured) { <span class="badge badge--featured">Featured</span> }
+                  @if (p.isNewArrival) { <span class="badge badge--new">New</span> }
+                </div>
+              </td>
+              <td>{{ p.categoryName }}</td>
+              <td>
+                @if (p.salePrice) {
+                  <span class="price price--sale">{{ p.salePrice | price }}</span>
+                } @else {
+                  <span class="price">{{ p.price | price }}</span>
+                }
+              </td>
+              <td>
+                <span [class.text-muted]="p.totalStock > 0" [class.pl__stock--zero]="p.totalStock === 0">
+                  {{ p.totalStock }}
+                </span>
+                <span class="text-faint"> · {{ p.variantCount }} variant{{ p.variantCount === 1 ? '' : 's' }}</span>
+              </td>
+              <td>
+                <button
+                  class="pl__status pl__status--{{ p.status }}"
+                  type="button"
+                  (click)="togglePublish(p.id, p.status)"
+                  [disabled]="p.status === 'archived'"
+                >
+                  {{ p.status }}
+                </button>
+              </td>
+              <td class="pl__actions">
+                <a [routerLink]="['/admin/products', p.id, 'edit']">Edit</a>
+                <button type="button" class="pl__delete" [disabled]="deletingId() === p.id" (click)="remove(p.id, p.name)">
+                  {{ deletingId() === p.id ? '…' : 'Delete' }}
+                </button>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <ui-pagination [page]="page()" [totalPages]="totalPages()" (pageChange)="goToPage($event)" />
+</div>

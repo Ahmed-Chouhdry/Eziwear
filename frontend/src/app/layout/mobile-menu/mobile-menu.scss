@@ -1,0 +1,87 @@
+.mm {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-drawer);
+}
+
+.mm__backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  background: var(--overlay);
+  backdrop-filter: blur(2px);
+  animation: ezi-fade-in var(--dur-fast) var(--ease-out);
+}
+
+.mm__panel {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: min(88vw, 360px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  padding: var(--sp-4) var(--sp-5) var(--sp-6);
+  background: var(--drawer-bg);
+  border-inline-end: 1px solid var(--border);
+  overflow-y: auto;
+  animation: ezi-slide-in-left var(--dur-base) var(--ease-out);
+}
+
+.mm__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: var(--sp-2);
+}
+.mm__logo {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-xl);
+  text-transform: uppercase;
+  color: var(--text);
+}
+.mm__logo span { color: var(--accent); }
+.mm__close { font-size: 28px; line-height: 1; color: var(--text-faint); padding: 4px; }
+.mm__close:hover { color: var(--text); }
+
+.mm__nav {
+  display: flex;
+  flex-direction: column;
+}
+.mm__label {
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: var(--sp-2);
+}
+.mm__link {
+  display: block;
+  text-align: start;
+  width: 100%;
+  padding: var(--sp-3) 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: 500;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  transition: color var(--dur-fast) var(--ease-out), padding-inline-start var(--dur-fast) var(--ease-out);
+}
+.mm__link:hover { color: var(--accent); padding-inline-start: var(--sp-2); }
+.mm__link--vip { color: var(--vip); }
+.mm__link--vip:hover { color: var(--vip); }
+
+.mm__theme {
+  margin-top: auto;
+  padding: var(--sp-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.mm__theme:hover { border-color: var(--accent); color: var(--accent); }

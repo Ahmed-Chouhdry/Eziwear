@@ -1,0 +1,96 @@
+<app-hero />
+
+<app-category-strip />
+
+<product-rail
+  eyebrow="Just dropped"
+  title="New Arrivals"
+  [linkTo]="['/shop', 'new-arrivals']"
+  [products]="newArrivals() ?? []"
+  [loading]="newArrivals() === null"
+  (addToCart)="onAdd($event)"
+/>
+
+<!-- Sale / promotion banner -->
+<section class="section container">
+  <div class="promo reveal" eziReveal>
+    <div class="promo__text">
+      <span class="eyebrow">Season Sale</span>
+      <h2 class="promo__title">Up to 30% off<br />core styles</h2>
+      <p class="promo__sub">Tracksuits, hoodies and trousers — while stock lasts.</p>
+      <a class="btn btn--primary btn--lg" [routerLink]="['/shop', 'sale']">Shop the Sale</a>
+    </div>
+  </div>
+</section>
+
+<product-rail
+  eyebrow="Editor's picks"
+  title="Featured"
+  [linkTo]="['/shop']"
+  [products]="featured() ?? []"
+  [loading]="featured() === null"
+  (addToCart)="onAdd($event)"
+/>
+
+<!-- VIP section — gold, exclusive, restrained -->
+<section class="vip-band">
+  <div class="container">
+    <product-rail
+      eyebrow="Limited · Earned"
+      title="VIP Collection"
+      [vip]="true"
+      [linkTo]="['/shop', 'vip']"
+      [products]="vip() ?? []"
+      [loading]="vip() === null"
+      (addToCart)="onAdd($event)"
+    />
+  </div>
+</section>
+
+<product-rail
+  eyebrow="Most loved"
+  title="Best Sellers"
+  [linkTo]="['/shop', 'best-sellers']"
+  [products]="bestSellers() ?? []"
+  [loading]="bestSellers() === null"
+  (addToCart)="onAdd($event)"
+/>
+
+<!-- Advertisement placement -->
+<section class="section container">
+  <a class="ad reveal" eziReveal routerLink="/shop">
+    <span class="ad__label">EZiWear × Movement</span>
+    <span class="ad__headline">Built for the way you actually move.</span>
+    <span class="ad__cta">Discover the range →</span>
+  </a>
+</section>
+
+<!-- Social section -->
+<section class="section container">
+  <div class="social">
+    <div class="social__head">
+      <span class="eyebrow">@eziwear</span>
+      <h2 class="social__title">Wear it. Tag it.</h2>
+    </div>
+    <div class="social__grid">
+      @for (n of [1,2,3,4,5,6]; track n) {
+        <a class="social__cell reveal" eziReveal [revealDelay]="n * 40"
+           href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+          <img [src]="'https://picsum.photos/seed/ezi-social-' + n + '/400/400'" alt="EZiWear on Instagram" loading="lazy" />
+        </a>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Newsletter -->
+<section class="section container">
+  <div class="news reveal" eziReveal>
+    <h2 class="news__title">Get first access</h2>
+    <p class="news__sub">New drops, restocks and VIP releases — straight to your inbox.</p>
+    <form class="news__form" (submit)="$event.preventDefault()">
+      <input class="input" type="email" placeholder="you@email.com" aria-label="Email address" autocomplete="email" />
+      <button class="btn btn--primary" type="submit">Subscribe</button>
+    </form>
+  </div>
+</section>

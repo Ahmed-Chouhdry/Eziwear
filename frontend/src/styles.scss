@@ -1,0 +1,10 @@
+/* =============================================================
+   EZiWear — Global stylesheet entry
+   Order matters: tokens → reset → typography → components → utilities → animations
+   ============================================================= */
+@use 'styles/tokens';
+@use 'styles/reset';
+@use 'styles/typography';
+@use 'styles/components';
+@use 'styles/utilities';
+@use 'styles/animations';

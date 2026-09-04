@@ -1,0 +1,21 @@
+.pf { display: flex; flex-direction: column; gap: var(--sp-4); }
+
+.pf__panel {
+  padding: var(--sp-5);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+.pf__panel-title {
+  font-size: var(--fs-lg);
+  text-transform: uppercase;
+  margin-bottom: var(--sp-4);
+}
+.pf__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  max-width: 420px;
+}
+.pf__form .btn { align-self: flex-start; margin-top: var(--sp-1); }
+.pf__form .input:disabled { opacity: 0.6; }

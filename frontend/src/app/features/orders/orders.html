@@ -1,0 +1,42 @@
+<div class="container section">
+  <h1 class="ord__title">My Orders</h1>
+
+  @if (loading()) {
+    <div class="ord__list">
+      @for (i of [1,2,3]; track i) {
+        <div class="ord__card"><ui-skeleton shape="text" width="40%" /><ui-skeleton shape="text" width="70%" /></div>
+      }
+    </div>
+  } @else if (orders().length === 0) {
+    <ui-empty-state icon="✦" title="No orders yet" message="When you place an order it'll show up here with tracking.">
+      <a class="btn btn--primary" routerLink="/shop">Start shopping</a>
+    </ui-empty-state>
+  } @else {
+    <div class="ord__list">
+      @for (o of orders(); track o.orderNumber) {
+        <a class="ord__card" [routerLink]="['/order', o.orderNumber]">
+          <div class="ord__thumb">
+            @if (o.firstImage) { <img [src]="o.firstImage" [alt]="o.firstItem" loading="lazy" /> }
+            @else { <span aria-hidden="true">EZi</span> }
+          </div>
+          <div class="ord__info">
+            <div class="ord__row">
+              <strong>{{ o.orderNumber }}</strong>
+              <span class="badge"
+                [class.badge--in-stock]="o.orderStatus === 'delivered'"
+                [class.badge--sale]="o.orderStatus !== 'delivered' && o.orderStatus !== 'cancelled'"
+                [class.badge--out-stock]="o.orderStatus === 'cancelled'">
+                {{ statusLabel[o.orderStatus] }}
+              </span>
+            </div>
+            <span class="text-muted ord__meta">
+              {{ o.createdAt | date: 'mediumDate' }} · {{ o.itemCount }} item{{ o.itemCount === 1 ? '' : 's' }} · {{ o.firstItem }}
+              @if (o.itemCount > 1) { and more }
+            </span>
+          </div>
+          <span class="price ord__total">{{ o.total | price }}</span>
+        </a>
+      }
+    </div>
+  }
+</div>

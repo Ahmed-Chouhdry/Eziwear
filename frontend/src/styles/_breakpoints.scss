@@ -1,0 +1,37 @@
+/* =============================================================
+   EZiWear — Responsive breakpoints
+   Every page/component must be tested across these classes:
+     small mobile 320-375 · large mobile 376-480 · tablet portrait 481-768
+     tablet/desktop 769-1024 · laptop 1025-1440 · large desktop 1441+
+   Usage:  @include bp(md) { ... }   /  @include bp-max(sm) { ... }
+   ============================================================= */
+
+@use 'sass:map';
+
+$breakpoints: (
+  'xs': 376px,   // large mobile and up
+  'sm': 481px,   // tablet portrait and up
+  'md': 769px,   // tablet / small desktop and up
+  'lg': 1025px,  // laptop and up
+  'xl': 1441px,  // large desktop and up
+);
+
+@mixin bp($name) {
+  @if map.has-key($breakpoints, $name) {
+    @media (min-width: map.get($breakpoints, $name)) {
+      @content;
+    }
+  } @else {
+    @error "Unknown breakpoint `#{$name}`.";
+  }
+}
+
+@mixin bp-max($name) {
+  @if map.has-key($breakpoints, $name) {
+    @media (max-width: (map.get($breakpoints, $name) - 1px)) {
+      @content;
+    }
+  } @else {
+    @error "Unknown breakpoint `#{$name}`.";
+  }
+}

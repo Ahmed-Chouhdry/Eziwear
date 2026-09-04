@@ -1,0 +1,60 @@
+<footer class="ft">
+  <div class="container">
+    <div class="ft__grid">
+      <div class="ft__brand">
+        <a class="ft__logo" routerLink="/">EZi<span>Wear</span></a>
+        <p class="ft__tagline">Move different. Wear EZiWear.</p>
+        <p class="ft__mission">
+          Premium streetwear built for movement — tracksuits, hoodies, tees, shirts and trousers.
+        </p>
+        <div class="ft__newsletter">
+          <label class="field__label" for="ft-email">Join the list</label>
+          <form class="ft__form" (submit)="$event.preventDefault()">
+            <input class="input" id="ft-email" type="email" placeholder="you@email.com" autocomplete="email" />
+            <button class="btn btn--primary btn--sm" type="submit">Subscribe</button>
+          </form>
+        </div>
+      </div>
+
+      <nav class="ft__col" aria-label="Shop">
+        <h3 class="ft__heading">Shop</h3>
+        <ul role="list">
+          @for (c of categories; track c.slug) {
+            <li><a [routerLink]="['/shop', c.slug]">{{ c.label }}</a></li>
+          }
+          <li><a class="ft__link--vip" [routerLink]="['/shop', 'vip']">VIP Collection</a></li>
+        </ul>
+      </nav>
+
+      <nav class="ft__col" aria-label="Customer support">
+        <h3 class="ft__heading">Support</h3>
+        <ul role="list">
+          @for (s of support; track s.link) {
+            <li><a [routerLink]="s.link">{{ s.label }}</a></li>
+          }
+        </ul>
+      </nav>
+
+      <nav class="ft__col" aria-label="Policies">
+        <h3 class="ft__heading">Company</h3>
+        <ul role="list">
+          <li><a routerLink="/about">About EZiWear</a></li>
+          @for (p of policies; track p.link) {
+            <li><a [routerLink]="p.link">{{ p.label }}</a></li>
+          }
+        </ul>
+      </nav>
+    </div>
+
+    <div class="ft__bottom">
+      <div class="ft__social">
+        @for (s of social(); track s.platform) {
+          <a [href]="s.url" target="_blank" rel="noopener noreferrer" [attr.aria-label]="s.platform">
+            {{ s.icon }}
+          </a>
+        }
+      </div>
+      <p class="ft__copy">© {{ year }} EZiWear. All rights reserved.</p>
+    </div>
+  </div>
+</footer>

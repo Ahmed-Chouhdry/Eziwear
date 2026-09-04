@@ -1,0 +1,72 @@
+<div class="container section">
+  <h1 class="cart__title">Your Cart</h1>
+
+  @if (cart.items().length === 0) {
+    <ui-empty-state icon="🛍️" title="Your cart is empty" message="Add a few pieces and they'll show up here.">
+      <a class="btn btn--primary" routerLink="/shop">Start shopping</a>
+    </ui-empty-state>
+  } @else {
+    <div class="cart__layout">
+      <ul class="cart__list" role="list">
+        @for (item of cart.items(); track item.key) {
+          <li class="cart__item">
+            <div class="cart__thumb">
+              @if (item.image) { <img [src]="item.image" [alt]="item.name" loading="lazy" /> }
+              @else { <span aria-hidden="true">EZi</span> }
+            </div>
+            <div class="cart__info">
+              <a class="cart__name" [routerLink]="['/product', item.slug]">{{ item.name }}</a>
+              <span class="cart__variant">{{ item.size }} · {{ item.color }}</span>
+              <span class="price cart__unit">{{ item.unitPrice | price }}</span>
+            </div>
+            <div class="cart__qty">
+              <button type="button" aria-label="Decrease" (click)="cart.setQuantity(item.key, item.quantity - 1)">−</button>
+              <span>{{ item.quantity }}</span>
+              <button type="button" aria-label="Increase" [disabled]="item.quantity >= item.maxStock"
+                (click)="cart.setQuantity(item.key, item.quantity + 1)">+</button>
+            </div>
+            <div class="cart__line">
+              <span class="price">{{ item.unitPrice * item.quantity | price }}</span>
+              <button class="cart__remove" type="button" (click)="cart.remove(item.key)">Remove</button>
+            </div>
+          </li>
+        }
+      </ul>
+
+      <aside class="cart__summary">
+        <h2 class="cart__summary-title">Summary</h2>
+
+        <!-- Coupon -->
+        @if (cart.coupon(); as coupon) {
+          <div class="cart__coupon-applied">
+            <span>Coupon <b>{{ coupon.code }}</b></span>
+            <button type="button" (click)="cart.removeCoupon()">Remove</button>
+          </div>
+        } @else {
+          <form class="cart__coupon" (submit)="$event.preventDefault(); applyCoupon()">
+            <input class="input" [(ngModel)]="couponCode" name="coupon" placeholder="Coupon code" aria-label="Coupon code" />
+            <button class="btn btn--secondary btn--sm" type="submit" [disabled]="applying()">
+              {{ applying() ? '…' : 'Apply' }}
+            </button>
+          </form>
+        }
+
+        <div class="cart__row"><span>Subtotal</span><span class="price">{{ cart.totals().subtotal | price }}</span></div>
+        @if (cart.totals().discount > 0) {
+          <div class="cart__row cart__row--discount">
+            <span>Discount</span><span>−{{ cart.totals().discount | price }}</span>
+          </div>
+        }
+        <div class="cart__row cart__row--muted">
+          <span>Shipping</span>
+          <span>{{ cart.totals().shippingFee === 0 ? 'Free' : (cart.totals().shippingFee | price) }}</span>
+        </div>
+        <div class="cart__row cart__row--total">
+          <span>Total</span><span class="price">{{ cart.totals().total | price }}</span>
+        </div>
+        <a class="btn btn--primary btn--lg btn--block" routerLink="/checkout">Checkout</a>
+        <a class="btn btn--ghost btn--block" routerLink="/shop">Continue shopping</a>
+      </aside>
+    </div>
+  }
+</div>

@@ -1,0 +1,66 @@
+/* =============================================================
+   EZiWear — Animations (premium, restrained, on-palette)
+   ============================================================= */
+
+@keyframes ezi-fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ezi-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes ezi-scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes ezi-slide-in-right {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes ezi-slide-in-left {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes ezi-shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position: 200% 0; }
+}
+
+@keyframes ezi-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ezi-gold-pulse {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(214, 168, 79, 0.4), 0 0 16px rgba(214, 168, 79, 0.12); }
+  50%      { box-shadow: 0 0 0 1px rgba(214, 168, 79, 0.6), 0 0 26px rgba(214, 168, 79, 0.22); }
+}
+
+/* Scroll-reveal — element starts hidden, .is-visible added by directive */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity var(--dur-slow) var(--ease-out),
+              transform var(--dur-slow) var(--ease-out);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

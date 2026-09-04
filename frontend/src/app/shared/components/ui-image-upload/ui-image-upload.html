@@ -1,0 +1,39 @@
+<div class="iu">
+  <div class="iu__preview" [class.iu__preview--empty]="!value()">
+    @if (uploading()) {
+      <ui-spinner [size]="22" [accent]="true" />
+    } @else if (value()) {
+      <img [src]="value()" [alt]="label()" loading="lazy" />
+    } @else {
+      <span class="iu__placeholder" aria-hidden="true">🖼</span>
+    }
+  </div>
+
+  <div class="iu__controls">
+    <label class="btn btn--secondary btn--sm iu__upload-btn" [for]="inputId">
+      {{ uploading() ? 'Uploading…' : value() ? 'Replace image' : 'Upload image' }}
+    </label>
+    <input
+      class="iu__file-input"
+      [id]="inputId"
+      type="file"
+      accept="image/*"
+      [disabled]="uploading()"
+      (change)="onFileSelected($event)"
+    />
+    @if (value()) {
+      <button class="iu__clear" type="button" (click)="clear()">Remove</button>
+    }
+  </div>
+
+  <details class="iu__manual">
+    <summary>…or paste an image URL</summary>
+    <input
+      class="input iu__url-input"
+      type="url"
+      [value]="value() || ''"
+      placeholder="https://…"
+      (change)="setManualUrl($any($event.target).value)"
+    />
+  </details>
+</div>

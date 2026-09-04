@@ -1,0 +1,57 @@
+:host { display: block; }
+
+.ot {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  counter-reset: step;
+}
+.ot::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 7px;
+  inset-inline: 10%;
+  height: 2px;
+  background: var(--border-strong);
+}
+
+.ot-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: 1;
+  text-align: center;
+}
+.ot-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--border-strong);
+  z-index: 1;
+}
+.ot-label {
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.ot-step.is-done .ot-dot { background: var(--accent); border-color: var(--accent); }
+.ot-step.is-done .ot-label { color: var(--text-muted); }
+.ot-step.is-current .ot-dot {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--ezi-orange-soft);
+}
+.ot-step.is-current .ot-label { color: var(--accent); }
+
+.ot-terminal {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--text-muted);
+}
+.ot-terminal--bad { color: var(--status-error); }

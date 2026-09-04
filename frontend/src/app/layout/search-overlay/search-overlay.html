@@ -1,0 +1,41 @@
+@if (ui.searchOpen()) {
+  <div class="so" role="dialog" aria-modal="true" aria-label="Search">
+    <button class="so__backdrop" type="button" aria-label="Close search" (click)="close()"></button>
+
+    <div class="so__panel">
+      <form class="so__form" (submit)="$event.preventDefault(); submit()">
+        <svg class="so__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" />
+        </svg>
+        <input
+          #searchInput
+          class="so__input"
+          type="search"
+          name="q"
+          placeholder="Search for tracksuits, hoodies, tees…"
+          autocomplete="off"
+          [(ngModel)]="term"
+        />
+        <button class="so__close" type="button" aria-label="Close" (click)="close()">&times;</button>
+      </form>
+
+      <div class="so__section">
+        <span class="so__label">Popular</span>
+        <div class="so__tags">
+          @for (s of suggestions; track s) {
+            <button class="so__tag" type="button" (click)="pick(s)">{{ s }}</button>
+          }
+        </div>
+      </div>
+
+      <div class="so__section">
+        <span class="so__label">Categories</span>
+        <div class="so__cats">
+          @for (c of categories; track c.slug) {
+            <a class="so__cat" [routerLink]="['/shop', c.slug]" (click)="close()">{{ c.label }}</a>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

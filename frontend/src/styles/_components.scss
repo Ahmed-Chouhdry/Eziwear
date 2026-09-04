@@ -1,0 +1,205 @@
+/* =============================================================
+   EZiWear — Shared component primitives (global classes)
+   Angular components layer structure/behaviour on top of these.
+   ============================================================= */
+@use 'breakpoints' as *;
+
+/* -------------------------------------------------------------
+   Buttons
+   Primary = Burnt Orange bg + Ivory text. Accent stays rare.
+   ------------------------------------------------------------- */
+.btn {
+  --_h: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: var(--_h);
+  padding: 0 var(--sp-5);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid transparent;
+  transition: background-color var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out),
+              color var(--dur-fast) var(--ease-out),
+              transform var(--dur-fast) var(--ease-out),
+              box-shadow var(--dur-fast) var(--ease-out);
+}
+.btn:active { transform: scale(0.97); }
+.btn:disabled,
+.btn[aria-disabled='true'] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.btn--primary {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+.btn--primary:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 6px 20px var(--ezi-orange-soft);
+}
+
+.btn--secondary {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+:root[data-theme='light'] .btn--secondary { border-color: var(--ezi-black); }
+.btn--secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--text-muted);
+}
+.btn--ghost:hover { color: var(--accent); background: var(--ezi-orange-soft); }
+
+.btn--vip {
+  background: transparent;
+  color: var(--vip);
+  border-color: var(--vip);
+}
+.btn--vip:hover { background: var(--ezi-gold-soft); }
+
+.btn--danger { background: var(--status-error); color: #fff; }
+
+.btn--sm { --_h: 38px; padding: 0 var(--sp-4); font-size: var(--fs-xs); }
+.btn--lg { --_h: 56px; padding: 0 var(--sp-6); font-size: var(--fs-base); }
+.btn--block { width: 100%; }
+.btn--icon { padding: 0; width: var(--_h); }
+
+/* -------------------------------------------------------------
+   Badges  ·  NEW / SALE = Burnt Orange   ·  VIP / PREMIUM = Soft Gold
+   ------------------------------------------------------------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-display);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  line-height: 1;
+}
+.badge--new,
+.badge--sale { background: var(--accent); color: var(--accent-contrast); }
+.badge--featured { background: var(--ezi-orange-soft); color: var(--accent); }
+.badge--vip {
+  background: transparent;
+  color: var(--vip);
+  border: 1px solid var(--vip);
+  box-shadow: var(--ezi-gold-glow);
+}
+.badge--muted { background: var(--surface-inset); color: var(--text-muted); }
+.badge--in-stock { background: var(--status-success-bg); color: var(--status-success); }
+.badge--out-stock { background: var(--status-error-bg); color: var(--status-error); }
+
+/* -------------------------------------------------------------
+   Form controls
+   ------------------------------------------------------------- */
+.field { display: flex; flex-direction: column; gap: var(--sp-2); }
+.field__label {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.input,
+.select,
+.textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--input-bg);
+  color: var(--text);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--dur-fast) var(--ease-out),
+              box-shadow var(--dur-fast) var(--ease-out);
+}
+.textarea { min-height: 120px; resize: vertical; padding-top: var(--sp-3); }
+.input::placeholder,
+.textarea::placeholder { color: var(--input-placeholder); }
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--ezi-orange-soft);
+}
+.field--error .input,
+.field--error .select,
+.field--error .textarea { border-color: var(--status-error); }
+.field__error {
+  font-size: var(--fs-xs);
+  color: var(--status-error);
+}
+.field__hint {
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+}
+
+/* -------------------------------------------------------------
+   Skeleton loading
+   ------------------------------------------------------------- */
+.skeleton {
+  background: var(--skeleton);
+  background-size: 200% 100%;
+  animation: ezi-shimmer 1.4s linear infinite;
+  border-radius: var(--radius-sm);
+}
+.skeleton--text { height: 0.8em; margin: 0.2em 0; border-radius: var(--radius-xs); }
+.skeleton--title { height: 1.4em; width: 60%; }
+.skeleton--img { aspect-ratio: 3 / 4; width: 100%; border-radius: var(--radius-md); }
+.skeleton--pill { height: 38px; width: 96px; border-radius: var(--radius-pill); }
+
+/* -------------------------------------------------------------
+   Chips (filters / sizes / colors)  — selected = Burnt Orange
+   ------------------------------------------------------------- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text);
+  background: transparent;
+  transition: all var(--dur-fast) var(--ease-out);
+}
+.chip:hover { border-color: var(--accent); }
+.chip.is-selected {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+.chip:disabled { opacity: 0.35; text-decoration: line-through; pointer-events: none; }
+
+/* Color swatch chip */
+.swatch {
+  width: 32px; height: 32px;
+  border-radius: var(--radius-pill);
+  border: 2px solid transparent;
+  box-shadow: 0 0 0 1px var(--border-strong);
+  cursor: pointer;
+}
+.swatch.is-selected { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }

@@ -1,0 +1,53 @@
+<div class="pf">
+  <section class="pf__panel">
+    <h2 class="pf__panel-title">Profile</h2>
+    <form class="pf__form" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+      <div class="field">
+        <label class="field__label" for="pf-email">Email</label>
+        <input class="input" id="pf-email" type="email" [value]="auth.user()?.email" disabled />
+        <span class="field__hint">Email can't be changed here.</span>
+      </div>
+      <div class="field" [class.field--error]="profileForm.controls.name.touched && profileForm.controls.name.invalid">
+        <label class="field__label" for="pf-name">Full name</label>
+        <input class="input" id="pf-name" formControlName="name" autocomplete="name" />
+        @if (profileForm.controls.name.touched && profileForm.controls.name.invalid) {
+          <span class="field__error">Enter your name.</span>
+        }
+      </div>
+      <div class="field">
+        <label class="field__label" for="pf-phone">Phone</label>
+        <input class="input" id="pf-phone" formControlName="phone" autocomplete="tel" inputmode="tel" />
+      </div>
+      <button class="btn btn--primary" type="submit" [disabled]="savingProfile()">
+        {{ savingProfile() ? 'Saving…' : 'Save changes' }}
+      </button>
+    </form>
+  </section>
+
+  <section class="pf__panel">
+    <h2 class="pf__panel-title">Change password</h2>
+    <form class="pf__form" [formGroup]="passwordForm" (ngSubmit)="savePassword()">
+      <div class="field" [class.field--error]="passwordForm.controls.currentPassword.touched && passwordForm.controls.currentPassword.invalid">
+        <label class="field__label" for="pf-cur">Current password</label>
+        <input class="input" id="pf-cur" type="password" formControlName="currentPassword" autocomplete="current-password" />
+      </div>
+      <div class="field" [class.field--error]="passwordForm.controls.newPassword.touched && passwordForm.controls.newPassword.invalid">
+        <label class="field__label" for="pf-new">New password</label>
+        <input class="input" id="pf-new" type="password" formControlName="newPassword" autocomplete="new-password" />
+        @if (passwordForm.controls.newPassword.touched && passwordForm.controls.newPassword.invalid) {
+          <span class="field__error">At least 8 characters.</span>
+        }
+      </div>
+      <div class="field" [class.field--error]="passwordForm.controls.confirm.touched && (passwordForm.controls.confirm.invalid || passwordForm.hasError('mismatch'))">
+        <label class="field__label" for="pf-confirm">Confirm new password</label>
+        <input class="input" id="pf-confirm" type="password" formControlName="confirm" autocomplete="new-password" />
+        @if (passwordForm.controls.confirm.touched && passwordForm.hasError('mismatch')) {
+          <span class="field__error">Passwords don't match.</span>
+        }
+      </div>
+      <button class="btn btn--secondary" type="submit" [disabled]="savingPassword()">
+        {{ savingPassword() ? 'Updating…' : 'Update password' }}
+      </button>
+    </form>
+  </section>
+</div>

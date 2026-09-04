@@ -1,0 +1,61 @@
+@use '../../../../../styles/breakpoints' as *;
+
+.cd__loading { display: grid; place-items: center; padding: var(--sp-9) 0; }
+.cd__missing { text-align: center; padding: var(--sp-9) 0; display: flex; flex-direction: column; gap: var(--sp-4); align-items: center; }
+.cd__crumbs { font-size: var(--fs-xs); color: var(--text-faint); margin-bottom: var(--sp-4); }
+.cd__crumbs a:hover { color: var(--accent); }
+
+.cd__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
+  flex-wrap: wrap;
+}
+.cd__name { font-size: var(--fs-xl); }
+
+.cd__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-5);
+}
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--sp-4);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  border-top: 2px solid var(--border-strong);
+}
+.stat--accent { border-top-color: var(--accent); }
+.stat--silver { border-top-color: var(--ezi-silver); }
+.stat__label { font-size: var(--fs-2xs); font-weight: 600; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-muted); }
+.stat__value { font-family: var(--font-display); font-size: var(--fs-xl); font-weight: 600; text-transform: capitalize; }
+
+.cd__grid {
+  display: grid;
+  gap: var(--sp-4);
+  grid-template-columns: 1fr;
+  @include bp(md) { grid-template-columns: 1.4fr 1fr; align-items: start; }
+}
+.cd__panel {
+  padding: var(--sp-5);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+}
+.cd__panel-title { font-size: var(--fs-sm); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-muted); margin-bottom: var(--sp-4); }
+
+.cd__table { overflow-x: auto; }
+.cd__table table { width: 100%; border-collapse: collapse; min-width: 460px; }
+.cd__table th, .cd__table td { text-align: start; padding: var(--sp-2) var(--sp-3); font-size: var(--fs-sm); border-bottom: 1px solid var(--border); }
+.cd__table th { font-size: var(--fs-2xs); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-faint); }
+.cd__table tbody tr:last-child td { border-bottom: 0; }
+.cd__order-link { font-family: var(--font-display); }
+.cd__order-link:hover { color: var(--accent); }
+
+.cd__addresses { display: flex; flex-direction: column; gap: var(--sp-3); font-size: var(--fs-sm); }

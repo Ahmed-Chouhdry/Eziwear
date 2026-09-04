@@ -1,0 +1,186 @@
+@use '../../../styles/breakpoints' as *;
+
+:host {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--z-header);
+  display: block;
+}
+
+/* ---- Announcement bar ---- */
+.topbar {
+  background: var(--ezi-black);
+  color: var(--ezi-silver);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--tracking-wide);
+}
+.topbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-6);
+  height: 34px;
+  text-transform: uppercase;
+}
+@include bp(md) {
+  .topbar__inner { justify-content: space-between; }
+}
+
+/* ---- Header bar ---- */
+.hdr {
+  background: var(--header-bg);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  transition:
+    background-color var(--dur-base) var(--ease-out),
+    height var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+.hdr--scrolled {
+  background: var(--header-bg-solid);
+  box-shadow: var(--shadow-sm);
+}
+
+.hdr__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  height: var(--header-h);
+  transition: height var(--dur-base) var(--ease-out);
+}
+.hdr--scrolled .hdr__inner {
+  height: var(--header-h-scrolled);
+}
+
+/* ---- Logo ---- */
+.hdr__logo {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-xl);
+  letter-spacing: var(--tracking-tight);
+  text-transform: uppercase;
+  color: var(--text);
+  white-space: nowrap;
+}
+.hdr__logo span { color: var(--accent); }
+
+@include bp(md) {
+  .hdr__logo { margin-inline-end: var(--sp-5); }
+}
+@include bp-max(md) {
+  .hdr__inner { justify-content: space-between; }
+  .hdr__logo { position: absolute; left: 50%; transform: translateX(-50%); }
+}
+
+/* ---- Nav ---- */
+.hdr__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-5);
+  flex: 1;
+}
+.hdr__link {
+  position: relative;
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text);
+  padding-block: 4px;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.hdr__link::after {
+  content: '';
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: 0;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.hdr__link:hover { color: var(--accent); }
+.hdr__link.is-active { color: var(--accent); }
+.hdr__link.is-active::after,
+.hdr__link:hover::after { transform: scaleX(1); }
+
+.hdr__link--vip { color: var(--vip); }
+.hdr__link--vip::after { background: var(--vip); }
+.hdr__link--vip:hover,
+.hdr__link--vip.is-active { color: var(--vip); }
+
+/* ---- Actions ---- */
+.hdr__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  margin-inline-start: auto;
+}
+
+.hdr__icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.hdr__icon:hover { color: var(--accent); background: var(--ezi-orange-soft); }
+.hdr__icon svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hdr__icon { position: relative; }
+.hdr__dot {
+  position: absolute;
+  inset-block-start: 7px;
+  inset-inline-end: 7px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 1.5px solid var(--header-bg-solid);
+}
+.hdr__cart { position: relative; }
+.hdr__badge {
+  position: absolute;
+  inset-block-start: 4px;
+  inset-inline-end: 2px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: var(--radius-pill);
+}
+
+/* ---- Burger ---- */
+.burger,
+.burger::before,
+.burger::after {
+  content: '';
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.burger { position: relative; }
+.burger::before { position: absolute; top: -6px; }
+.burger::after { position: absolute; top: 6px; }

@@ -1,0 +1,147 @@
+<div class="pf">
+  <nav class="pf__crumbs">
+    <a routerLink="/admin/products">Products</a> <span aria-hidden="true">/</span>
+    <span>{{ isEdit() ? 'Edit' : 'New' }}</span>
+  </nav>
+  <h1 class="pf__title">{{ isEdit() ? 'Edit product' : 'New product' }}</h1>
+
+  @if (loading()) {
+    <div class="pf__loading"><ui-spinner [size]="28" [accent]="true" /></div>
+  } @else {
+    <form class="pf__form" [formGroup]="form" (ngSubmit)="save()">
+      <!-- Basics -->
+      <section class="pf__panel">
+        <h2 class="pf__panel-title">Basics</h2>
+        <div class="pf__grid">
+          <div class="field" [class.field--error]="form.controls.name.touched && form.controls.name.invalid">
+            <label class="field__label" for="p-name">Product name</label>
+            <input class="input" id="p-name" formControlName="name" />
+          </div>
+          <div class="field" [class.field--error]="form.controls.sku.touched && form.controls.sku.invalid">
+            <label class="field__label" for="p-sku">SKU</label>
+            <input class="input" id="p-sku" formControlName="sku" />
+          </div>
+        </div>
+        <div class="pf__grid">
+          <div class="field" [class.field--error]="form.controls.categoryId.touched && form.controls.categoryId.invalid">
+            <label class="field__label" for="p-cat">Category</label>
+            <select class="select" id="p-cat" formControlName="categoryId">
+              @for (c of categories(); track c.id) {
+                <option [value]="c.id">{{ c.name }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label class="field__label" for="p-status">Status</label>
+            <select class="select" id="p-status" formControlName="status">
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field__label" for="p-desc">Description</label>
+          <textarea class="textarea" id="p-desc" formControlName="description" rows="4"></textarea>
+        </div>
+      </section>
+
+      <!-- Pricing & flags -->
+      <section class="pf__panel">
+        <h2 class="pf__panel-title">Pricing &amp; badges</h2>
+        <div class="pf__grid">
+          <div class="field" [class.field--error]="form.controls.price.touched && form.controls.price.invalid">
+            <label class="field__label" for="p-price">Price (Rs)</label>
+            <input class="input" id="p-price" type="number" min="0" step="1" formControlName="price" />
+          </div>
+          <div class="field">
+            <label class="field__label" for="p-sale">Sale price <span class="field__hint">(optional)</span></label>
+            <input class="input" id="p-sale" type="number" min="0" step="1" formControlName="salePrice" />
+          </div>
+        </div>
+        <div class="pf__flags">
+          <label class="pf__flag"><input type="checkbox" formControlName="isNewArrival" /> New Arrival</label>
+          <label class="pf__flag"><input type="checkbox" formControlName="isFeatured" /> Featured</label>
+          <label class="pf__flag pf__flag--vip"><input type="checkbox" formControlName="isVip" /> VIP</label>
+        </div>
+      </section>
+
+      <!-- Images -->
+      <section class="pf__panel">
+        <div class="pf__panel-head">
+          <h2 class="pf__panel-title">Images</h2>
+          <button class="btn btn--secondary btn--sm" type="button" (click)="addImage()">+ Add image</button>
+        </div>
+        <p class="field__hint pf__hint">Upload straight to Cloudinary, or paste an already-hosted URL.</p>
+        <div class="pf__images">
+          @for (im of images(); track $index; let i = $index) {
+            <div class="pf__image-row">
+              <ui-image-upload
+                [value]="im.imageUrl"
+                folder="products"
+                label="Product image"
+                (valueChange)="setImageUrl(i, $event)"
+              />
+              <div class="pf__image-actions">
+                <button type="button" (click)="moveImage(i, -1)" [disabled]="i === 0" aria-label="Move up">↑</button>
+                <button type="button" (click)="moveImage(i, 1)" [disabled]="i === images().length - 1" aria-label="Move down">↓</button>
+                <button type="button" class="pf__remove" (click)="removeImage(i)" aria-label="Remove row">&times;</button>
+              </div>
+            </div>
+          }
+          @if (!images().length) {
+            <p class="text-muted">No images yet.</p>
+          }
+        </div>
+      </section>
+
+      <!-- Variants -->
+      <section class="pf__panel">
+        <div class="pf__panel-head">
+          <h2 class="pf__panel-title">Size &amp; colour variants</h2>
+          <button class="btn btn--secondary btn--sm" type="button" (click)="addVariantRow()">+ Add variant</button>
+        </div>
+        <div class="pf__variants">
+          <div class="pf__variant-head">
+            <span>Size</span><span>Colour</span><span>Hex</span><span>Stock</span><span>SKU</span><span></span>
+          </div>
+          @for (v of variants(); track $index; let i = $index) {
+            <div class="pf__variant-row">
+              <input class="input" [value]="v.size" (change)="updateVariantField(i, 'size', $any($event.target).value)" placeholder="M" />
+              <input class="input" [value]="v.color" (change)="updateVariantField(i, 'color', $any($event.target).value)" placeholder="Obsidian" />
+              <div class="pf__hex-group">
+                <input
+                  class="pf__swatch"
+                  type="color"
+                  [value]="isValidHex(v.colorHex) ? v.colorHex : '#0b0b0d'"
+                  (input)="updateVariantField(i, 'colorHex', $any($event.target).value)"
+                  [attr.aria-label]="'Colour swatch for ' + (v.color || 'variant ' + (i + 1))"
+                />
+                <input
+                  class="input pf__hex"
+                  [class.pf__hex--invalid]="v.colorHex.trim() && !isValidHex(v.colorHex)"
+                  [value]="v.colorHex"
+                  (change)="updateVariantField(i, 'colorHex', $any($event.target).value)"
+                  placeholder="#0B0B0D"
+                />
+              </div>
+              <input class="input" type="number" min="0" [value]="v.stock" (change)="updateVariantField(i, 'stock', +$any($event.target).value)" />
+              <input class="input" [value]="v.sku" (change)="updateVariantField(i, 'sku', $any($event.target).value)" placeholder="EZI-1-OB-M" />
+              <button type="button" class="pf__remove" (click)="removeVariantRow(i)" aria-label="Remove variant">&times;</button>
+            </div>
+          }
+          @if (!variants().length) {
+            <p class="text-muted">No variants yet — add at least one.</p>
+          }
+        </div>
+      </section>
+
+      <div class="pf__actions">
+        <button class="btn btn--primary btn--lg" type="submit" [disabled]="saving()">
+          {{ saving() ? 'Saving…' : (isEdit() ? 'Save changes' : 'Create product') }}
+        </button>
+        <a class="btn btn--ghost" routerLink="/admin/products">Cancel</a>
+      </div>
+    </form>
+  }
+</div>

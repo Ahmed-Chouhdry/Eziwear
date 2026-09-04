@@ -1,0 +1,307 @@
+<div class="container section">
+  @if (loading()) {
+    <div class="pd__layout">
+      <ui-skeleton shape="img" height="560px" />
+      <div class="pd__info">
+        <ui-skeleton shape="title" />
+        <ui-skeleton shape="text" width="30%" />
+        <ui-skeleton shape="text" />
+        <ui-skeleton shape="text" width="80%" />
+      </div>
+    </div>
+  } @else if (!product()) {
+    <div class="pd__missing">
+      <h1>Product not found</h1>
+      <p class="text-muted">This piece may have sold out or been retired.</p>
+      <a class="btn btn--primary" routerLink="/shop">Back to shop</a>
+    </div>
+  } @else {
+    <nav class="pd__crumbs" aria-label="Breadcrumb">
+      <a routerLink="/">Home</a> <span aria-hidden="true">/</span>
+      <a [routerLink]="['/shop', product()!.categorySlug]">{{ product()!.categoryName || product()!.categorySlug }}</a>
+      <span aria-hidden="true">/</span> <span>{{ product()!.name }}</span>
+    </nav>
+
+    <div class="pd__layout">
+      <!-- Gallery -->
+      <div class="pd__gallery">
+        <div
+          class="pd__stage"
+          [class.is-zoomable]="!allSoldOut()"
+          (mousemove)="onZoomMove($event)"
+          (click)="openZoom()"
+        >
+          <img
+            class="pd__stage-img"
+            [style]="zoomStyle()"
+            [src]="product()!.images[activeImage()]?.imageUrl || product()!.images[0]?.imageUrl"
+            [alt]="product()!.name"
+          />
+          <div class="pd__badges">
+            @if (product()!.isVip) { <ui-badge kind="vip">VIP</ui-badge> }
+            @if (onSale()) { <ui-badge kind="sale">Sale · {{ discountPct() }}%</ui-badge> }
+            @else if (product()!.isNewArrival) { <ui-badge kind="new">New</ui-badge> }
+          </div>
+          @if (allSoldOut()) { <span class="pd__stage-soldout">Sold out</span> }
+          <span class="pd__zoom-hint" aria-hidden="true">⤢ Click to zoom</span>
+        </div>
+        @if (product()!.images.length > 1) {
+          <div class="pd__thumbs">
+            @for (im of product()!.images; track im.id; let i = $index) {
+              <button
+                class="pd__thumb"
+                [class.is-active]="i === activeImage()"
+                (click)="selectImage(i)"
+                [attr.aria-label]="'View image ' + (i + 1)"
+              >
+                <img [src]="im.imageUrl" alt="" loading="lazy" />
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Info -->
+      <div class="pd__info">
+        <span class="eyebrow">{{ product()!.sku }}</span>
+        <div class="pd__title-row">
+          <h1 class="pd__name" [class.text-vip]="product()!.isVip">{{ product()!.name }}</h1>
+          <button
+            class="pd__wish"
+            type="button"
+            [class.is-saved]="wishlist.has(product()!.id)"
+            [attr.aria-pressed]="wishlist.has(product()!.id)"
+            [attr.aria-label]="wishlist.has(product()!.id) ? 'Remove from wishlist' : 'Save to wishlist'"
+            (click)="toggleWishlist()"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 20s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 5c-2.5 4.5-9.5 9-9.5 9Z" />
+            </svg>
+          </button>
+        </div>
+
+        <button class="pd__rating-link" type="button" (click)="reviews.scrollIntoView()">
+          @if (product()!.rating) {
+            <span class="pd__stars" aria-hidden="true">
+              @for (s of [1,2,3,4,5]; track s) {
+                <span [class.is-on]="s <= (product()!.rating || 0)">★</span>
+              }
+            </span>
+            {{ product()!.rating }} · {{ product()!.reviewCount }} review{{ product()!.reviewCount === 1 ? '' : 's' }}
+          } @else {
+            <span class="pd__stars" aria-hidden="true">★★★★★</span> No reviews yet
+          }
+        </button>
+
+        <div class="pd__price">
+          @if (onSale()) {
+            <span class="price price--sale">{{ product()!.salePrice | price }}</span>
+            <span class="price price--old">{{ product()!.price | price }}</span>
+            <span class="badge badge--sale">−{{ discountPct() }}%</span>
+          } @else {
+            <span class="price">{{ product()!.price | price }}</span>
+          }
+        </div>
+
+        <p class="pd__desc">{{ product()!.description }}</p>
+
+        @if (allSoldOut()) {
+          <div class="pd__soldout-box">
+            <strong>This product is sold out.</strong>
+            <span class="text-muted">Check back soon or explore similar pieces below.</span>
+          </div>
+        } @else {
+          <!-- Colour -->
+          <div class="pd__opt">
+            <span class="pd__opt-label">Colour @if (selectedColor()) { <b>· {{ selectedColor() }}</b> }</span>
+            <div class="pd__swatches">
+              @for (c of colors(); track c.name) {
+                <button
+                  class="swatch"
+                  [class.is-selected]="c.name === selectedColor()"
+                  [class.is-unavailable]="!colorAvailable(c.name)"
+                  [style.background]="c.hex || 'var(--surface-inset)'"
+                  [attr.aria-label]="c.name + (colorAvailable(c.name) ? '' : ' (unavailable)')"
+                  [attr.aria-pressed]="c.name === selectedColor()"
+                  (click)="selectColor(c.name)"
+                ></button>
+              }
+            </div>
+          </div>
+
+          <!-- Size -->
+          <div class="pd__opt">
+            <div class="pd__opt-head">
+              <span class="pd__opt-label">Size @if (selectedSize()) { <b>· {{ selectedSize() }}</b> }</span>
+              <a routerLink="/support/size-guide" class="pd__sizeguide">Size guide</a>
+            </div>
+            <div class="pd__sizes">
+              @for (s of sizes(); track s) {
+                <button
+                  class="chip"
+                  [class.is-selected]="s === selectedSize()"
+                  [disabled]="!sizeAvailable(s)"
+                  (click)="selectSize(s)"
+                >{{ s }}</button>
+              }
+            </div>
+          </div>
+
+          <!-- Quantity + actions -->
+          <div class="pd__buy">
+            <div class="pd__qty">
+              <button type="button" aria-label="Decrease" (click)="setQty(-1)" [disabled]="quantity() <= 1">−</button>
+              <span>{{ quantity() }}</span>
+              <button
+                type="button"
+                aria-label="Increase"
+                (click)="setQty(1)"
+                [disabled]="currentVariant() && quantity() >= currentVariant()!.stock"
+              >+</button>
+            </div>
+            <button class="btn btn--primary btn--lg grow" type="button" (click)="addToCart(false)">
+              Add to Cart
+            </button>
+          </div>
+          <button class="btn btn--secondary btn--lg btn--block" type="button" (click)="addToCart(true)">
+            Buy Now
+          </button>
+
+          @if (stockNote(); as note) {
+            <p class="pd__stock" [class.pd__stock--out]="note.level === 'out'" [class.pd__stock--low]="note.level === 'low'">
+              {{ note.text }}
+            </p>
+          }
+        }
+
+        <ul class="pd__meta" role="list">
+          <li>Free shipping on orders over Rs 5,000</li>
+          <li>Cash on Delivery available</li>
+          <li>7-day returns &amp; exchanges</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Reviews -->
+    <section class="pd__reviews" #reviews>
+      <h2 class="pd__section-title">Reviews</h2>
+      <div class="pd__reviews-body">
+        <div class="pd__reviews-score">
+          <span class="pd__reviews-num">{{ product()!.rating || '—' }}</span>
+          <span class="pd__stars pd__stars--lg" aria-hidden="true">
+            @for (s of [1,2,3,4,5]; track s) {
+              <span [class.is-on]="s <= (product()!.rating || 0)">★</span>
+            }
+          </span>
+          <span class="text-muted">
+            Based on {{ product()!.reviewCount }} review{{ product()!.reviewCount === 1 ? '' : 's' }}
+          </span>
+        </div>
+
+        @if (!auth.isAuthenticated()) {
+          <p class="text-muted pd__reviews-note">
+            <a routerLink="/auth/login">Sign in</a> to write a review once your order is delivered.
+          </p>
+        } @else if (myReview()) {
+          <div class="pd__my-review">
+            <span class="pd__stars" aria-hidden="true">
+              @for (s of [1,2,3,4,5]; track s) { <span [class.is-on]="s <= myReview()!.rating">★</span> }
+            </span>
+            <span class="badge badge--muted">
+              {{ myReview()!.status === 'pending' ? 'Awaiting approval' : myReview()!.status === 'rejected' ? 'Not approved' : 'Published' }}
+            </span>
+            @if (!reviewFormOpen()) {
+              <button class="pd__review-edit" type="button" (click)="openReviewForm()">Edit your review</button>
+            }
+          </div>
+        } @else if (eligibleToReview() && !reviewFormOpen()) {
+          <button class="btn btn--secondary btn--sm" type="button" (click)="openReviewForm()">Write a review</button>
+        } @else if (!eligibleToReview()) {
+          <p class="text-muted pd__reviews-note">
+            Reviews open once your order for this item has been delivered.
+          </p>
+        }
+
+        @if (reviewFormOpen()) {
+          <form class="pd__review-form" [formGroup]="reviewForm" (ngSubmit)="submitReview()">
+            <div class="field">
+              <label class="field__label">Your rating</label>
+              <div class="pd__rate-input" role="radiogroup" aria-label="Rating">
+                @for (s of [1,2,3,4,5]; track s) {
+                  <button
+                    type="button"
+                    class="pd__rate-star"
+                    [class.is-on]="s <= reviewForm.controls.rating.value"
+                    (click)="setReviewRating(s)"
+                    [attr.aria-pressed]="s === reviewForm.controls.rating.value"
+                  >★</button>
+                }
+              </div>
+            </div>
+            <div class="field">
+              <label class="field__label" for="review-comment">Your review <span class="field__hint">(optional)</span></label>
+              <textarea class="textarea" id="review-comment" formControlName="comment" rows="3" maxlength="1000" placeholder="How was the fit, fabric, quality…"></textarea>
+            </div>
+            <div class="pd__review-form-actions">
+              <button class="btn btn--primary btn--sm" type="submit" [disabled]="submittingReview()">
+                {{ submittingReview() ? 'Submitting…' : 'Submit review' }}
+              </button>
+              <button class="btn btn--ghost btn--sm" type="button" (click)="cancelReviewForm()">Cancel</button>
+            </div>
+          </form>
+        }
+
+        @if (productReviews().length) {
+          <ul class="pd__review-list" role="list">
+            @for (r of productReviews(); track r.id) {
+              <li class="pd__review-item">
+                <div class="pd__review-item-head">
+                  <span class="pd__stars" aria-hidden="true">
+                    @for (s of [1,2,3,4,5]; track s) { <span [class.is-on]="s <= r.rating">★</span> }
+                  </span>
+                  <strong>{{ r.reviewerName }}</strong>
+                </div>
+                @if (r.comment) { <p class="pd__review-comment">{{ r.comment }}</p> }
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="text-muted pd__reviews-note">
+            No reviews yet — be the first to share your experience.
+          </p>
+        }
+      </div>
+    </section>
+
+    <!-- Related -->
+    @if (related().length) {
+      <section class="pd__related">
+        <h2 class="pd__section-title">You may also like</h2>
+        <div class="product-grid">
+          @for (r of related(); track r.id) {
+            <product-card [product]="r" />
+          }
+        </div>
+      </section>
+    }
+  }
+</div>
+
+<!-- Zoom lightbox -->
+@if (zoomOpen() && product()) {
+  <div class="pd-zoom" (click)="closeZoom()">
+    <button class="pd-zoom__close" type="button" aria-label="Close" (click)="closeZoom()">&times;</button>
+    <img
+      class="pd-zoom__img"
+      [src]="product()!.images[activeImage()]?.imageUrl"
+      [alt]="product()!.name"
+      (click)="$event.stopPropagation()"
+    />
+    @if (product()!.images.length > 1) {
+      <button class="pd-zoom__nav pd-zoom__nav--prev" type="button" aria-label="Previous"
+        (click)="$event.stopPropagation(); zoomStep(-1)">‹</button>
+      <button class="pd-zoom__nav pd-zoom__nav--next" type="button" aria-label="Next"
+        (click)="$event.stopPropagation(); zoomStep(1)">›</button>
+    }
+  </div>
+}

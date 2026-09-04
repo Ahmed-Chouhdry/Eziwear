@@ -1,0 +1,190 @@
+/* =============================================================
+   EZiWear — Official Design Tokens
+   Brand palette is FIXED. Do not introduce colors outside this file.
+   Ratio target:  Black 35% · Ivory 35% · Graphite 15% · Orange 8% · Silver 5% · Gold 2%
+   ============================================================= */
+
+:root {
+  /* ---- Raw brand palette (never changes between themes) ---- */
+  --ezi-black: #0b0b0d;      /* Obsidian Black  */
+  --ezi-ivory: #f5f2ea;      /* Ivory White     */
+  --ezi-graphite: #17171a;   /* Graphite Gray   */
+  --ezi-silver: #c9c4b8;     /* Champagne Silver*/
+  --ezi-orange: #c96a32;     /* Burnt Orange — MAIN ACCENT */
+  --ezi-gold: #d6a84f;       /* Soft Gold — VIP / PREMIUM  */
+
+  --ezi-orange-hover: #b65c28;
+  --ezi-orange-soft: rgba(201, 106, 50, 0.12);
+  --ezi-gold-soft: rgba(214, 168, 79, 0.14);
+  --ezi-gold-glow: 0 0 0 1px rgba(214, 168, 79, 0.45), 0 0 22px rgba(214, 168, 79, 0.18);
+
+  /* ---- Functional status colors (NOT brand colors) ---- */
+  --status-error: #c0473f;
+  --status-error-bg: rgba(192, 71, 63, 0.12);
+  --status-success: #4f7d52;
+  --status-success-bg: rgba(79, 125, 82, 0.12);
+  --status-warning: var(--ezi-orange);
+
+  /* ---- Typography ---- */
+  --font-display: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  --fs-2xs: 0.6875rem;   /* 11px */
+  --fs-xs: 0.75rem;      /* 12 */
+  --fs-sm: 0.875rem;     /* 14 */
+  --fs-base: 1rem;       /* 16 */
+  --fs-lg: 1.125rem;     /* 18 */
+  --fs-xl: 1.375rem;     /* 22 */
+  --fs-2xl: 1.75rem;     /* 28 */
+  --fs-3xl: 2.25rem;     /* 36 */
+  --fs-4xl: clamp(2.5rem, 6vw, 4rem);
+  --fs-hero: clamp(2.75rem, 9vw, 6.5rem);
+
+  --lh-tight: 1.05;
+  --lh-snug: 1.25;
+  --lh-normal: 1.6;
+
+  --tracking-tight: -0.02em;
+  --tracking-wide: 0.08em;
+  --tracking-widest: 0.18em;
+
+  /* ---- Spacing scale (4px base) ---- */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+  --sp-8: 4rem;
+  --sp-9: 6rem;
+  --sp-10: 8rem;
+
+  /* ---- Radius ---- */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+
+  /* ---- Layout ---- */
+  --container-max: 1440px;
+  --container-pad: clamp(1rem, 4vw, 3rem);
+  --header-h: 72px;
+  --header-h-scrolled: 60px;
+
+  /* ---- Motion ---- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 160ms;
+  --dur-base: 260ms;
+  --dur-slow: 480ms;
+
+  --z-header: 100;
+  --z-drawer: 200;
+  --z-modal: 300;
+  --z-toast: 400;
+}
+
+/* =============================================================
+   DARK THEME (default) — premium luxury streetwear
+   ============================================================= */
+:root,
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: var(--ezi-black);
+  --bg-elevated: var(--ezi-graphite);
+  --surface: var(--ezi-graphite);
+  --surface-2: #1e1e22;
+  --surface-inset: #121214;
+
+  --text: var(--ezi-ivory);
+  --text-muted: var(--ezi-silver);
+  --text-faint: rgba(201, 196, 184, 0.55);
+  --text-on-accent: var(--ezi-ivory);
+
+  --border: rgba(201, 196, 184, 0.15);
+  --border-strong: rgba(201, 196, 184, 0.28);
+  --border-hover: var(--ezi-orange);
+
+  --header-bg: rgba(11, 11, 13, 0.85);
+  --header-bg-solid: var(--ezi-black);
+  --footer-bg: var(--ezi-black);
+  --hero-bg: var(--ezi-black);
+  --drawer-bg: var(--ezi-graphite);
+
+  --card-bg: var(--ezi-graphite);
+  --card-border: rgba(201, 196, 184, 0.15);
+
+  --input-bg: var(--ezi-graphite);
+  --input-border: rgba(201, 196, 184, 0.2);
+  --input-placeholder: rgba(201, 196, 184, 0.45);
+
+  --accent: var(--ezi-orange);
+  --accent-hover: var(--ezi-orange-hover);
+  --accent-contrast: var(--ezi-ivory);
+  --vip: var(--ezi-gold);
+
+  --overlay: rgba(11, 11, 13, 0.72);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.55);
+  --skeleton: linear-gradient(90deg, #1b1b1f 0%, #242429 50%, #1b1b1f 100%);
+}
+
+/* =============================================================
+   LIGHT THEME — clean, premium, minimal (not an inversion)
+   ============================================================= */
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: var(--ezi-ivory);
+  --bg-elevated: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #fbf9f3;
+  --surface-inset: #efece2;
+
+  --text: var(--ezi-black);
+  --text-muted: #68645d;
+  --text-faint: rgba(11, 11, 13, 0.45);
+  --text-on-accent: var(--ezi-ivory);
+
+  --border: rgba(11, 11, 13, 0.1);
+  --border-strong: rgba(11, 11, 13, 0.18);
+  --border-hover: var(--ezi-orange);
+
+  --header-bg: rgba(245, 242, 234, 0.85);
+  --header-bg-solid: var(--ezi-ivory);
+  --footer-bg: var(--ezi-black);      /* footer stays strongly branded */
+  --hero-bg: var(--ezi-black);        /* hero stays dark for drama */
+  --drawer-bg: #ffffff;
+
+  --card-bg: #ffffff;
+  --card-border: rgba(11, 11, 13, 0.1);
+
+  --input-bg: #ffffff;
+  --input-border: rgba(11, 11, 13, 0.15);
+  --input-placeholder: rgba(11, 11, 13, 0.4);
+
+  --accent: var(--ezi-orange);
+  --accent-hover: var(--ezi-orange-hover);
+  --accent-contrast: var(--ezi-ivory);
+  --vip: #b98a2f;                     /* slightly deeper gold for contrast on ivory */
+
+  --overlay: rgba(11, 11, 13, 0.5);
+  --shadow-sm: 0 1px 2px rgba(11, 11, 13, 0.06);
+  --shadow-md: 0 10px 30px rgba(11, 11, 13, 0.1);
+  --shadow-lg: 0 24px 60px rgba(11, 11, 13, 0.14);
+  --skeleton: linear-gradient(90deg, #ece8dd 0%, #f6f3ec 50%, #ece8dd 100%);
+}
+
+/* Respect OS preference only when the user has not chosen explicitly.
+   The inline script in index.html sets data-theme early; this is a fallback. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-slow: 0ms;
+  }
+}

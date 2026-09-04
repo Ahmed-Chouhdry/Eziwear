@@ -1,0 +1,102 @@
+<div class="sf">
+  <header class="sf__head">
+    <h2 class="sf__title">Filters</h2>
+    <div class="sf__head-actions">
+      @if (hasActive()) {
+        <button class="sf__clear" type="button" (click)="clear()">Clear all</button>
+      }
+      <button class="sf__close hide-desktop" type="button" aria-label="Close filters" (click)="closeRequested.emit()">
+        &times;
+      </button>
+    </div>
+  </header>
+
+  <!-- Availability -->
+  <section class="sf__group">
+    <label class="sf__check">
+      <input
+        type="checkbox"
+        [checked]="state().inStock"
+        (change)="setInStock($any($event.target).checked)"
+      />
+      In stock only
+    </label>
+  </section>
+
+  <!-- Price -->
+  <section class="sf__group">
+    <h3 class="sf__group-title">Price</h3>
+    <div class="sf__price">
+      <label class="sf__price-field">
+        <span class="visually-hidden">Minimum price</span>
+        <input
+          class="input"
+          type="number"
+          inputmode="numeric"
+          min="0"
+          [placeholder]="'Rs ' + (options()?.priceRange?.min ?? 0)"
+          [value]="state().minPrice ?? ''"
+          (change)="setMinPrice($any($event.target).value)"
+        />
+      </label>
+      <span class="sf__price-dash" aria-hidden="true">–</span>
+      <label class="sf__price-field">
+        <span class="visually-hidden">Maximum price</span>
+        <input
+          class="input"
+          type="number"
+          inputmode="numeric"
+          min="0"
+          [placeholder]="'Rs ' + (options()?.priceRange?.max ?? 0)"
+          [value]="state().maxPrice ?? ''"
+          (change)="setMaxPrice($any($event.target).value)"
+        />
+      </label>
+    </div>
+  </section>
+
+  <!-- Size -->
+  @if (options()?.sizes?.length) {
+    <section class="sf__group">
+      <h3 class="sf__group-title">Size</h3>
+      <div class="sf__chips">
+        @for (size of options()!.sizes; track size) {
+          <button
+            class="chip"
+            type="button"
+            [class.is-selected]="state().sizes.includes(size)"
+            [attr.aria-pressed]="state().sizes.includes(size)"
+            (click)="toggleSize(size)"
+          >{{ size }}</button>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Colour -->
+  @if (options()?.colors?.length) {
+    <section class="sf__group">
+      <h3 class="sf__group-title">Colour</h3>
+      <div class="sf__colors">
+        @for (c of options()!.colors; track c.name) {
+          <button
+            class="sf__color"
+            type="button"
+            [class.is-selected]="state().colors.includes(c.name)"
+            [attr.aria-pressed]="state().colors.includes(c.name)"
+            [attr.aria-label]="c.name"
+            [attr.title]="c.name"
+            (click)="toggleColor(c.name)"
+          >
+            <span class="swatch" [style.background]="c.hex || 'var(--surface-inset)'"></span>
+            <span class="sf__color-name">{{ c.name }}</span>
+          </button>
+        }
+      </div>
+    </section>
+  }
+
+  <button class="btn btn--primary btn--block hide-desktop" type="button" (click)="closeRequested.emit()">
+    Show results
+  </button>
+</div>

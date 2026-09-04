@@ -1,0 +1,53 @@
+.ol__head { margin-bottom: var(--sp-5); }
+.ol__title { font-size: var(--fs-2xl); text-transform: uppercase; }
+
+.ol__filters {
+  display: flex;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+  flex-wrap: wrap;
+}
+.ol__search { max-width: 340px; flex: 1; }
+.ol__filters .select { min-width: 160px; }
+
+.ol__table {
+  overflow-x: auto;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+}
+.ol__table table { width: 100%; border-collapse: collapse; min-width: 820px; }
+.ol__table th, .ol__table td {
+  text-align: start;
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--fs-sm);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.ol__table th {
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.ol__table tbody tr:last-child td { border-bottom: 0; }
+.ol__table tbody tr:hover { background: var(--surface-inset); }
+
+.ol__link { font-family: var(--font-display); }
+.ol__link:hover { color: var(--accent); }
+.ol__email { font-size: var(--fs-xs); }
+
+.pill {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: var(--radius-xs);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+.pill--processing { background: var(--ezi-orange-soft); color: var(--accent); }
+.pill--confirmed { background: var(--surface-inset); color: var(--text-muted); }
+.pill--shipped { background: var(--ezi-gold-soft); color: var(--vip); }
+.pill--delivered { background: var(--status-success-bg); color: var(--status-success); }
+.pill--cancelled { background: var(--status-error-bg); color: var(--status-error); }

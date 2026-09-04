@@ -1,0 +1,31 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: eziwear-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-eziroot}
+      MYSQL_DATABASE: ${DB_NAME:-eziwear}
+      MYSQL_USER: ${DB_USER:-eziwear}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-eziwear}
+    ports:
+      - "${DB_PORT:-3307}:3306"
+    volumes:
+      - eziwear-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${DB_ROOT_PASSWORD:-eziroot}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  adminer:
+    image: adminer:latest
+    container_name: eziwear-adminer
+    restart: unless-stopped
+    ports:
+      - "${ADMINER_PORT:-8081}:8080"
+    depends_on:
+      - mysql
+
+volumes:
+  eziwear-mysql-data:

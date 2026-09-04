@@ -1,0 +1,147 @@
+@use '../../../styles/breakpoints' as *;
+
+.co__crumbs { font-size: var(--fs-xs); color: var(--text-faint); margin-bottom: var(--sp-4); }
+.co__crumbs a:hover { color: var(--accent); }
+.co__title { font-size: var(--fs-3xl); text-transform: uppercase; margin-bottom: var(--sp-6); }
+
+.co__loading {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-8) 0;
+  color: var(--text-muted);
+}
+
+.co__layout {
+  display: grid;
+  gap: var(--sp-6);
+  grid-template-columns: 1fr;
+
+  @include bp(md) { grid-template-columns: 1fr 360px; align-items: start; gap: var(--sp-7); }
+}
+
+.co__step {
+  padding: var(--sp-5);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--sp-4);
+}
+.co__step-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+.co__step-num {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+.co__step-head h2 { font-size: var(--fs-lg); text-transform: uppercase; }
+
+.co__addresses { display: flex; flex-direction: column; gap: var(--sp-3); }
+.co__addr {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+.co__addr:hover { border-color: var(--accent); }
+.co__addr.is-selected { border-color: var(--accent); background: var(--ezi-orange-soft); }
+.co__addr input { margin-top: 3px; accent-color: var(--accent); }
+.co__addr-body { display: flex; flex-direction: column; gap: 2px; flex: 1; font-size: var(--fs-sm); }
+
+.co__add-toggle {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-sm);
+  color: var(--accent);
+  font-weight: 500;
+}
+.co__add-toggle:hover { text-decoration: underline; }
+
+.co__form { display: flex; flex-direction: column; gap: var(--sp-4); margin-top: var(--sp-3); }
+.co__grid {
+  display: grid;
+  gap: var(--sp-4);
+  grid-template-columns: 1fr;
+  @include bp(xs) { grid-template-columns: 1fr 1fr; }
+}
+.co__check, .co__notes { margin-top: var(--sp-1); }
+.co__check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.co__check input { width: 16px; height: 16px; accent-color: var(--accent); }
+.co__notes { margin-top: var(--sp-4); }
+
+.co__option {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+}
+.co__option.is-selected { border-color: var(--accent); }
+.co__option input { accent-color: var(--accent); }
+.co__option-body { display: flex; flex-direction: column; gap: 2px; flex: 1; font-size: var(--fs-sm); }
+
+/* Summary */
+.co__summary {
+  padding: var(--sp-5);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+
+  @include bp(md) { position: sticky; top: calc(var(--header-h) + var(--sp-4)); }
+}
+.co__summary-title { font-size: var(--fs-lg); text-transform: uppercase; }
+.co__items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--border);
+  max-height: 260px;
+  overflow-y: auto;
+}
+.co__item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--sp-2);
+  align-items: start;
+  font-size: var(--fs-sm);
+}
+.co__item-qty { color: var(--text-faint); font-family: var(--font-display); }
+.co__item-name { line-height: 1.35; }
+
+.co__row { display: flex; justify-content: space-between; font-size: var(--fs-sm); }
+.co__row--discount { color: var(--accent); }
+.co__row--total {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--border);
+  margin-bottom: var(--sp-2);
+}
+.co__fineprint { font-size: var(--fs-xs); text-align: center; }
+.co__fineprint a { color: var(--accent); text-decoration: underline; }

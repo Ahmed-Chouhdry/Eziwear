@@ -1,0 +1,42 @@
+<div class="adm" [class.adm--nav-open]="navOpen()">
+  <aside class="adm__sidebar">
+    <a class="adm__logo" routerLink="/">EZi<span>Wear</span><small>Admin</small></a>
+    <nav class="adm__nav">
+      @for (l of links; track l.path) {
+        <a
+          class="adm__link"
+          [routerLink]="l.path"
+          routerLinkActive="is-active"
+          (click)="navOpen.set(false)"
+        >
+          <span class="adm__link-icon" aria-hidden="true">{{ l.icon }}</span>
+          {{ l.label }}
+        </a>
+      }
+    </nav>
+    <button class="adm__logout" type="button" (click)="auth.logout()">Log out</button>
+  </aside>
+
+  <div class="adm__body">
+    <header class="adm__topbar">
+      <button class="adm__burger" type="button" aria-label="Toggle navigation" (click)="navOpen.set(!navOpen())">
+        ☰
+      </button>
+      <span class="adm__crumb">EZiWear Admin</span>
+      <div class="adm__topbar-actions">
+        <button class="adm__icon-btn" type="button" (click)="theme.toggle()">
+          {{ theme.isDark() ? '☀' : '☾' }}
+        </button>
+        <span class="adm__user">{{ auth.user()?.name ?? 'Admin' }}</span>
+      </div>
+    </header>
+
+    <main class="adm__main">
+      <router-outlet />
+    </main>
+  </div>
+
+  @if (navOpen()) {
+    <button class="adm__scrim" type="button" aria-label="Close navigation" (click)="navOpen.set(false)"></button>
+  }
+</div>

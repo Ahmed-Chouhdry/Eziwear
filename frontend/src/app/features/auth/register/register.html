@@ -1,0 +1,45 @@
+<form class="af" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <header class="af__head">
+    <h1 class="af__title">Create account</h1>
+    <p class="af__sub">Join EZiWear for first access to drops.</p>
+  </header>
+
+  <div class="field" [class.field--error]="form.controls.name.touched && form.controls.name.invalid">
+    <label class="field__label" for="reg-name">Full name</label>
+    <input class="input" id="reg-name" type="text" formControlName="name" autocomplete="name" />
+    @if (form.controls.name.touched && form.controls.name.invalid) {
+      <span class="field__error">Enter your name.</span>
+    }
+  </div>
+
+  <div class="field" [class.field--error]="form.controls.email.touched && form.controls.email.invalid">
+    <label class="field__label" for="reg-email">Email</label>
+    <input class="input" id="reg-email" type="email" formControlName="email" autocomplete="email" />
+    @if (form.controls.email.touched && form.controls.email.invalid) {
+      <span class="field__error">Enter a valid email address.</span>
+    }
+  </div>
+
+  <div class="field">
+    <label class="field__label" for="reg-phone">Phone <span class="field__hint">(optional)</span></label>
+    <input class="input" id="reg-phone" type="tel" formControlName="phone" autocomplete="tel" />
+  </div>
+
+  <div class="field" [class.field--error]="form.controls.password.touched && form.controls.password.invalid">
+    <label class="field__label" for="reg-pw">Password</label>
+    <input class="input" id="reg-pw" type="password" formControlName="password" autocomplete="new-password" />
+    @if (form.controls.password.touched && form.controls.password.invalid) {
+      <span class="field__error">Use at least 8 characters.</span>
+    } @else {
+      <span class="field__hint">At least 8 characters.</span>
+    }
+  </div>
+
+  <button class="btn btn--primary btn--lg btn--block" type="submit" [disabled]="submitting()">
+    {{ submitting() ? 'Creating…' : 'Create account' }}
+  </button>
+
+  <p class="af__foot">
+    Already have an account? <a routerLink="/auth/login" class="af__link">Sign in</a>
+  </p>
+</form>

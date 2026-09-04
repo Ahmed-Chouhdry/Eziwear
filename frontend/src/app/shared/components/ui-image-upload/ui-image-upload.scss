@@ -1,0 +1,38 @@
+:host { display: flex; flex-direction: column; gap: var(--sp-2); }
+
+.iu__preview {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  max-width: 220px;
+  display: grid;
+  place-items: center;
+  background: var(--surface-inset);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.iu__preview img { width: 100%; height: 100%; object-fit: cover; }
+.iu__preview--empty { color: var(--text-faint); }
+.iu__placeholder { font-size: var(--fs-2xl); opacity: 0.4; }
+
+.iu__controls { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+.iu__upload-btn { cursor: pointer; }
+.iu__file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.iu__clear {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  text-decoration: underline;
+}
+.iu__clear:hover { color: var(--status-error); }
+
+.iu__manual { font-size: var(--fs-xs); }
+.iu__manual summary { color: var(--text-faint); cursor: pointer; }
+.iu__manual summary:hover { color: var(--text-muted); }
+.iu__url-input { margin-top: var(--sp-2); max-width: 360px; }
