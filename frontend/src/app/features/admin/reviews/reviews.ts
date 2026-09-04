@@ -4,6 +4,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AdminReviewListItem, AdminReviewService, ReviewStatus } from '../../../core/services/admin-review.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { UiEmptyState } from '../../../shared/components/ui-empty-state/ui-empty-state';
 import { UiPagination } from '../../../shared/components/ui-pagination/ui-pagination';
@@ -20,6 +21,7 @@ import { UiSkeleton } from '../../../shared/components/ui-skeleton/ui-skeleton';
 export class Reviews {
   private readonly api = inject(AdminReviewService);
   private readonly toast = inject(ToastService);
+  private readonly confirmSvc = inject(ConfirmService);
 
   protected readonly search = signal('');
   protected readonly status = signal<ReviewStatus | ''>('pending');
@@ -72,7 +74,11 @@ export class Reviews {
   }
 
   async remove(r: AdminReviewListItem): Promise<void> {
-    if (!confirm(`Permanently delete this review by ${r.customerName}?`)) return;
+    const ok = await this.confirmSvc.confirm({
+      message: `Permanently delete this review by ${r.customerName}?`,
+      danger: true,
+    });
+    if (!ok) return;
     this.busyId.set(r.id);
     try {
       await firstValueFrom(this.api.remove(r.id));

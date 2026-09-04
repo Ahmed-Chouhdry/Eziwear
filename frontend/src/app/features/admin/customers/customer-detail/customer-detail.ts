@@ -4,6 +4,7 @@ import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 import { AdminCustomerService } from '../../../../core/services/admin-customer.service';
+import { ConfirmService } from '../../../../core/services/confirm.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { UiSpinner } from '../../../../shared/components/ui-spinner/ui-spinner';
 import { PricePipe } from '../../../../shared/pipes/price.pipe';
@@ -20,6 +21,7 @@ export class CustomerDetail {
   private readonly route = inject(ActivatedRoute);
   private readonly api = inject(AdminCustomerService);
   private readonly toast = inject(ToastService);
+  private readonly confirmSvc = inject(ConfirmService);
 
   protected readonly updating = signal(false);
 
@@ -36,11 +38,18 @@ export class CustomerDetail {
   protected readonly loading = computed(() => this.res.isLoading());
   protected readonly customer = computed(() => this.res.value());
 
-  toggleStatus(): void {
+  async toggleStatus(): Promise<void> {
     const c = this.customer();
     if (!c) return;
     const next = c.status === 'active' ? 'suspended' : 'active';
-    if (next === 'suspended' && !confirm(`Suspend ${c.name}? They won't be able to sign in.`)) return;
+    if (next === 'suspended') {
+      const ok = await this.confirmSvc.confirm({
+        message: `Suspend ${c.name}? They won't be able to sign in.`,
+        danger: true,
+        confirmText: 'Suspend',
+      });
+      if (!ok) return;
+    }
     this.updating.set(true);
     this.api.updateStatus(c.id, next).subscribe({
       next: () => {

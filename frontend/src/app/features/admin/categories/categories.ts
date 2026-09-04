@@ -7,6 +7,7 @@ import {
   AdminCategoryService,
   CategoryPayload,
 } from '../../../core/services/admin-category.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { UiImageUpload } from '../../../shared/components/ui-image-upload/ui-image-upload';
 import { UiSkeleton } from '../../../shared/components/ui-skeleton/ui-skeleton';
@@ -22,6 +23,7 @@ import { UiSkeleton } from '../../../shared/components/ui-skeleton/ui-skeleton';
 export class Categories {
   private readonly fb = inject(FormBuilder);
   private readonly toast = inject(ToastService);
+  private readonly confirmSvc = inject(ConfirmService);
   private readonly api = inject(AdminCategoryService);
 
   protected readonly res = rxResource({ stream: () => this.api.list() });
@@ -110,7 +112,7 @@ export class Categories {
       this.toast.error(`Move or delete the ${c.productCount} product(s) in "${c.name}" first.`);
       return;
     }
-    if (!confirm(`Delete category "${c.name}"?`)) return;
+    if (!(await this.confirmSvc.confirm({ message: `Delete category "${c.name}"?`, danger: true }))) return;
     try {
       await firstValueFrom(this.api.remove(c.id));
       this.toast.success('Category deleted.');

@@ -8,6 +8,7 @@ import {
   AdminCouponService,
   CouponPayload,
 } from '../../../core/services/admin-coupon.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { UiEmptyState } from '../../../shared/components/ui-empty-state/ui-empty-state';
 import { UiPagination } from '../../../shared/components/ui-pagination/ui-pagination';
@@ -25,6 +26,7 @@ import { PricePipe } from '../../../shared/pipes/price.pipe';
 export class Coupons {
   private readonly fb = inject(FormBuilder);
   private readonly toast = inject(ToastService);
+  private readonly confirmSvc = inject(ConfirmService);
   private readonly api = inject(AdminCouponService);
 
   protected readonly search = signal('');
@@ -131,7 +133,7 @@ export class Coupons {
   }
 
   async remove(c: AdminCoupon): Promise<void> {
-    if (!confirm(`Delete coupon "${c.code}"?`)) return;
+    if (!(await this.confirmSvc.confirm({ message: `Delete coupon "${c.code}"?`, danger: true }))) return;
     await firstValueFrom(this.api.remove(c.id));
     this.toast.success('Coupon deleted.');
     this.res.reload();

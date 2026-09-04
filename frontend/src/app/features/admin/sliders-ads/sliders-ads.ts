@@ -12,6 +12,7 @@ import {
   SliderPayload,
   SocialLinkPayload,
 } from '../../../core/services/admin-content.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { UiImageUpload } from '../../../shared/components/ui-image-upload/ui-image-upload';
 import { UiSkeleton } from '../../../shared/components/ui-skeleton/ui-skeleton';
@@ -27,6 +28,7 @@ import { UiSkeleton } from '../../../shared/components/ui-skeleton/ui-skeleton';
 export class SlidersAds {
   private readonly fb = inject(FormBuilder);
   private readonly toast = inject(ToastService);
+  private readonly confirmSvc = inject(ConfirmService);
   private readonly api = inject(AdminContentService);
 
   protected readonly tab = signal<'sliders' | 'ads' | 'social'>('sliders');
@@ -122,7 +124,7 @@ export class SlidersAds {
   }
 
   async removeSlider(s: AdminSlider): Promise<void> {
-    if (!confirm('Delete this slider?')) return;
+    if (!(await this.confirmSvc.confirm({ message: 'Delete this slider?', danger: true }))) return;
     await firstValueFrom(this.api.removeSlider(s.id));
     this.toast.success('Slider deleted.');
     this.slidersRes.reload();
@@ -212,7 +214,7 @@ export class SlidersAds {
   }
 
   async removeAd(a: AdminAd): Promise<void> {
-    if (!confirm('Delete this advertisement?')) return;
+    if (!(await this.confirmSvc.confirm({ message: 'Delete this advertisement?', danger: true }))) return;
     await firstValueFrom(this.api.removeAd(a.id));
     this.toast.success('Advertisement deleted.');
     this.adsRes.reload();
@@ -288,7 +290,7 @@ export class SlidersAds {
   }
 
   async removeSocial(s: AdminSocialLink): Promise<void> {
-    if (!confirm(`Delete the ${s.platform} link?`)) return;
+    if (!(await this.confirmSvc.confirm({ message: `Delete the ${s.platform} link?`, danger: true }))) return;
     await firstValueFrom(this.api.removeSocialLink(s.id));
     this.toast.success('Social link deleted.');
     this.socialRes.reload();

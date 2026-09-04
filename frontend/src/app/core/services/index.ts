@@ -22,3 +22,4 @@ export * from './admin-coupon.service';
 export * from './admin-review.service';
 export * from './review.service';
 export * from './admin-upload.service';
+export * from './confirm.service';
