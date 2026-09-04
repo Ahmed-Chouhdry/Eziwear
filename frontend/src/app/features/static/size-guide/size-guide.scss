@@ -1,0 +1,76 @@
+@use '../../../../styles/breakpoints' as *;
+
+.sg__crumbs {
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+  margin-bottom: var(--sp-5);
+}
+.sg__crumbs a:hover { color: var(--accent); }
+
+.sg__head { margin-bottom: var(--sp-6); }
+.sg__title { font-size: var(--fs-3xl); text-transform: uppercase; }
+.sg__sub { margin-top: var(--sp-2); max-width: 60ch; }
+
+.sg__table {
+  overflow-x: auto;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--sp-7);
+}
+.sg__table table { width: 100%; border-collapse: collapse; min-width: 680px; }
+.sg__table th, .sg__table td {
+  text-align: start;
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--fs-sm);
+  border-bottom: 1px solid var(--border);
+}
+.sg__table th {
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.sg__th-note { text-transform: none; letter-spacing: 0; font-weight: 400; }
+.sg__table tbody tr:last-child td { border-bottom: 0; }
+.sg__table tbody tr:hover { background: var(--surface-inset); }
+.sg__size { font-family: var(--font-display); font-weight: 700; letter-spacing: var(--tracking-wide); }
+
+.sg__grid {
+  display: grid;
+  gap: var(--sp-5);
+  grid-template-columns: 1fr;
+  @include bp(md) { grid-template-columns: 1fr 1fr; }
+}
+.sg__panel {
+  padding: var(--sp-5);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+}
+.sg__panel-title {
+  font-size: var(--fs-sm);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--sp-4);
+}
+.sg__tips {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+.sg__tips li { padding-inline-start: var(--sp-4); position: relative; }
+.sg__tips li::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0.6em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.sg__cta { margin-top: var(--sp-4); }

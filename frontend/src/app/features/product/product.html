@@ -148,30 +148,32 @@
           </div>
 
           <!-- Quantity + actions -->
-          <div class="pd__buy">
-            <div class="pd__qty">
-              <button type="button" aria-label="Decrease" (click)="setQty(-1)" [disabled]="quantity() <= 1">−</button>
-              <span>{{ quantity() }}</span>
-              <button
-                type="button"
-                aria-label="Increase"
-                (click)="setQty(1)"
-                [disabled]="currentVariant() && quantity() >= currentVariant()!.stock"
-              >+</button>
+          <div class="pd__buy-group">
+            <div class="pd__buy">
+              <div class="pd__qty">
+                <button type="button" aria-label="Decrease" (click)="setQty(-1)" [disabled]="quantity() <= 1">−</button>
+                <span>{{ quantity() }}</span>
+                <button
+                  type="button"
+                  aria-label="Increase"
+                  (click)="setQty(1)"
+                  [disabled]="currentVariant() && quantity() >= currentVariant()!.stock"
+                >+</button>
+              </div>
+              <button class="btn btn--primary btn--lg grow" type="button" (click)="addToCart(false)">
+                Add to Cart
+              </button>
             </div>
-            <button class="btn btn--primary btn--lg grow" type="button" (click)="addToCart(false)">
-              Add to Cart
+            <button class="btn btn--secondary btn--lg btn--block" type="button" (click)="addToCart(true)">
+              Buy Now
             </button>
-          </div>
-          <button class="btn btn--secondary btn--lg btn--block" type="button" (click)="addToCart(true)">
-            Buy Now
-          </button>
 
-          @if (stockNote(); as note) {
-            <p class="pd__stock" [class.pd__stock--out]="note.level === 'out'" [class.pd__stock--low]="note.level === 'low'">
-              {{ note.text }}
-            </p>
-          }
+            @if (stockNote(); as note) {
+              <p class="pd__stock" [class.pd__stock--out]="note.level === 'out'" [class.pd__stock--low]="note.level === 'low'">
+                {{ note.text }}
+              </p>
+            }
+          </div>
         }
 
         <ul class="pd__meta" role="list">

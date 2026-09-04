@@ -1,0 +1,61 @@
+<div class="container section">
+  <nav class="sg__crumbs" aria-label="Breadcrumb">
+    <a routerLink="/">Home</a> <span aria-hidden="true">/</span> <span>Size Guide</span>
+  </nav>
+
+  <header class="sg__head">
+    <h1 class="sg__title">Size Guide</h1>
+    <p class="text-muted sg__sub">
+      All measurements are of the garment (not the body), in inches. Unisex, standard fit.
+    </p>
+  </header>
+
+  <div class="sg__table">
+    <table>
+      <thead>
+        <tr>
+          <th>Size</th>
+          <th>Chest</th>
+          <th>Length</th>
+          <th>Shoulder</th>
+          <th>Sleeve</th>
+          <th>Waist <span class="sg__th-note">(pants)</span></th>
+          <th>Length <span class="sg__th-note">(pants)</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of rows; track r.size) {
+          <tr>
+            <td class="sg__size">{{ r.size }}</td>
+            <td>{{ r.chest }}</td>
+            <td>{{ r.length }}</td>
+            <td>{{ r.shoulder }}</td>
+            <td>{{ r.sleeve }}</td>
+            <td>{{ r.waist }}</td>
+            <td>{{ r.pantLength }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sg__grid">
+    <section class="sg__panel">
+      <h2 class="sg__panel-title">How to measure</h2>
+      <ul class="sg__tips" role="list">
+        @for (t of tips; track t) { <li>{{ t }}</li> }
+      </ul>
+    </section>
+
+    <section class="sg__panel">
+      <h2 class="sg__panel-title">Between sizes?</h2>
+      <p class="text-muted">
+        If your measurement falls between two sizes, we recommend sizing up for a
+        comfortable, relaxed fit — true to the EZiWear silhouette. Colours may vary
+        slightly by screen, and finished pieces can differ by ±0.5–1" from the chart
+        due to hand-finishing.
+      </p>
+      <a class="btn btn--secondary btn--sm sg__cta" routerLink="/support/contact">Still unsure? Contact us</a>
+    </section>
+  </div>
+</div>

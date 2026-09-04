@@ -79,6 +79,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/static/static-page').then((m) => m.StaticPage),
       },
       {
+        path: 'support/size-guide',
+        loadComponent: () => import('./features/static/size-guide/size-guide').then((m) => m.SizeGuide),
+        title: 'Size Guide — EZiWear',
+      },
+      {
         path: 'support/:slug',
         loadComponent: () => import('./features/static/static-page').then((m) => m.StaticPage),
       },

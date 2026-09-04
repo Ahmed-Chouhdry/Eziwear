@@ -13,13 +13,15 @@
   gap: var(--sp-6);
   grid-template-columns: 1fr;
 
-  @include bp(md) { grid-template-columns: 1.1fr 1fr; gap: var(--sp-8); align-items: start; }
+  @include bp(md) { grid-template-columns: minmax(320px, 480px) 1fr; gap: var(--sp-8); align-items: start; }
 }
 
 /* ---- Gallery ---- */
 .pd__stage {
   position: relative;
+  width: 100%;
   aspect-ratio: 3 / 4;
+  max-height: min(70vh, 640px);
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--surface-inset);
@@ -92,7 +94,7 @@
 }
 
 /* ---- Info ---- */
-.pd__info { display: flex; flex-direction: column; gap: var(--sp-4); }
+.pd__info { display: flex; flex-direction: column; gap: var(--sp-3); }
 
 .pd__title-row {
   display: flex;
@@ -151,7 +153,7 @@
   font-size: var(--fs-sm);
 }
 
-.pd__opt { display: flex; flex-direction: column; gap: var(--sp-3); }
+.pd__opt { display: flex; flex-direction: column; gap: var(--sp-2); }
 .pd__opt-head { display: flex; align-items: baseline; justify-content: space-between; }
 .pd__opt-label {
   font-size: var(--fs-xs);
@@ -178,6 +180,7 @@
   transform: rotate(-45deg);
 }
 
+.pd__buy-group { display: flex; flex-direction: column; gap: var(--sp-2); }
 .pd__buy { display: flex; gap: var(--sp-3); }
 .pd__qty {
   display: inline-flex;
@@ -199,11 +202,10 @@
 .pd__meta {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-2);
-  margin-top: var(--sp-3);
-  padding-top: var(--sp-4);
+  gap: var(--sp-1);
+  padding-top: var(--sp-3);
   border-top: 1px solid var(--border);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-xs);
   color: var(--text-muted);
 }
 
