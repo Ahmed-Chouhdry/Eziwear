@@ -18,25 +18,16 @@ export class Footer {
   protected readonly categories = CATEGORIES;
   protected readonly year = new Date().getFullYear();
 
-  private readonly abbr: Record<string, string> = {
-    instagram: 'IG',
-    tiktok: 'TT',
-    facebook: 'FB',
-    youtube: 'YT',
-    whatsapp: 'WA',
-    twitter: 'X',
-    x: 'X',
-  };
+  private readonly knownIcons = new Set(['instagram', 'tiktok', 'facebook', 'youtube', 'whatsapp', 'twitter', 'x']);
 
   private readonly liveSocial = toSignal(this.content.getSocialLinks(), { initialValue: null });
   protected readonly social = computed(() => {
     const rows = this.liveSocial();
-    if (!rows || rows.length === 0) return SOCIAL_LINKS;
-    return rows.map((s) => ({
-      platform: s.platform,
-      url: s.url,
-      icon: this.abbr[s.platform.toLowerCase()] ?? s.platform.slice(0, 2).toUpperCase(),
-    }));
+    const list = !rows || rows.length === 0 ? SOCIAL_LINKS : rows;
+    return list.map((s) => {
+      const key = s.platform.toLowerCase();
+      return { platform: s.platform, url: s.url, icon: this.knownIcons.has(key) ? key : 'link' };
+    });
   });
 
   protected readonly support = [
