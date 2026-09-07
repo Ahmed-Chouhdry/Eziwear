@@ -9,8 +9,7 @@ After=network.target
 
 [Service]
 Type=simple
-User=www-data
-Group=www-data
+# Runs as root to match the CI-owned checkout (git reset re-owns files each deploy).
 WorkingDirectory=/var/www/eziwear/backend
 # Loads DB creds, JWT_SECRET, PORT, NODE_ENV=production, CORS_ORIGIN, Cloudinary…
 EnvironmentFile=/var/www/eziwear/.env
@@ -20,10 +19,6 @@ RestartSec=3
 # Logs go to the journal:  journalctl -u eziwear-api -f
 StandardOutput=journal
 StandardError=journal
-# Light hardening
-NoNewPrivileges=true
-ProtectSystem=full
-ProtectHome=true
 
 [Install]
 WantedBy=multi-user.target
