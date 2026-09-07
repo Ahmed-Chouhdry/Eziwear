@@ -96,29 +96,7 @@
 /* ---- Info ---- */
 .pd__info { display: flex; flex-direction: column; gap: var(--sp-3); }
 
-.pd__title-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--sp-3);
-}
-.pd__name { font-size: var(--fs-3xl); text-transform: uppercase; }
-
-.pd__wish {
-  flex-shrink: 0;
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  color: var(--text-muted);
-  transition: all var(--dur-fast) var(--ease-out);
-}
-.pd__wish svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; }
-.pd__wish:hover { border-color: var(--accent); color: var(--accent); }
-.pd__wish.is-saved { border-color: var(--accent); color: var(--accent); }
-.pd__wish.is-saved svg { fill: var(--accent); }
+.pd__name { font-size: var(--fs-2xl); text-transform: uppercase; }
 
 .pd__rating-link {
   display: inline-flex;
@@ -180,13 +158,13 @@
   transform: rotate(-45deg);
 }
 
-.pd__buy-group { display: flex; flex-direction: column; gap: var(--sp-2); }
-.pd__buy { display: flex; gap: var(--sp-3); }
 .pd__qty {
   display: inline-flex;
+  align-self: flex-start;
   align-items: center;
   gap: var(--sp-3);
   padding: 0 var(--sp-3);
+  height: 44px;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
 }
@@ -195,9 +173,30 @@
 .pd__qty button:disabled { opacity: 0.3; }
 .pd__qty span { font-family: var(--font-display); min-width: 20px; text-align: center; }
 
-.pd__stock { font-size: var(--fs-xs); color: var(--status-success); }
-.pd__stock--low { color: var(--accent); }
-.pd__stock--out { color: var(--status-error); }
+.pd__buy-group { display: flex; flex-direction: column; gap: var(--sp-2); }
+.pd__buy-row { display: flex; gap: var(--sp-2); }
+.pd__wish-btn {
+  flex: none;
+  width: 56px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  color: var(--accent);
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+.pd__wish-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+.pd__wish-btn:hover { background: var(--ezi-orange-soft); }
+.pd__wish-btn.is-saved { background: var(--ezi-orange-soft); }
+.pd__wish-btn.is-saved svg { fill: var(--accent); }
+
+.pd__stock-line {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  color: var(--accent);
+}
+.pd__stock-line--out { color: var(--status-error); }
 
 .pd__meta {
   display: flex;

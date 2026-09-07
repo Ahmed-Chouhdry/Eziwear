@@ -65,21 +65,7 @@
       <div class="pd__info">
         @if (product()!.isVip) { <span class="pd__vip-tag">VIP Collection</span> }
         <span class="eyebrow">{{ product()!.sku }}</span>
-        <div class="pd__title-row">
-          <h1 class="pd__name" [class.text-vip]="product()!.isVip">{{ product()!.name }}</h1>
-          <button
-            class="pd__wish"
-            type="button"
-            [class.is-saved]="wishlist.has(product()!.id)"
-            [attr.aria-pressed]="wishlist.has(product()!.id)"
-            [attr.aria-label]="wishlist.has(product()!.id) ? 'Remove from wishlist' : 'Save to wishlist'"
-            (click)="toggleWishlist()"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 20s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 5c-2.5 4.5-9.5 9-9.5 9Z" />
-            </svg>
-          </button>
-        </div>
+        <h1 class="pd__name" [class.text-vip]="product()!.isVip">{{ product()!.name }}</h1>
 
         <button class="pd__rating-link" type="button" (click)="reviews.scrollIntoView()">
           @if (product()!.rating) {
@@ -114,7 +100,7 @@
         } @else {
           <!-- Colour -->
           <div class="pd__opt">
-            <span class="pd__opt-label">Colour @if (selectedColor()) { <b>· {{ selectedColor() }}</b> }</span>
+            <span class="pd__opt-label">@if (selectedColor()) { Selected: <b>{{ selectedColor() }}</b> } @else { Colour }</span>
             <div class="pd__swatches">
               @for (c of colors(); track c.name) {
                 <button
@@ -148,33 +134,52 @@
             </div>
           </div>
 
-          <!-- Quantity + actions -->
+          <!-- Quantity -->
+          <div class="pd__qty">
+            <button type="button" aria-label="Decrease" (click)="setQty(-1)" [disabled]="quantity() <= 1">−</button>
+            <span>{{ quantity() }}</span>
+            <button
+              type="button"
+              aria-label="Increase"
+              (click)="setQty(1)"
+              [disabled]="currentVariant() && quantity() >= currentVariant()!.stock"
+            >+</button>
+          </div>
+
+          <!-- Actions -->
           <div class="pd__buy-group">
-            <div class="pd__buy">
-              <div class="pd__qty">
-                <button type="button" aria-label="Decrease" (click)="setQty(-1)" [disabled]="quantity() <= 1">−</button>
-                <span>{{ quantity() }}</span>
-                <button
-                  type="button"
-                  aria-label="Increase"
-                  (click)="setQty(1)"
-                  [disabled]="currentVariant() && quantity() >= currentVariant()!.stock"
-                >+</button>
-              </div>
-              <button class="btn btn--primary btn--lg grow" type="button" (click)="addToCart(false)">
-                Add to Cart
+            <div class="pd__buy-row">
+              <button class="btn btn--primary btn--lg grow" type="button" (click)="addToCart(false)">Add to Cart</button>
+              <button
+                class="pd__wish-btn"
+                type="button"
+                [class.is-saved]="wishlist.has(product()!.id)"
+                [attr.aria-pressed]="wishlist.has(product()!.id)"
+                [attr.aria-label]="wishlist.has(product()!.id) ? 'Remove from wishlist' : 'Save to wishlist'"
+                (click)="toggleWishlist()"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 5c-2.5 4.5-9.5 9-9.5 9Z" /></svg>
               </button>
             </div>
-            <button class="btn btn--gold btn--lg btn--block" type="button" (click)="addToCart(true)">
-              Buy Now
-            </button>
-
-            @if (stockNote(); as note) {
-              <p class="pd__stock" [class.pd__stock--out]="note.level === 'out'" [class.pd__stock--low]="note.level === 'low'">
-                {{ note.text }}
-              </p>
-            }
+            <div class="pd__buy-row">
+              <button class="btn btn--gold btn--lg grow" type="button" (click)="addToCart(true)">Buy Now</button>
+              <button
+                class="pd__wish-btn"
+                type="button"
+                [class.is-saved]="wishlist.has(product()!.id)"
+                [attr.aria-label]="wishlist.has(product()!.id) ? 'Remove from wishlist' : 'Save to wishlist'"
+                (click)="toggleWishlist()"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 5c-2.5 4.5-9.5 9-9.5 9Z" /></svg>
+              </button>
+            </div>
           </div>
+
+          <p class="pd__stock-line" [class.pd__stock-line--out]="stockNote()?.level === 'out'">
+            @if (stockNote()?.level === 'out') { {{ stockNote()!.text }} }
+            @else if (stockNote()?.level === 'low') { {{ stockNote()!.text }} · Fast shipping available }
+            @else { In stock · Fast shipping available }
+          </p>
         }
 
         <ul class="pd__meta" role="list">
