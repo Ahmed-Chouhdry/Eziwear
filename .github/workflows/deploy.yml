@@ -21,10 +21,37 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           command_timeout: 20m
+          envs: DEPLOY_DIR,ENV_FILE
           script: |
             set -euo pipefail
-            export DEPLOY_DIR="${{ secrets.DEPLOY_DIR }}"
+
+            DEPLOY_DIR="${DEPLOY_DIR:-/var/www/eziwear}"
+            REPO_URL="https://github.com/Ahmed-Chouhdry/Eziwear.git"
+
+            # --- bootstrap: clone on first run ---
+            if [ ! -d "$DEPLOY_DIR/.git" ]; then
+              echo "==> First run — cloning into $DEPLOY_DIR"
+              mkdir -p "$(dirname "$DEPLOY_DIR")"
+              git clone "$REPO_URL" "$DEPLOY_DIR"
+            fi
+
             cd "$DEPLOY_DIR"
             git fetch --all --prune
             git reset --hard origin/main
+
+            # --- .env: write from the ENV_FILE secret if provided, else require it on disk ---
+            if [ -n "${ENV_FILE:-}" ]; then
+              printf '%s\n' "$ENV_FILE" > .env
+              chmod 600 .env
+              echo "==> .env written from ENV_FILE secret"
+            elif [ ! -f .env ]; then
+              echo "!! No .env on the server and no ENV_FILE secret set." >&2
+              echo "   Either 'cp .env.example .env && nano .env' on the box," >&2
+              echo "   or add an ENV_FILE repo secret with the full file contents." >&2
+              exit 1
+            fi
+
             bash deploy/deploy.sh
+    env:
+      DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}
+      ENV_FILE: ${{ secrets.ENV_FILE }}
