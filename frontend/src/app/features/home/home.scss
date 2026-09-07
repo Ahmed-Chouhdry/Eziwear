@@ -82,10 +82,10 @@
 
 .vip-band__inner {
   display: grid;
-  gap: var(--sp-5);
+  gap: var(--sp-4);
   grid-template-columns: 1fr;
 
-  @include bp(md) { grid-template-columns: 240px 1fr; align-items: center; }
+  @include bp(md) { grid-template-columns: 220px minmax(0, 1fr); align-items: center; }
 }
 .vip-intro {
   display: flex;
@@ -105,13 +105,22 @@
 .vip-intro .btn { margin-top: var(--sp-2); }
 
 .vip-cards {
-  display: grid;
+  display: flex;
   gap: var(--sp-3);
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-
-  @include bp(sm) { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding-block: 4px;
 }
-.vip-cards > * { min-width: 0; }
+.vip-cards::-webkit-scrollbar { display: none; }
+.vip-cards > * {
+  scroll-snap-align: start;
+  flex: 0 0 clamp(150px, 40vw, 190px);
+  min-width: 0;
+}
+@include bp(md) {
+  .vip-cards > * { flex-basis: calc((100% - 3 * var(--sp-3)) / 4); }
+}
 
 /* ---- Social ---- */
 .social__head {

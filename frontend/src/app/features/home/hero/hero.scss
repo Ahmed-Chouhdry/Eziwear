@@ -3,7 +3,7 @@
 .hero {
   position: relative;
   background: var(--hero-bg);
-  min-height: clamp(420px, 62vh, 600px);
+  min-height: clamp(400px, 58vh, 560px);
   overflow: hidden;
   isolation: isolate;
 }
@@ -40,13 +40,13 @@
   transform: scale(1);
 }
 
-/* Keep the hero dark and text legible — no rainbow over the image */
+/* Even center vignette so centred text stays legible */
 .hero__scrim {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at center, rgba(11, 11, 13, 0.35) 0%, rgba(11, 11, 13, 0.7) 100%),
-    linear-gradient(0deg, rgba(11, 11, 13, 0.75) 0%, rgba(11, 11, 13, 0) 45%, rgba(11, 11, 13, 0.55) 100%);
+    radial-gradient(ellipse at center, rgba(11, 11, 13, 0.35) 0%, rgba(11, 11, 13, 0.72) 100%),
+    linear-gradient(0deg, rgba(11, 11, 13, 0.72) 0%, rgba(11, 11, 13, 0) 45%, rgba(11, 11, 13, 0.5) 100%);
 }
 
 .hero__content {
@@ -87,8 +87,8 @@
 .hero__headline {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: var(--fs-hero);
-  line-height: var(--lh-tight);
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  line-height: 1.08;
   letter-spacing: var(--tracking-tight);
   text-transform: uppercase;
   color: var(--ezi-ivory);
@@ -100,10 +100,9 @@
   font-family: var(--font-display);
   font-weight: 600;
   font-size: var(--fs-sm);
-  letter-spacing: var(--tracking-widest);
-  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
   color: var(--ezi-silver);
-  max-width: 46ch;
+  max-width: 44ch;
 }
 
 .hero__cta {

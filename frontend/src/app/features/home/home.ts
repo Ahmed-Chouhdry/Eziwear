@@ -34,10 +34,10 @@ export class Home {
   private readonly quickAdd = inject(QuickAddService);
   private readonly content = inject(ContentService);
 
-  protected readonly newArrivals = toSignal(this.catalog.getNewArrivals(4), { initialValue: null });
-  protected readonly featured = toSignal(this.catalog.getFeatured(4), { initialValue: null });
-  protected readonly vip = toSignal(this.catalog.getVip(4), { initialValue: null });
-  protected readonly bestSellers = toSignal(this.catalog.getBestSellers(4), { initialValue: null });
+  protected readonly newArrivals = toSignal(this.catalog.getNewArrivals(12), { initialValue: null });
+  protected readonly featured = toSignal(this.catalog.getFeatured(12), { initialValue: null });
+  protected readonly vip = toSignal(this.catalog.getVip(12), { initialValue: null });
+  protected readonly bestSellers = toSignal(this.catalog.getBestSellers(12), { initialValue: null });
 
   private readonly knownIcons = new Set(['instagram', 'tiktok', 'facebook', 'youtube', 'whatsapp']);
   private readonly liveSocial = toSignal(this.content.getSocialLinks(), { initialValue: null });
