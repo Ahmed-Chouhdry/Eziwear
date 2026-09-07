@@ -1,0 +1,30 @@
+name: Deploy to server
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH deploy
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command_timeout: 20m
+          script: |
+            set -euo pipefail
+            export DEPLOY_DIR="${{ secrets.DEPLOY_DIR }}"
+            cd "$DEPLOY_DIR"
+            git fetch --all --prune
+            git reset --hard origin/main
+            bash deploy/deploy.sh

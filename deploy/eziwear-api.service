@@ -1,0 +1,29 @@
+# /etc/systemd/system/eziwear-api.service
+# Adjust WorkingDirectory / User / paths to match your server, then:
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now eziwear-api.service
+
+[Unit]
+Description=EZiWear API (Node/Express)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/eziwear/backend
+# Loads DB creds, JWT_SECRET, PORT, NODE_ENV=production, CORS_ORIGIN, Cloudinary…
+EnvironmentFile=/var/www/eziwear/.env
+ExecStart=/usr/bin/node dist/server.js
+Restart=always
+RestartSec=3
+# Logs go to the journal:  journalctl -u eziwear-api -f
+StandardOutput=journal
+StandardError=journal
+# Light hardening
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
