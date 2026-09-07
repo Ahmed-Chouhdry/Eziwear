@@ -21,10 +21,15 @@ const schema = z.object({
   JWT_SECRET: z.string().min(16, 'JWT_SECRET must be at least 16 characters'),
   JWT_EXPIRES_IN: z.string().default('7d'),
 
+  // "*" (or a list containing "*") opens CORS to every origin; otherwise a
+  // comma-separated allow-list.
   CORS_ORIGIN: z
     .string()
     .default('http://localhost:4200')
-    .transform((s) => s.split(',').map((o) => o.trim()).filter(Boolean)),
+    .transform((s) => {
+      const list = s.split(',').map((o) => o.trim()).filter(Boolean);
+      return list.includes('*') ? ('*' as const) : list;
+    }),
 
   RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(15 * 60 * 1000),
   RATE_LIMIT_MAX: z.coerce.number().int().positive().default(300),

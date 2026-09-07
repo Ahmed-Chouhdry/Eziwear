@@ -17,7 +17,9 @@ export function createApp(): Express {
   app.use(helmet());
   app.use(
     cors({
-      origin: env.CORS_ORIGIN,
+      // "*" → reflect any origin (still works alongside credentials, unlike a
+      // literal "*" header); otherwise use the configured allow-list.
+      origin: env.CORS_ORIGIN === '*' ? true : env.CORS_ORIGIN,
       credentials: true,
     }),
   );
