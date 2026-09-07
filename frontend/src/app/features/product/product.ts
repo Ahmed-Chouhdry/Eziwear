@@ -65,6 +65,15 @@ export class ProductPage {
     return this.recent.items().filter((p) => p.id !== id);
   });
 
+  protected readonly infoTabs = [
+    { key: 'description', label: 'Description' },
+    { key: 'features', label: 'Features' },
+    { key: 'materials', label: 'Materials' },
+    { key: 'size-guide', label: 'Size Guide' },
+    { key: 'shipping', label: 'Shipping & Returns' },
+  ] as const;
+  protected readonly activeTab = signal<(typeof this.infoTabs)[number]['key']>('description');
+
   protected readonly activeImage = signal(0);
   protected readonly selectedSize = signal<string | null>(null);
   protected readonly selectedColor = signal<string | null>(null);

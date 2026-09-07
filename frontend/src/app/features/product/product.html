@@ -194,29 +194,50 @@
       </div>
     </div>
 
-    <!-- Details accordion -->
-    <section class="pd__acc">
-      <details class="pd__acc-item" open>
-        <summary>Description</summary>
-        <p>{{ product()!.description }}</p>
-      </details>
-      <details class="pd__acc-item">
-        <summary>Features</summary>
-        <ul role="list">
-          <li>Heavyweight, movement-engineered fabric</li>
-          <li>Clean, confident silhouette</li>
-          <li>Reinforced stitching at stress points</li>
-          <li>Finished and quality-checked to EZiWear standards</li>
-        </ul>
-      </details>
-      <details class="pd__acc-item">
-        <summary>Materials &amp; Care</summary>
-        <p>Premium cotton-rich blend. Machine wash cold with like colours, inside out. Do not tumble dry. Cool iron if needed.</p>
-      </details>
-      <details class="pd__acc-item">
-        <summary>Shipping &amp; Returns</summary>
-        <p>Free delivery on orders above Rs 5,000 (Rs 250 otherwise). Delivered in 2–5 working days across Pakistan. Easy 7-day returns and exchanges on unworn items with tags.</p>
-      </details>
+    <!-- Details — tabs on desktop, accordion on mobile -->
+    <section class="pd__info-tabs">
+      <div class="pd__tablist" role="tablist">
+        @for (t of infoTabs; track t.key) {
+          <button
+            class="pd__tab"
+            type="button"
+            role="tab"
+            [class.is-active]="activeTab() === t.key"
+            [attr.aria-selected]="activeTab() === t.key"
+            (click)="activeTab.set(t.key)"
+          >{{ t.label }}</button>
+        }
+      </div>
+
+      @for (t of infoTabs; track t.key) {
+        <details class="pd__panel" [class.is-active]="activeTab() === t.key" [open]="activeTab() === t.key">
+          <summary (click)="activeTab.set(t.key)">{{ t.label }}</summary>
+          <div class="pd__panel-body">
+            @switch (t.key) {
+              @case ('description') { <p>{{ product()!.description }}</p> }
+              @case ('features') {
+                <ul role="list">
+                  <li>Heavyweight, movement-engineered fabric</li>
+                  <li>Clean, confident silhouette</li>
+                  <li>Reinforced stitching at stress points</li>
+                  <li>Finished and quality-checked to EZiWear standards</li>
+                </ul>
+              }
+              @case ('materials') {
+                <p>Premium cotton-rich blend. Machine wash cold with like colours, inside out. Do not tumble dry. Cool iron if needed.</p>
+              }
+              @case ('size-guide') {
+                <p>Runs true to size. Between sizes? Size up for a relaxed fit.
+                  <a routerLink="/support/size-guide">Full size guide →</a>
+                </p>
+              }
+              @case ('shipping') {
+                <p>Free delivery on orders above Rs 5,000 (Rs 250 otherwise). Delivered in 2–5 working days across Pakistan. Easy 7-day returns and exchanges on unworn items with tags.</p>
+              }
+            }
+          </div>
+        </details>
+      }
     </section>
 
     <!-- Reviews -->
