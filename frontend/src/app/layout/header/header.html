@@ -1,7 +1,8 @@
 <div class="topbar">
   <div class="container topbar__inner">
-    <span>Free shipping on orders over Rs 5,000</span>
-    <span class="hide-mobile">Cash on Delivery across Pakistan</span>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" /><circle cx="7.5" cy="18" r="1.6" /><circle cx="17.5" cy="18" r="1.6" /></svg>
+    <span>Free delivery on orders above PKR 5,000</span>
+    <span class="topbar__alt"><span class="topbar__sep">·</span> Cash on delivery across Pakistan</span>
   </div>
 </div>
 
@@ -16,9 +17,13 @@
       <span class="burger" aria-hidden="true"></span>
     </button>
 
-    <a class="hdr__logo" routerLink="/" aria-label="EZiWear home">EZi<span>Wear</span></a>
+    <a class="hdr__logo" routerLink="/" aria-label="EZiWear home">
+      <span class="hdr__logo-a">EZi</span><span class="hdr__logo-b">Wear</span>
+    </a>
 
     <nav class="hdr__nav hide-mobile" aria-label="Primary">
+      <a class="hdr__link" routerLink="/" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+      <a class="hdr__link" routerLink="/shop" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }">Shop</a>
       @for (c of categories; track c.slug) {
         <a
           class="hdr__link"
@@ -26,13 +31,25 @@
           routerLinkActive="is-active"
         >{{ c.label }}</a>
       }
+      <a class="hdr__link" [routerLink]="['/shop', 'new-arrivals']" routerLinkActive="is-active">New Arrivals</a>
       <a class="hdr__link hdr__link--vip" [routerLink]="['/shop', 'vip']" routerLinkActive="is-active">
         VIP
       </a>
     </nav>
 
+    <form class="hdr__search hide-mobile" role="search" (submit)="submitSearch($event)">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+      <input
+        type="search"
+        placeholder="Search products…"
+        aria-label="Search products"
+        [value]="searchTerm()"
+        (input)="searchTerm.set($any($event.target).value)"
+      />
+    </form>
+
     <div class="hdr__actions">
-      <button class="hdr__icon" type="button" aria-label="Search" (click)="ui.toggleSearch(true)">
+      <button class="hdr__icon hide-desktop" type="button" aria-label="Search" (click)="ui.toggleSearch(true)">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
       </button>
 

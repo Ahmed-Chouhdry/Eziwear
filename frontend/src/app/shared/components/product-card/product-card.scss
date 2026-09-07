@@ -103,12 +103,12 @@
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: var(--overlay);
+  background: rgba(11, 11, 13, 0.55);
+  backdrop-filter: blur(4px);
   color: var(--ezi-ivory);
   transition:
     background-color var(--dur-fast) var(--ease-out),
-    color var(--dur-fast) var(--ease-out),
-    opacity var(--dur-base) var(--ease-out);
+    color var(--dur-fast) var(--ease-out);
 }
 .pc__wish svg {
   width: 17px;
@@ -120,17 +120,6 @@
 .pc__wish:hover { color: var(--accent); }
 .pc__wish.is-saved { color: var(--accent); }
 .pc__wish.is-saved svg { fill: var(--accent); }
-
-@media (hover: hover) and (min-width: 769px) {
-  .pc__wish {
-    opacity: 0;
-  }
-  .pc:hover .pc__wish,
-  .pc:focus-within .pc__wish,
-  .pc__wish.is-saved {
-    opacity: 1;
-  }
-}
 
 .pc__soldout {
   position: absolute;
@@ -157,7 +146,7 @@
 .pc__name {
   font-family: var(--font-display);
   font-size: var(--fs-sm);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text);
   min-height: 2.4em;
 }
@@ -165,14 +154,19 @@
   color: var(--accent);
 }
 
-.pc__meta {
-  min-height: 1em;
+.pc__rating {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 1.1em;
   font-size: var(--fs-xs);
 }
-.pc__rating {
-  color: var(--vip);
-  font-weight: 600;
+.pc__stars {
+  display: inline-flex;
+  letter-spacing: 1px;
+  color: var(--border-strong);
 }
+.pc__star.is-full { color: var(--vip); }
 .pc__reviews {
   color: var(--text-faint);
   font-weight: 400;
@@ -185,10 +179,10 @@
   font-size: var(--fs-base);
 }
 
-/* ---- Add to cart ---- */
+/* ---- Add to cart — always visible ---- */
 .pc__add {
   margin: 0 var(--sp-4) var(--sp-4);
-  height: 42px;
+  height: 44px;
   border-radius: var(--radius-sm);
   background: var(--accent);
   color: var(--accent-contrast);
@@ -201,10 +195,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   padding-inline: var(--sp-2);
-  transition:
-    background-color var(--dur-fast) var(--ease-out),
-    opacity var(--dur-base) var(--ease-out),
-    transform var(--dur-base) var(--ease-out);
+  transition: background-color var(--dur-fast) var(--ease-out);
 }
 .pc__add:hover:not(:disabled) {
   background: var(--accent-hover);
@@ -213,17 +204,4 @@
   background: var(--surface-inset);
   color: var(--text-faint);
   cursor: not-allowed;
-}
-
-/* On pointer devices, reveal the button on hover for a cleaner grid */
-@media (hover: hover) and (min-width: 769px) {
-  .pc__add {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  .pc:hover .pc__add,
-  .pc:focus-within .pc__add {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }

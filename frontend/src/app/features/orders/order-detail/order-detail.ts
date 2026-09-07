@@ -40,4 +40,16 @@ export class OrderDetail {
   protected readonly loading = computed(() => this.res.isLoading());
   protected readonly error = computed(() => this.res.error() != null);
   protected readonly order = computed(() => this.res.value());
+
+  /** Rough delivery window: 2–5 working days from the order date. */
+  protected readonly estimatedDelivery = computed(() => {
+    const o = this.order();
+    if (!o) return null;
+    const base = new Date(o.createdAt);
+    const from = new Date(base);
+    from.setDate(from.getDate() + 2);
+    const to = new Date(base);
+    to.setDate(to.getDate() + 5);
+    return { from, to };
+  });
 }

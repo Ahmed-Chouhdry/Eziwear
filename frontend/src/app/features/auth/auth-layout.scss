@@ -11,32 +11,38 @@
 .auth__brand {
   display: none;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: var(--sp-3);
   padding: var(--sp-8);
   background: var(--ezi-black);
   color: var(--ezi-ivory);
   background-image:
-    linear-gradient(0deg, rgba(11, 11, 13, 0.85), rgba(11, 11, 13, 0.4)),
-    url('https://picsum.photos/seed/ezi-auth/1000/1400');
+    linear-gradient(0deg, rgba(11, 11, 13, 0.92), rgba(11, 11, 13, 0.35)),
+    url('https://picsum.photos/seed/ezi-auth-street/1000/1400');
   background-size: cover;
   background-position: center;
 
   @include bp(md) { display: flex; }
 }
 .auth__logo {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--font-logo);
+  font-weight: 700;
+  font-size: 1.9rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.auth__logo-a { color: var(--ezi-ivory); }
+.auth__logo-b { color: var(--ezi-orange); }
+.auth__brand-foot { display: flex; flex-direction: column; gap: var(--sp-2); }
+.auth__brand-title {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: var(--fs-2xl);
+  font-size: var(--fs-3xl);
+  line-height: var(--lh-tight);
   text-transform: uppercase;
   color: var(--ezi-ivory);
-}
-.auth__logo span { color: var(--accent); }
-.auth__tagline {
-  font-family: var(--font-display);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-wide);
-  font-size: var(--fs-sm);
 }
 .auth__copy { color: var(--ezi-silver); font-size: var(--fs-sm); }
 

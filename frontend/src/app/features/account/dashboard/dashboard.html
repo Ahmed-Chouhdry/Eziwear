@@ -1,0 +1,66 @@
+<section class="dash">
+  <header class="dash__welcome">
+    <h2>Welcome back, {{ firstName() }}!</h2>
+    <p class="text-muted">Here's what's happening with your account.</p>
+  </header>
+
+  <div class="dash__stats">
+    <div class="dash__stat">
+      <span class="dash__stat-num">{{ stats().total }}</span>
+      <span class="dash__stat-label">Total Orders</span>
+    </div>
+    <div class="dash__stat">
+      <span class="dash__stat-num">{{ stats().pending }}</span>
+      <span class="dash__stat-label">Pending</span>
+    </div>
+    <div class="dash__stat">
+      <span class="dash__stat-num">{{ stats().delivered }}</span>
+      <span class="dash__stat-label">Delivered</span>
+    </div>
+    <div class="dash__stat">
+      <span class="dash__stat-num">{{ stats().wishlist }}</span>
+      <span class="dash__stat-label">Wishlist Items</span>
+    </div>
+  </div>
+
+  <div class="dash__panel">
+    <div class="dash__panel-head">
+      <h3>Recent Orders</h3>
+      <a routerLink="/account/orders" class="dash__seeall">View all →</a>
+    </div>
+    @if (recentOrders().length) {
+      <ul class="dash__orders" role="list">
+        @for (o of recentOrders(); track o.orderNumber) {
+          <li class="dash__order">
+            <div class="dash__order-thumb">
+              @if (o.firstImage) { <img [src]="o.firstImage" [alt]="o.firstItem" loading="lazy" /> }
+            </div>
+            <div class="dash__order-info">
+              <a class="dash__order-num" [routerLink]="['/order', o.orderNumber]">{{ o.orderNumber }}</a>
+              <span class="text-muted">{{ o.createdAt | date: 'mediumDate' }} · {{ o.itemCount }} item{{ o.itemCount === 1 ? '' : 's' }}</span>
+            </div>
+            <span class="price">{{ o.total | price }}</span>
+            <span class="badge" [class.badge--in-stock]="o.orderStatus === 'delivered'" [class.badge--muted]="o.orderStatus !== 'delivered'">
+              {{ statusLabel[o.orderStatus] }}
+            </span>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="text-muted">No orders yet. <a routerLink="/shop" class="dash__seeall">Start shopping →</a></p>
+    }
+  </div>
+
+  <div class="dash__panel">
+    <address class="dash__profile">
+      <strong>{{ auth.user()?.name }}</strong>
+      <span class="text-muted">{{ auth.user()?.email }}</span>
+      @if (auth.user()?.phone) { <span class="text-muted">{{ auth.user()?.phone }}</span> }
+      <a routerLink="/account/profile" class="dash__seeall">Edit profile →</a>
+    </address>
+  </div>
+
+  @if (recommendedList().length) {
+    <product-rail title="Recommended for you" [products]="recommendedList()" (addToCart)="onAdd($event)" />
+  }
+</section>

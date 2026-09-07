@@ -10,11 +10,22 @@
   } @else {
     @if (justPlaced()) {
       <div class="od__thanks">
-        <span class="od__check" aria-hidden="true">✓</span>
-        <h1>Thank you — your order is placed</h1>
-        <p class="text-muted">
-          A confirmation has been recorded. Pay with cash when your order arrives.
-        </p>
+        <span class="od__check" aria-hidden="true"></span>
+        <h1>Order Confirmed!</h1>
+        <p class="text-muted">Thank you for shopping with EZiWear.</p>
+        <div class="od__thanks-facts">
+          <span>Order <b>{{ order()!.orderNumber }}</b></span>
+          <span>Placed <b>{{ order()!.createdAt | date: 'mediumDate' }}</b></span>
+          @if (estimatedDelivery(); as est) {
+            <span>Estimated delivery
+              <b>{{ est.from | date: 'MMM d' }} – {{ est.to | date: 'MMM d' }}</b>
+            </span>
+          }
+        </div>
+        <div class="od__thanks-cta">
+          <a class="btn btn--primary" [routerLink]="['/order', order()!.orderNumber]">Track Order</a>
+          <a class="btn btn--secondary" routerLink="/shop">Continue Shopping</a>
+        </div>
       </div>
     } @else {
       <nav class="od__crumbs" aria-label="Breadcrumb">

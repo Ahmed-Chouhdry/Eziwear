@@ -9,9 +9,13 @@ import { RouterLink, RouterOutlet } from '@angular/router';
   template: `
     <div class="auth">
       <aside class="auth__brand">
-        <a class="auth__logo" routerLink="/">EZi<span>Wear</span></a>
-        <p class="auth__tagline">Move different. Wear EZiWear.</p>
-        <p class="auth__copy">Premium streetwear built for movement.</p>
+        <a class="auth__logo" routerLink="/" aria-label="EZiWear home">
+          <span class="auth__logo-a">EZi</span><span class="auth__logo-b">Wear</span>
+        </a>
+        <div class="auth__brand-foot">
+          <h2 class="auth__brand-title">Move different.</h2>
+          <p class="auth__copy">Premium streetwear built for movement.</p>
+        </div>
       </aside>
       <main class="auth__panel">
         <div class="auth__card">

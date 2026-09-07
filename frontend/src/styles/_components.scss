@@ -45,8 +45,10 @@
 }
 .btn--primary:hover {
   background: var(--accent-hover);
-  box-shadow: 0 6px 20px var(--ezi-orange-soft);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px var(--ezi-orange-soft);
 }
+.btn--primary:active { transform: scale(0.98); }
 
 .btn--secondary {
   background: transparent;
@@ -65,12 +67,25 @@
 }
 .btn--ghost:hover { color: var(--accent); background: var(--ezi-orange-soft); }
 
+/* Outlined gold — subtle VIP affordance */
 .btn--vip {
   background: transparent;
   color: var(--vip);
   border-color: var(--vip);
 }
 .btn--vip:hover { background: var(--ezi-gold-soft); }
+
+/* Filled gold — "Buy Now" style on PDP / wishlist */
+.btn--gold {
+  background: var(--vip);
+  color: var(--ezi-black);
+}
+.btn--gold:hover {
+  background: color-mix(in srgb, var(--vip) 88%, #fff);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px var(--ezi-gold-soft);
+}
+.btn--gold:active { transform: scale(0.98); }
 
 .btn--danger { background: var(--status-error); color: #fff; }
 

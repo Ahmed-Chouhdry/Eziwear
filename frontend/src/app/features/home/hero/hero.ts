@@ -21,6 +21,16 @@ interface Slide {
   image: string;
 }
 
+/** Split a headline into lines, marking any "EZiWear" token for accent colouring. */
+export function headlineLines(headline: string): { text: string; accent: boolean }[][] {
+  return headline.split('\n').map((line) =>
+    line
+      .split(/(\bEZi ?Wear\b)/i)
+      .filter((s) => s.length > 0)
+      .map((s) => ({ text: s, accent: /^EZi ?Wear$/i.test(s) })),
+  );
+}
+
 const FALLBACK: Slide[] = [
   {
     eyebrow: 'New Collection',
@@ -82,6 +92,8 @@ export class HeroComponent implements OnInit {
       if (this.timer) clearInterval(this.timer);
     });
   }
+
+  protected readonly lines = headlineLines;
 
   go(i: number): void {
     this.active.set(i);

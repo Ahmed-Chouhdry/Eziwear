@@ -8,6 +8,7 @@ import { Paginated, Product, ProductVariant } from '../../core/models';
 import { AuthService } from '../../core/services/auth.service';
 import { CatalogService } from '../../core/services/catalog.service';
 import { CartService } from '../../core/services/cart.service';
+import { RecentlyViewedService } from '../../core/services/recently-viewed.service';
 import { Review, ReviewEligibility, ReviewService } from '../../core/services/review.service';
 import { ToastService } from '../../core/services/toast.service';
 import { UiService } from '../../core/services/ui.service';
@@ -35,6 +36,7 @@ export class ProductPage {
   private readonly doc = inject(DOCUMENT);
   private readonly fb = inject(FormBuilder);
   private readonly reviewApi = inject(ReviewService);
+  private readonly recent = inject(RecentlyViewedService);
   protected readonly wishlist = inject(WishlistService);
   protected readonly auth = inject(AuthService);
 
@@ -58,6 +60,11 @@ export class ProductPage {
   });
   protected readonly related = computed<Product[]>(() => this.relatedRes.value() ?? []);
 
+  protected readonly recentlyViewed = computed<Product[]>(() => {
+    const id = this.product()?.id;
+    return this.recent.items().filter((p) => p.id !== id);
+  });
+
   protected readonly activeImage = signal(0);
   protected readonly selectedSize = signal<string | null>(null);
   protected readonly selectedColor = signal<string | null>(null);
@@ -77,6 +84,7 @@ export class ProductPage {
         this.selectedColor.set(null);
         return;
       }
+      this.recent.record(p);
       const colors = this.colors();
       const sizes = this.sizes();
       this.selectedColor.set(

@@ -26,9 +26,17 @@ export interface SocialLink {
 }
 
 export const SOCIAL_LINKS: SocialLink[] = [
-  { platform: 'Instagram', url: 'https://instagram.com', icon: 'IG' },
-  { platform: 'TikTok', url: 'https://tiktok.com', icon: 'TT' },
-  { platform: 'Facebook', url: 'https://facebook.com', icon: 'FB' },
-  { platform: 'YouTube', url: 'https://youtube.com', icon: 'YT' },
-  { platform: 'WhatsApp', url: 'https://wa.me/0000000000', icon: 'WA' },
+  { platform: 'Instagram', url: 'https://www.instagram.com/eziwear05', icon: 'instagram' },
+  { platform: 'TikTok', url: 'https://tiktok.com/@eziwear.official', icon: 'tiktok' },
+  { platform: 'Facebook', url: 'https://facebook.com/eziwear.official', icon: 'facebook' },
+  { platform: 'YouTube', url: 'https://youtube.com/@eziwear.official', icon: 'youtube' },
 ];
+
+/** Display handle per platform, keyed by lowercase platform name. */
+export const SOCIAL_HANDLES: Record<string, string> = {
+  instagram: '@eziwear05',
+  tiktok: '@eziwear.official',
+  facebook: '/eziwear.official',
+  youtube: '@eziwear.official',
+  whatsapp: 'Chat with us',
+};

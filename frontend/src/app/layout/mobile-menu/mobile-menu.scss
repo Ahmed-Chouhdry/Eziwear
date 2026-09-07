@@ -35,13 +35,16 @@
   padding-block: var(--sp-2);
 }
 .mm__logo {
-  font-family: var(--font-display);
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--font-logo);
   font-weight: 700;
-  font-size: var(--fs-xl);
-  text-transform: uppercase;
-  color: var(--text);
+  font-size: 1.4rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
 }
-.mm__logo span { color: var(--accent); }
+.mm__logo-a { color: var(--text); }
+.mm__logo-b { color: var(--ezi-orange); }
 .mm__close { font-size: 28px; line-height: 1; color: var(--text-faint); padding: 4px; }
 .mm__close:hover { color: var(--text); }
 

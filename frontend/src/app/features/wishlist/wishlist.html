@@ -1,6 +1,9 @@
 <div class="container section">
   <header class="wl__head">
-    <h1 class="wl__title">Wishlist</h1>
+    <h1 class="wl__title">
+      My Wishlist
+      @if (wishlist.count() > 0) { <span class="wl__count">({{ wishlist.count() }} {{ wishlist.count() === 1 ? 'Item' : 'Items' }})</span> }
+    </h1>
     @if (wishlist.count() > 0) {
       <button class="wl__clear" type="button" (click)="wishlist.clear()">Clear all</button>
     }
@@ -38,8 +41,8 @@
                 <span class="price">{{ item.price | price }}</span>
               }
             </div>
-            <a class="btn btn--secondary btn--sm btn--block" [routerLink]="['/product', item.slug]">
-              View product
+            <a class="btn btn--primary btn--sm btn--block" [routerLink]="['/product', item.slug]">
+              View Product
             </a>
           </div>
         </article>

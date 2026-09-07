@@ -22,14 +22,16 @@
 }
 
 .ft__logo {
-  font-family: var(--font-display);
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--font-logo);
   font-weight: 700;
-  font-size: var(--fs-2xl);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-tight);
-  color: var(--ezi-ivory);
+  font-size: 1.9rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
 }
-.ft__logo span { color: var(--accent); }
+.ft__logo-a { color: var(--ezi-ivory); }
+.ft__logo-b { color: var(--ezi-orange); }
 
 .ft__tagline {
   margin-top: var(--sp-2);
@@ -127,6 +129,26 @@
 @include bp-max(xs) {
   .ft__social-label { display: none; }
   .ft__social-link { padding-inline: 0; width: 38px; justify-content: center; }
+}
+
+.ft__pay {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+.ft__pay span {
+  display: inline-grid;
+  place-items: center;
+  min-width: 46px;
+  height: 28px;
+  padding-inline: 8px;
+  border: 1px solid rgba(201, 196, 184, 0.2);
+  border-radius: var(--radius-xs);
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ezi-silver);
 }
 
 .ft__copy { font-size: var(--fs-xs); color: var(--text-faint); }

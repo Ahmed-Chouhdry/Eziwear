@@ -13,7 +13,7 @@ import { RevealDirective } from '../../../shared/directives/reveal.directive';
     <section class="section container">
       <div class="cs__head">
         <span class="eyebrow">Shop by category</span>
-        <h2 class="cs__title">Find your fit</h2>
+        <h2 class="cs__title">Find your everyday style</h2>
       </div>
 
       <div class="cs__grid">
@@ -24,8 +24,9 @@ import { RevealDirective } from '../../../shared/directives/reveal.directive';
             [revealDelay]="i * 60"
             [routerLink]="['/shop', c.slug]"
           >
-            <img class="cs__img" [src]="c.image" [alt]="c.name" loading="lazy" />
-            <span class="cs__scrim"></span>
+            <span class="cs__disc">
+              <img class="cs__img" [src]="c.image" [alt]="c.name" loading="lazy" />
+            </span>
             <span class="cs__name">{{ c.name }}</span>
           </a>
         }

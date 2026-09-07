@@ -4,6 +4,14 @@
   </nav>
   <h1 class="co__title">Checkout</h1>
 
+  <ol class="co__steps" aria-label="Checkout progress">
+    <li class="is-done">Cart</li>
+    <li class="is-active">Information</li>
+    <li>Shipping</li>
+    <li>Payment</li>
+    <li>Confirmation</li>
+  </ol>
+
   @if (loading()) {
     <div class="co__loading"><ui-spinner [size]="28" [accent]="true" /> <span>Preparing your order…</span></div>
   } @else {
@@ -128,7 +136,10 @@
         <ul class="co__items" role="list">
           @for (item of cart.items(); track item.key) {
             <li class="co__item">
-              <span class="co__item-qty">{{ item.quantity }}×</span>
+              <span class="co__item-thumb">
+                @if (item.image) { <img [src]="item.image" [alt]="item.name" loading="lazy" /> }
+                <span class="co__item-qty">{{ item.quantity }}</span>
+              </span>
               <span class="co__item-name line-clamp-2">{{ item.name }}<br />
                 <span class="text-muted">{{ item.size }} · {{ item.color }}</span>
               </span>

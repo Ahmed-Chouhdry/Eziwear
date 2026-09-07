@@ -4,12 +4,14 @@
 
     <div class="mm__panel">
       <header class="mm__head">
-        <a class="mm__logo" routerLink="/" (click)="close()">EZi<span>Wear</span></a>
+        <a class="mm__logo" routerLink="/" (click)="close()" aria-label="EZiWear home"><span class="mm__logo-a">EZi</span><span class="mm__logo-b">Wear</span></a>
         <button class="mm__close" type="button" aria-label="Close" (click)="close()">&times;</button>
       </header>
 
       <nav class="mm__nav" aria-label="Categories">
         <span class="mm__label">Shop</span>
+        <a class="mm__link" routerLink="/" (click)="close()">Home</a>
+        <a class="mm__link" routerLink="/shop" (click)="close()">Shop All</a>
         @for (c of categories; track c.slug) {
           <a class="mm__link" [routerLink]="['/shop', c.slug]" (click)="close()">{{ c.label }}</a>
         }

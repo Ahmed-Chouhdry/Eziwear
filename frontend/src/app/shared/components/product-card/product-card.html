@@ -40,12 +40,16 @@
   <div class="pc__body">
     <a class="pc__name line-clamp-2" [routerLink]="link()">{{ product().name }}</a>
 
-    <div class="pc__meta">
+    <div class="pc__rating" [attr.aria-label]="product().rating ? 'Rated ' + (product().rating | number: '1.1-1') + ' out of 5' : 'No reviews yet'">
       @if (product().rating) {
-        <span class="pc__rating" aria-label="Rated {{ product().rating }} out of 5">
-          ★ {{ product().rating | number: '1.1-1' }}
-          <span class="pc__reviews">({{ product().reviewCount ?? 0 }})</span>
+        <span class="pc__stars" aria-hidden="true">
+          @for (s of stars(); track $index) {
+            <span class="pc__star" [class.is-full]="s !== 'empty'">★</span>
+          }
         </span>
+        <span class="pc__reviews">({{ product().reviewCount ?? 0 }})</span>
+      } @else {
+        <span class="pc__reviews">No reviews yet</span>
       }
     </div>
 

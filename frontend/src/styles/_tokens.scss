@@ -18,6 +18,10 @@
   --ezi-gold-soft: rgba(214, 168, 79, 0.14);
   --ezi-gold-glow: 0 0 0 1px rgba(214, 168, 79, 0.45), 0 0 22px rgba(214, 168, 79, 0.18);
 
+  /* Logo wordmark — bright gold→champagne gradient for use on dark surfaces
+     (footer, admin sidebar, auth panel — always dark regardless of theme). */
+  --logo-gradient-bright: linear-gradient(135deg, #d6a84f 0%, #f5e6c4 40%, #c9c4b8 60%, #d6a84f 100%);
+
   /* ---- Functional status colors (NOT brand colors) ---- */
   --status-error: #c0473f;
   --status-error-bg: rgba(192, 71, 63, 0.12);
@@ -26,8 +30,10 @@
   --status-warning: var(--ezi-orange);
 
   /* ---- Typography ---- */
-  --font-display: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
-  --font-body: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  /* Poppins is the single brand typeface — 700 headings, 600 sub-headings, 400 body. */
+  --font-display: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-logo: 'Poppins', 'Segoe UI', system-ui, sans-serif;
 
   --fs-2xs: 0.6875rem;   /* 11px */
   --fs-xs: 0.75rem;      /* 12 */
@@ -92,6 +98,9 @@
 :root,
 :root[data-theme='dark'] {
   color-scheme: dark;
+
+  /* Logo on theme-switching surfaces (header, mobile menu) — bright on dark. */
+  --logo-gradient: var(--logo-gradient-bright);
 
   --bg: var(--ezi-black);
   --bg-elevated: var(--ezi-graphite);

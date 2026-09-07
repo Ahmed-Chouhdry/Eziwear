@@ -63,6 +63,7 @@
 
       <!-- Info -->
       <div class="pd__info">
+        @if (product()!.isVip) { <span class="pd__vip-tag">VIP Collection</span> }
         <span class="eyebrow">{{ product()!.sku }}</span>
         <div class="pd__title-row">
           <h1 class="pd__name" [class.text-vip]="product()!.isVip">{{ product()!.name }}</h1>
@@ -164,7 +165,7 @@
                 Add to Cart
               </button>
             </div>
-            <button class="btn btn--secondary btn--lg btn--block" type="button" (click)="addToCart(true)">
+            <button class="btn btn--gold btn--lg btn--block" type="button" (click)="addToCart(true)">
               Buy Now
             </button>
 
@@ -177,12 +178,46 @@
         }
 
         <ul class="pd__meta" role="list">
-          <li>Free shipping on orders over Rs 5,000</li>
-          <li>Cash on Delivery available</li>
-          <li>7-day returns &amp; exchanges</li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" /><circle cx="7.5" cy="18" r="1.6" /><circle cx="17.5" cy="18" r="1.6" /></svg>
+            Free shipping on orders over Rs 5,000
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2" /><path d="M3 10h18" /></svg>
+            Cash on Delivery available
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.7-5.7L21 9" /><path d="M21 4v5h-5" /><path d="M20 12a8 8 0 0 1-13.7 5.7L3 15" /><path d="M3 20v-5h5" /></svg>
+            7-day returns &amp; exchanges
+          </li>
         </ul>
       </div>
     </div>
+
+    <!-- Details accordion -->
+    <section class="pd__acc">
+      <details class="pd__acc-item" open>
+        <summary>Description</summary>
+        <p>{{ product()!.description }}</p>
+      </details>
+      <details class="pd__acc-item">
+        <summary>Features</summary>
+        <ul role="list">
+          <li>Heavyweight, movement-engineered fabric</li>
+          <li>Clean, confident silhouette</li>
+          <li>Reinforced stitching at stress points</li>
+          <li>Finished and quality-checked to EZiWear standards</li>
+        </ul>
+      </details>
+      <details class="pd__acc-item">
+        <summary>Materials &amp; Care</summary>
+        <p>Premium cotton-rich blend. Machine wash cold with like colours, inside out. Do not tumble dry. Cool iron if needed.</p>
+      </details>
+      <details class="pd__acc-item">
+        <summary>Shipping &amp; Returns</summary>
+        <p>Free delivery on orders above Rs 5,000 (Rs 250 otherwise). Delivered in 2–5 working days across Pakistan. Easy 7-day returns and exchanges on unworn items with tags.</p>
+      </details>
+    </section>
 
     <!-- Reviews -->
     <section class="pd__reviews" #reviews>
@@ -281,6 +316,18 @@
         <h2 class="pd__section-title">You may also like</h2>
         <div class="product-grid">
           @for (r of related(); track r.id) {
+            <product-card [product]="r" />
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Recently viewed -->
+    @if (recentlyViewed().length) {
+      <section class="pd__related">
+        <h2 class="pd__section-title">Recently viewed</h2>
+        <div class="product-grid">
+          @for (r of recentlyViewed(); track r.id) {
             <product-card [product]="r" />
           }
         </div>

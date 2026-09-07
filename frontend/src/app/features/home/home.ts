@@ -1,11 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { CatalogService } from '../../core/services/catalog.service';
 import { QuickAddService } from '../../core/services/quick-add.service';
 import { Product } from '../../core/models';
+import { SOCIAL_HANDLES, SOCIAL_LINKS } from '../../core/nav';
+import { ContentService } from '../../core/services/content.service';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { ProductRail } from '../../shared/components/product-rail/product-rail';
+import { SocialIcon } from '../../shared/components/social-icon/social-icon';
 import { HeroComponent } from './hero/hero';
 import { CategoryStripComponent } from './category-strip/category-strip';
 
@@ -16,6 +19,7 @@ import { CategoryStripComponent } from './category-strip/category-strip';
     RouterLink,
     RevealDirective,
     ProductRail,
+    SocialIcon,
     HeroComponent,
     CategoryStripComponent,
   ],
@@ -26,11 +30,35 @@ import { CategoryStripComponent } from './category-strip/category-strip';
 export class Home {
   private readonly catalog = inject(CatalogService);
   private readonly quickAdd = inject(QuickAddService);
+  private readonly content = inject(ContentService);
 
   protected readonly newArrivals = toSignal(this.catalog.getNewArrivals(4), { initialValue: null });
   protected readonly featured = toSignal(this.catalog.getFeatured(4), { initialValue: null });
   protected readonly vip = toSignal(this.catalog.getVip(4), { initialValue: null });
   protected readonly bestSellers = toSignal(this.catalog.getBestSellers(4), { initialValue: null });
+
+  private readonly knownIcons = new Set(['instagram', 'tiktok', 'facebook', 'youtube', 'whatsapp']);
+  private readonly liveSocial = toSignal(this.content.getSocialLinks(), { initialValue: null });
+  protected readonly social = computed(() => {
+    const rows = this.liveSocial();
+    const list = !rows || rows.length === 0 ? SOCIAL_LINKS : rows;
+    return list.map((s) => {
+      const key = s.platform.toLowerCase();
+      return {
+        platform: s.platform,
+        url: s.url,
+        icon: this.knownIcons.has(key) ? key : 'link',
+        handle: SOCIAL_HANDLES[key] ?? '',
+      };
+    });
+  });
+
+  protected readonly perks = [
+    { icon: 'truck', title: 'Fast Delivery', note: 'Across Pakistan' },
+    { icon: 'gem', title: 'Premium Quality', note: '100% Original' },
+    { icon: 'return', title: 'Easy Returns', note: '7 Days Return' },
+    { icon: 'lock', title: 'Secure Checkout', note: 'Safe & Secure' },
+  ];
 
   onAdd(product: Product): void {
     this.quickAdd.add(product);

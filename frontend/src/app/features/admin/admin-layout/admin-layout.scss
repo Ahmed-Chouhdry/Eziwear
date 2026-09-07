@@ -35,19 +35,24 @@
 .adm--nav-open .adm__sidebar { transform: translateX(0); }
 
 .adm__logo {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--fs-lg);
-  text-transform: uppercase;
-  color: var(--ezi-ivory);
   display: flex;
   align-items: baseline;
   gap: 6px;
 }
-.adm__logo span { color: var(--accent); }
+.adm__logo-mark {
+  font-family: var(--font-logo);
+  font-weight: 700;
+  font-size: 1.3rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ezi-ivory);
+}
+.adm__logo-mark b { color: var(--ezi-orange); font-weight: 700; }
 .adm__logo small {
+  font-family: var(--font-display);
   font-size: var(--fs-2xs);
   letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
   color: var(--ezi-silver);
 }
 

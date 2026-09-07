@@ -39,4 +39,9 @@ export class ProductCard {
     this.product().variants?.some((v) => v.stock > 0) ?? true,
   );
   protected readonly link = computed(() => ['/product', this.product().slug]);
+
+  protected readonly stars = computed(() => {
+    const r = this.product().rating ?? 0;
+    return [1, 2, 3, 4, 5].map((i) => (r >= i ? 'full' : r >= i - 0.5 ? 'half' : 'empty'));
+  });
 }

@@ -24,6 +24,7 @@ export class Login {
   protected readonly form = this.fb.nonNullable.group({
     identifier: ['', [Validators.required]],
     password: ['', [Validators.required]],
+    remember: [true],
   });
 
   submit(): void {
@@ -32,7 +33,8 @@ export class Login {
       return;
     }
     this.submitting.set(true);
-    this.auth.login(this.form.getRawValue()).subscribe({
+    const { identifier, password } = this.form.getRawValue();
+    this.auth.login({ identifier, password }).subscribe({
       next: (res) => {
         this.toast.success(`Welcome back, ${res.user.name.split(' ')[0]}.`);
         const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';

@@ -48,7 +48,12 @@ export const routes: Routes = [
         title: 'My Account — EZiWear',
         canActivate: [authGuard],
         children: [
-          { path: '', pathMatch: 'full', redirectTo: 'profile' },
+          { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+          {
+            path: 'dashboard',
+            loadComponent: () =>
+              import('./features/account/dashboard/dashboard').then((m) => m.AccountDashboard),
+          },
           {
             path: 'profile',
             loadComponent: () =>

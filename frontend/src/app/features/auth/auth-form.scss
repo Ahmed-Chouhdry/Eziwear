@@ -23,6 +23,16 @@
   display: flex;
   justify-content: flex-end;
 }
+.af__row--split { justify-content: space-between; align-items: center; }
+.af__remember {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.af__remember input { width: 16px; height: 16px; accent-color: var(--accent); }
 .af__link {
   color: var(--accent);
   font-size: var(--fs-sm);

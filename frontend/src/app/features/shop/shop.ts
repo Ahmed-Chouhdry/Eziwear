@@ -11,7 +11,6 @@ import { ProductCard } from '../../shared/components/product-card/product-card';
 import { UiEmptyState } from '../../shared/components/ui-empty-state/ui-empty-state';
 import { UiPagination } from '../../shared/components/ui-pagination/ui-pagination';
 import { UiSkeleton } from '../../shared/components/ui-skeleton/ui-skeleton';
-import { PricePipe } from '../../shared/pipes/price.pipe';
 import { EMPTY_FILTERS, FilterState, ShopFilters } from './shop-filters/shop-filters';
 
 const SORTS: { value: NonNullable<ProductQuery['sort']>; label: string }[] = [
@@ -67,7 +66,6 @@ const INITIAL_STATE: RouteState = {
     UiPagination,
     UiSkeleton,
     ShopFilters,
-    PricePipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './shop.html',
@@ -167,7 +165,7 @@ export class Shop {
   protected readonly heading = computed(() => {
     const c = this.category();
     if (this.search()) return `Search: “${this.search()}”`;
-    if (!c) return 'All Products';
+    if (!c) return 'Shop All';
     return SPECIAL_TITLES[c] ?? CATEGORIES.find((x) => x.slug === c)?.label ?? 'Shop';
   });
   protected readonly isVip = computed(() => this.category() === 'vip');

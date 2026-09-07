@@ -1,7 +1,7 @@
 <form class="af" [formGroup]="form" (ngSubmit)="submit()" novalidate>
   <header class="af__head">
-    <h1 class="af__title">Sign in</h1>
-    <p class="af__sub">Welcome back to EZiWear.</p>
+    <h1 class="af__title">Welcome back</h1>
+    <p class="af__sub">Move with EZiWear.</p>
   </header>
 
   <div class="field" [class.field--error]="form.controls.identifier.touched && form.controls.identifier.invalid">
@@ -20,7 +20,11 @@
     }
   </div>
 
-  <div class="af__row">
+  <div class="af__row af__row--split">
+    <label class="af__remember">
+      <input type="checkbox" formControlName="remember" />
+      Remember me
+    </label>
     <a routerLink="/auth/forgot-password" class="af__link">Forgot password?</a>
   </div>
 

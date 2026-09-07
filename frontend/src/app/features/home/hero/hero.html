@@ -9,9 +9,20 @@
           {{ slide.eyebrow }}
           @if (slide.vipTag) { <span class="hero__vip">VIP</span> }
         </span>
-        <h1 class="hero__headline">{{ slide.headline }}</h1>
+        <h1 class="hero__headline">
+          @for (line of lines(slide.headline); track $index) {
+            <span class="hero__line">
+              @for (seg of line; track $index) {
+                <span [class.hero__accent]="seg.accent">{{ seg.text }}</span>
+              }
+            </span>
+          }
+        </h1>
         @if (slide.sub) { <p class="hero__sub">{{ slide.sub }}</p> }
-        <a class="btn btn--primary btn--lg" [routerLink]="slide.ctaLink">{{ slide.ctaLabel }}</a>
+        <div class="hero__cta">
+          <a class="btn btn--primary btn--lg" [routerLink]="slide.ctaLink">{{ slide.ctaLabel }}</a>
+          <a class="btn btn--secondary btn--lg hero__cta-alt" routerLink="/shop">Explore</a>
+        </div>
       </div>
     </div>
   }

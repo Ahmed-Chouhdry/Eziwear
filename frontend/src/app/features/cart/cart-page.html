@@ -1,5 +1,8 @@
 <div class="container section">
-  <h1 class="cart__title">Your Cart</h1>
+  <h1 class="cart__title">Your Shopping Cart</h1>
+  @if (cart.items().length) {
+    <p class="cart__count text-muted">{{ count() }} {{ count() === 1 ? 'item' : 'items' }}</p>
+  }
 
   @if (cart.items().length === 0) {
     <ui-empty-state icon="🛍️" title="Your cart is empty" message="Add a few pieces and they'll show up here.">
@@ -27,7 +30,10 @@
             </div>
             <div class="cart__line">
               <span class="price">{{ item.unitPrice * item.quantity | price }}</span>
-              <button class="cart__remove" type="button" (click)="cart.remove(item.key)">Remove</button>
+              <div class="cart__line-actions">
+                <button class="cart__link" type="button" (click)="moveToWishlist(item)">Move to wishlist</button>
+                <button class="cart__link" type="button" (click)="cart.remove(item.key)">Remove</button>
+              </div>
             </div>
           </li>
         }
@@ -64,9 +70,13 @@
         <div class="cart__row cart__row--total">
           <span>Total</span><span class="price">{{ cart.totals().total | price }}</span>
         </div>
-        <a class="btn btn--primary btn--lg btn--block" routerLink="/checkout">Checkout</a>
+        <a class="btn btn--primary btn--lg btn--block" routerLink="/checkout">Proceed to Checkout</a>
         <a class="btn btn--ghost btn--block" routerLink="/shop">Continue shopping</a>
       </aside>
     </div>
+
+    @if (upsell().length) {
+      <product-rail title="You may also like" [products]="upsell()" (addToCart)="onAdd($event)" />
+    }
   }
 </div>

@@ -16,10 +16,11 @@ export class AccountLayout {
   protected readonly wishlist = inject(WishlistService);
 
   protected readonly links = [
-    { label: 'Profile', path: '/account/profile', icon: '◍' },
+    { label: 'Dashboard', path: '/account/dashboard', icon: '▤' },
     { label: 'Orders', path: '/account/orders', icon: '▧' },
-    { label: 'Addresses', path: '/account/addresses', icon: '⌂' },
     { label: 'Wishlist', path: '/wishlist', icon: '♡' },
+    { label: 'Addresses', path: '/account/addresses', icon: '⌂' },
+    { label: 'Profile', path: '/account/profile', icon: '◍' },
   ];
 
   logout(): void {

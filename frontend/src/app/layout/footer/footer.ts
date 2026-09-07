@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { CATEGORIES, SOCIAL_LINKS } from '../../core/nav';
+import { CATEGORIES, SOCIAL_HANDLES, SOCIAL_LINKS } from '../../core/nav';
 import { ContentService } from '../../core/services/content.service';
+import { SocialIcon } from '../../shared/components/social-icon/social-icon';
 
 @Component({
   selector: 'app-footer',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, SocialIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './footer.html',
   styleUrl: './footer.scss',
@@ -26,7 +27,12 @@ export class Footer {
     const list = !rows || rows.length === 0 ? SOCIAL_LINKS : rows;
     return list.map((s) => {
       const key = s.platform.toLowerCase();
-      return { platform: s.platform, url: s.url, icon: this.knownIcons.has(key) ? key : 'link' };
+      return {
+        platform: s.platform,
+        url: s.url,
+        icon: this.knownIcons.has(key) ? key : 'link',
+        handle: SOCIAL_HANDLES[key] ?? '',
+      };
     });
   });
 

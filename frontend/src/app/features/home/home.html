@@ -11,27 +11,6 @@
   (addToCart)="onAdd($event)"
 />
 
-<!-- Sale / promotion banner -->
-<section class="section container">
-  <div class="promo reveal" eziReveal>
-    <div class="promo__text">
-      <span class="eyebrow">Season Sale</span>
-      <h2 class="promo__title">Up to 30% off<br />core styles</h2>
-      <p class="promo__sub">Tracksuits, hoodies and trousers — while stock lasts.</p>
-      <a class="btn btn--primary btn--lg" [routerLink]="['/shop', 'sale']">Shop the Sale</a>
-    </div>
-  </div>
-</section>
-
-<product-rail
-  eyebrow="Editor's picks"
-  title="Featured"
-  [linkTo]="['/shop']"
-  [products]="featured() ?? []"
-  [loading]="featured() === null"
-  (addToCart)="onAdd($event)"
-/>
-
 <!-- VIP section — gold, exclusive, restrained -->
 <section class="vip-band">
   <div class="container">
@@ -47,6 +26,18 @@
   </div>
 </section>
 
+<!-- Sale / promotion banner -->
+<section class="section container">
+  <a class="promo reveal" eziReveal [routerLink]="['/shop', 'sale']">
+    <div class="promo__text">
+      <span class="eyebrow">Mid season drop</span>
+      <h2 class="promo__title">Up to 30% off</h2>
+      <p class="promo__sub">Selected EZiWear collection — while stock lasts.</p>
+      <span class="btn btn--primary btn--lg">Shop the Sale</span>
+    </div>
+  </a>
+</section>
+
 <product-rail
   eyebrow="Most loved"
   title="Best Sellers"
@@ -56,27 +47,60 @@
   (addToCart)="onAdd($event)"
 />
 
-<!-- Advertisement placement -->
-<section class="section container">
-  <a class="ad reveal" eziReveal routerLink="/shop">
-    <span class="ad__label">EZiWear × Movement</span>
-    <span class="ad__headline">Built for the way you actually move.</span>
-    <span class="ad__cta">Discover the range →</span>
-  </a>
+<!-- Why EZiWear -->
+<section class="why">
+  <div class="container why__grid">
+    @for (p of perks; track p.title) {
+      <div class="why__item reveal" eziReveal>
+        <span class="why__icon" aria-hidden="true">
+          @switch (p.icon) {
+            @case ('truck') {
+              <svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" /><circle cx="7.5" cy="18" r="1.7" /><circle cx="17.5" cy="18" r="1.7" /></svg>
+            }
+            @case ('gem') {
+              <svg viewBox="0 0 24 24"><path d="M6 3h12l3 5-9 13L3 8z" /><path d="M3 8h18M9 3 7 8l5 13 5-13-2-5" /></svg>
+            }
+            @case ('return') {
+              <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 13.7-5.7L21 9" /><path d="M21 4v5h-5" /><path d="M20 12a8 8 0 0 1-13.7 5.7L3 15" /><path d="M3 20v-5h5" /></svg>
+            }
+            @case ('lock') {
+              <svg viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="2" /><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" /></svg>
+            }
+          }
+        </span>
+        <div class="why__text">
+          <span class="why__title">{{ p.title }}</span>
+          <span class="why__note">{{ p.note }}</span>
+        </div>
+      </div>
+    }
+  </div>
 </section>
 
-<!-- Social section -->
+<product-rail
+  eyebrow="Editor's picks"
+  title="Featured"
+  [linkTo]="['/shop']"
+  [products]="featured() ?? []"
+  [loading]="featured() === null"
+  (addToCart)="onAdd($event)"
+/>
+
+<!-- Social -->
 <section class="section container">
   <div class="social">
     <div class="social__head">
-      <span class="eyebrow">@eziwear</span>
-      <h2 class="social__title">Wear it. Tag it.</h2>
+      <span class="eyebrow">Follow EZiWear</span>
+      <h2 class="social__title">Stay connected with the latest drops</h2>
     </div>
-    <div class="social__grid">
-      @for (n of [1,2,3,4,5,6]; track n) {
-        <a class="social__cell reveal" eziReveal [revealDelay]="n * 40"
-           href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-          <img [src]="'https://picsum.photos/seed/ezi-social-' + n + '/400/400'" alt="EZiWear on Instagram" loading="lazy" />
+    <div class="social__row">
+      @for (s of social(); track s.platform) {
+        <a class="social__pill reveal" eziReveal [href]="s.url" target="_blank" rel="noopener noreferrer">
+          <span class="social__pill-icon" aria-hidden="true"><social-icon [name]="s.icon" /></span>
+          <span class="social__pill-text">
+            <span class="social__pill-name">{{ s.platform }}</span>
+            <span class="social__pill-handle">{{ s.handle }}</span>
+          </span>
         </a>
       }
     </div>
