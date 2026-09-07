@@ -1,113 +1,117 @@
 @use '../../../styles/breakpoints' as *;
 
-/* ---- Sale promo banner ---- */
+/* ---- Promo + trust strip (one band) ---- */
+.promo-strip { background: var(--ezi-black); border-block: 1px solid var(--border); }
+.promo-strip__inner {
+  display: grid;
+  gap: var(--sp-4);
+  grid-template-columns: 1fr;
+
+  @include bp(md) { grid-template-columns: minmax(240px, 320px) 1fr; align-items: stretch; }
+}
 .promo {
-  position: relative;
-  display: block;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  background: linear-gradient(115deg, var(--ezi-black) 0%, #1a1512 55%, #241a12 100%);
-  border: 1px solid var(--border);
-  padding: clamp(2rem, 6vw, 4.5rem);
-  transition: border-color var(--dur-base) var(--ease-out);
-}
-.promo:hover { border-color: var(--border-hover); }
-.promo::after {
-  content: '';
-  position: absolute;
-  inset-block: -40%;
-  inset-inline-end: -10%;
-  width: 45%;
-  background: radial-gradient(circle, var(--ezi-orange-soft), transparent 70%);
-  pointer-events: none;
-}
-.promo__text {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--sp-3);
-  max-width: 460px;
+  gap: 4px;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(115deg, rgba(11, 11, 13, 0.55), rgba(11, 11, 13, 0.78)),
+    url('https://picsum.photos/seed/ezi-midseason/800/400');
+  background-size: cover;
+  background-position: center;
+  border: 1px solid color-mix(in srgb, var(--ezi-orange) 30%, transparent);
+  padding: var(--sp-5);
   color: var(--ezi-ivory);
+  transition: border-color var(--dur-base) var(--ease-out);
+}
+.promo:hover { border-color: var(--accent); }
+.promo__eyebrow {
+  font-family: var(--font-display);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--ezi-orange);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 .promo__title {
-  font-size: var(--fs-3xl);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-2xl);
   text-transform: uppercase;
   color: var(--ezi-ivory);
 }
-.promo__sub { color: var(--ezi-silver); }
-.promo .btn { margin-top: var(--sp-2); }
+.promo__title::first-line { color: var(--ezi-ivory); }
+.promo__sub { color: var(--accent); font-size: var(--fs-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+.promo .btn { margin-top: var(--sp-3); }
 
-/* ---- VIP band ---- */
-.vip-band {
-  background: var(--ezi-black);
-  border-block: 1px solid color-mix(in srgb, var(--vip) 22%, transparent);
-  position: relative;
-}
-.vip-band::before {
-  content: '';
-  position: absolute;
-  inset-block-start: 0;
-  inset-inline: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--ezi-gold-soft), transparent);
-}
-.vip-band :is(.pc__name, .sh__title) { color: var(--ezi-ivory); }
-.vip-band .eyebrow { color: var(--ezi-silver); }
-
-/* ---- Why EZiWear ---- */
-.why {
-  background: var(--ezi-black);
-  border-block: 1px solid var(--border);
-  padding-block: var(--sp-6);
-  color: var(--ezi-ivory);
-}
-.why__grid {
+.perks {
   display: grid;
-  gap: var(--sp-4);
+  gap: var(--sp-2);
   grid-template-columns: repeat(2, 1fr);
+  align-items: center;
 
-  @include bp(md) { grid-template-columns: repeat(4, 1fr); }
+  @include bp(sm) { grid-template-columns: repeat(4, 1fr); }
 }
-.why__item {
+.perks__item {
   display: flex;
   align-items: center;
-  gap: var(--sp-3);
-  padding: var(--sp-2) var(--sp-3);
-
-  @include bp(md) {
-    justify-content: center;
-    border-inline-end: 1px solid var(--border);
-  }
-}
-.why__item:last-child { border-inline-end: none; }
-.why__icon {
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  flex: none;
-  color: var(--ezi-orange);
-}
-.why__icon svg {
-  width: 26px;
-  height: 26px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.why__text { display: flex; flex-direction: column; }
-.why__title {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: var(--fs-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  gap: var(--sp-2);
+  padding: var(--sp-2);
   color: var(--ezi-ivory);
 }
-.why__note { font-size: var(--fs-xs); color: var(--ezi-silver); }
+.perks__item + .perks__item { border-inline-start: 1px solid var(--border); }
+@include bp-max(sm) { .perks__item:nth-child(odd) { border-inline-start: none; } }
+.perks__icon { display: grid; place-items: center; width: 32px; height: 32px; flex: none; color: var(--ezi-orange); }
+.perks__icon svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.perks__text { display: flex; flex-direction: column; }
+.perks__title { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.03em; }
+.perks__note { font-size: var(--fs-2xs); color: var(--ezi-silver); }
+
+/* ---- VIP band — split: gold intro + cards ---- */
+.vip-band {
+  background: linear-gradient(180deg, var(--ezi-black), #14100a);
+  border-block: 1px solid color-mix(in srgb, var(--vip) 25%, transparent);
+  position: relative;
+}
+.vip-band :is(.pc__name) { color: var(--ezi-ivory); }
+
+.vip-band__inner {
+  display: grid;
+  gap: var(--sp-5);
+  grid-template-columns: 1fr;
+
+  @include bp(md) { grid-template-columns: 240px 1fr; align-items: center; }
+}
+.vip-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-2);
+}
+.vip-intro__crown { color: var(--vip); font-size: 1.6rem; line-height: 1; }
+.vip-intro__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-2xl);
+  text-transform: uppercase;
+  color: var(--vip);
+}
+.vip-intro__sub { color: var(--ezi-silver); font-size: var(--fs-sm); }
+.vip-intro .btn { margin-top: var(--sp-2); }
+
+.vip-cards {
+  display: grid;
+  gap: var(--sp-3);
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+
+  @include bp(sm) { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+}
+.vip-cards > * { min-width: 0; }
 
 /* ---- Social ---- */
 .social__head {

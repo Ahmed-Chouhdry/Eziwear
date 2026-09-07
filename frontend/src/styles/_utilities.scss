@@ -12,10 +12,10 @@
 }
 
 .section {
-  padding-block: var(--sp-7);
-  @include bp(md) { padding-block: var(--sp-8); }
+  padding-block: var(--sp-6);
+  @include bp(md) { padding-block: var(--sp-7); }
 }
-.section--tight { padding-block: var(--sp-6); }
+.section--tight { padding-block: var(--sp-5); }
 
 /* ---- Fl/ grid helpers ---- */
 .stack { display: flex; flex-direction: column; }

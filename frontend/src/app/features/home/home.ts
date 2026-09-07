@@ -7,6 +7,7 @@ import { Product } from '../../core/models';
 import { SOCIAL_HANDLES, SOCIAL_LINKS } from '../../core/nav';
 import { ContentService } from '../../core/services/content.service';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
+import { ProductCard } from '../../shared/components/product-card/product-card';
 import { ProductRail } from '../../shared/components/product-rail/product-rail';
 import { SocialIcon } from '../../shared/components/social-icon/social-icon';
 import { HeroComponent } from './hero/hero';
@@ -18,6 +19,7 @@ import { CategoryStripComponent } from './category-strip/category-strip';
   imports: [
     RouterLink,
     RevealDirective,
+    ProductCard,
     ProductRail,
     SocialIcon,
     HeroComponent,

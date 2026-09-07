@@ -43,7 +43,7 @@
 .pc__media {
   position: relative;
   display: block;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 4 / 5;
   background: var(--surface-inset);
   overflow: hidden;
 }
@@ -139,8 +139,8 @@
 .pc__body {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-2);
-  padding: var(--sp-4);
+  gap: 4px;
+  padding: var(--sp-3) var(--sp-3) 0;
 }
 
 .pc__name {
@@ -181,8 +181,8 @@
 
 /* ---- Add to cart — always visible ---- */
 .pc__add {
-  margin: 0 var(--sp-4) var(--sp-4);
-  height: 44px;
+  margin: var(--sp-3);
+  height: 40px;
   border-radius: var(--radius-sm);
   background: var(--accent);
   color: var(--accent-contrast);

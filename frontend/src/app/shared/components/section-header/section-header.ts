@@ -24,11 +24,11 @@ import { RouterLink } from '@angular/router';
         align-items: flex-end;
         justify-content: space-between;
         gap: var(--sp-4);
-        margin-bottom: var(--sp-5);
+        margin-bottom: var(--sp-4);
         flex-wrap: wrap;
       }
-      .sh__text { display: flex; flex-direction: column; gap: var(--sp-2); }
-      .sh__title { font-size: var(--fs-2xl); text-transform: uppercase; }
+      .sh__text { display: flex; flex-direction: column; gap: 2px; }
+      .sh__title { font-size: var(--fs-xl); text-transform: uppercase; }
       .sh__link {
         font-family: var(--font-display);
         font-size: var(--fs-xs);
