@@ -8,6 +8,7 @@ import { Product, ProductQuery } from '../../core/models';
 import { CatalogService } from '../../core/services/catalog.service';
 import { QuickAddService } from '../../core/services/quick-add.service';
 import { ProductCard } from '../../shared/components/product-card/product-card';
+import { PromoTrust } from '../../shared/components/promo-trust/promo-trust';
 import { UiEmptyState } from '../../shared/components/ui-empty-state/ui-empty-state';
 import { UiPagination } from '../../shared/components/ui-pagination/ui-pagination';
 import { UiSkeleton } from '../../shared/components/ui-skeleton/ui-skeleton';
@@ -62,6 +63,7 @@ const INITIAL_STATE: RouteState = {
     RouterLink,
     FormsModule,
     ProductCard,
+    PromoTrust,
     UiEmptyState,
     UiPagination,
     UiSkeleton,

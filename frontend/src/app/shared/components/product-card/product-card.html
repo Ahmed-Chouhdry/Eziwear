@@ -38,7 +38,11 @@
   </button>
 
   <div class="pc__body">
-    <a class="pc__name line-clamp-2" [routerLink]="link()">{{ product().name }}</a>
+    <a class="pc__name line-clamp-1" [routerLink]="link()">{{ product().name }}</a>
+
+    @if (product().description) {
+      <p class="pc__desc line-clamp-1">{{ product().description }}</p>
+    }
 
     <div class="pc__rating" [attr.aria-label]="product().rating ? 'Rated ' + (product().rating | number: '1.1-1') + ' out of 5' : 'No reviews yet'">
       @if (product().rating) {

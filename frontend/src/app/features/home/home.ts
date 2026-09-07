@@ -9,6 +9,7 @@ import { ContentService } from '../../core/services/content.service';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { ProductCard } from '../../shared/components/product-card/product-card';
 import { ProductRail } from '../../shared/components/product-rail/product-rail';
+import { PromoTrust } from '../../shared/components/promo-trust/promo-trust';
 import { SocialIcon } from '../../shared/components/social-icon/social-icon';
 import { HeroComponent } from './hero/hero';
 import { CategoryStripComponent } from './category-strip/category-strip';
@@ -21,6 +22,7 @@ import { CategoryStripComponent } from './category-strip/category-strip';
     RevealDirective,
     ProductCard,
     ProductRail,
+    PromoTrust,
     SocialIcon,
     HeroComponent,
     CategoryStripComponent,
@@ -54,13 +56,6 @@ export class Home {
       };
     });
   });
-
-  protected readonly perks = [
-    { icon: 'truck', title: 'Fast Delivery', note: 'Across Pakistan' },
-    { icon: 'gem', title: 'Premium Quality', note: '100% Original' },
-    { icon: 'return', title: 'Easy Returns', note: '7 Days Return' },
-    { icon: 'lock', title: 'Secure Checkout', note: 'Safe & Secure' },
-  ];
 
   onAdd(product: Product): void {
     this.quickAdd.add(product);

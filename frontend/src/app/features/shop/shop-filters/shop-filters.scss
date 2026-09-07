@@ -3,7 +3,7 @@
 .sf {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-5);
+  gap: var(--sp-3);
 }
 
 .sf__head {
@@ -25,14 +25,35 @@
 .sf__close { font-size: 26px; line-height: 1; color: var(--text-faint); }
 .sf__close:hover { color: var(--text); }
 
-.sf__group { display: flex; flex-direction: column; gap: var(--sp-3); }
+.sf__group {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: var(--sp-3);
+}
+.sf__group > :not(summary) { margin-top: var(--sp-3); }
 .sf__group-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   font-size: var(--fs-xs);
   font-weight: 600;
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
   color: var(--text-muted);
+  cursor: pointer;
+  list-style: none;
+  padding-block: 4px;
 }
+.sf__group-title::-webkit-details-marker { display: none; }
+.sf__group-title::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.sf__group[open] .sf__group-title::after { transform: rotate(225deg); }
 
 .sf__check {
   display: inline-flex;

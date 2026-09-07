@@ -148,10 +148,13 @@
   font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--text);
-  min-height: 2.4em;
 }
 .pc__name:hover {
   color: var(--accent);
+}
+.pc__desc {
+  font-size: var(--fs-2xs);
+  color: var(--text-muted);
 }
 
 .pc__rating {

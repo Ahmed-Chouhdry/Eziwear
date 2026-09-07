@@ -1,0 +1,78 @@
+@use '../../../../styles/breakpoints' as *;
+
+.pt { background: var(--ezi-black); border-block: 1px solid var(--border); }
+.pt__inner {
+  display: grid;
+  gap: var(--sp-4);
+  grid-template-columns: 1fr;
+
+  @include bp(md) { grid-template-columns: minmax(240px, 320px) 1fr; align-items: stretch; }
+}
+
+.pt__promo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4px;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(115deg, rgba(11, 11, 13, 0.55), rgba(11, 11, 13, 0.78)),
+    url('https://picsum.photos/seed/ezi-midseason/800/400');
+  background-size: cover;
+  background-position: center;
+  border: 1px solid color-mix(in srgb, var(--ezi-orange) 30%, transparent);
+  padding: var(--sp-5);
+  color: var(--ezi-ivory);
+  transition: border-color var(--dur-base) var(--ease-out);
+}
+.pt__promo:hover { border-color: var(--accent); }
+.pt__eyebrow {
+  font-family: var(--font-display);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--ezi-orange);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+.pt__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-2xl);
+  text-transform: uppercase;
+  color: var(--ezi-ivory);
+}
+.pt__sub {
+  color: var(--accent);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.pt__promo .btn { margin-top: var(--sp-3); }
+
+.pt__perks {
+  display: grid;
+  gap: var(--sp-2);
+  grid-template-columns: repeat(2, 1fr);
+  align-items: center;
+
+  @include bp(sm) { grid-template-columns: repeat(4, 1fr); }
+}
+.pt__perk {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2);
+  color: var(--ezi-ivory);
+}
+.pt__perk + .pt__perk { border-inline-start: 1px solid var(--border); }
+@include bp-max(sm) { .pt__perk:nth-child(odd) { border-inline-start: none; } }
+.pt__icon { display: grid; place-items: center; width: 32px; height: 32px; flex: none; color: var(--ezi-orange); }
+.pt__icon svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.pt__text { display: flex; flex-direction: column; }
+.pt__perk-title { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.03em; }
+.pt__note { font-size: var(--fs-2xs); color: var(--ezi-silver); }

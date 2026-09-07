@@ -88,12 +88,14 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.line-clamp-1,
 .line-clamp-2 {
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+.line-clamp-1 { -webkit-line-clamp: 1; }
+.line-clamp-2 { -webkit-line-clamp: 2; }
 
 /* ---- Accessibility ---- */
 .visually-hidden {

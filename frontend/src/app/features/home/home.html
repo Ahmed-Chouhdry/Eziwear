@@ -30,43 +30,7 @@
   </div>
 </section>
 
-<!-- Promo + trust strip (one band) -->
-<section class="promo-strip section--tight">
-  <div class="container promo-strip__inner">
-    <a class="promo reveal" eziReveal [routerLink]="['/shop', 'sale']">
-      <span class="promo__eyebrow">Mid season drop</span>
-      <span class="promo__title">Up to 30% off</span>
-      <span class="promo__sub">Selected EZiWear collection</span>
-      <span class="btn btn--primary btn--sm">Shop the Sale</span>
-    </a>
-    <div class="perks">
-      @for (p of perks; track p.title) {
-        <div class="perks__item reveal" eziReveal>
-          <span class="perks__icon" aria-hidden="true">
-            @switch (p.icon) {
-              @case ('truck') {
-                <svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" /><circle cx="7.5" cy="18" r="1.7" /><circle cx="17.5" cy="18" r="1.7" /></svg>
-              }
-              @case ('gem') {
-                <svg viewBox="0 0 24 24"><path d="M6 3h12l3 5-9 13L3 8z" /><path d="M3 8h18M9 3 7 8l5 13 5-13-2-5" /></svg>
-              }
-              @case ('return') {
-                <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 13.7-5.7L21 9" /><path d="M21 4v5h-5" /><path d="M20 12a8 8 0 0 1-13.7 5.7L3 15" /><path d="M3 20v-5h5" /></svg>
-              }
-              @case ('lock') {
-                <svg viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="2" /><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" /></svg>
-              }
-            }
-          </span>
-          <div class="perks__text">
-            <span class="perks__title">{{ p.title }}</span>
-            <span class="perks__note">{{ p.note }}</span>
-          </div>
-        </div>
-      }
-    </div>
-  </div>
-</section>
+<promo-trust />
 
 <product-rail
   eyebrow="Most loved"

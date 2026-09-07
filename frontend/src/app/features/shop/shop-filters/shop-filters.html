@@ -11,21 +11,9 @@
     </div>
   </header>
 
-  <!-- Availability -->
-  <section class="sf__group">
-    <label class="sf__check">
-      <input
-        type="checkbox"
-        [checked]="state().inStock"
-        (change)="setInStock($any($event.target).checked)"
-      />
-      In stock only
-    </label>
-  </section>
-
   <!-- Price -->
-  <section class="sf__group">
-    <h3 class="sf__group-title">Price</h3>
+  <details class="sf__group" open>
+    <summary class="sf__group-title">Price</summary>
     <div class="sf__price">
       <label class="sf__price-field">
         <span class="visually-hidden">Minimum price</span>
@@ -53,12 +41,12 @@
         />
       </label>
     </div>
-  </section>
+  </details>
 
   <!-- Size -->
   @if (options()?.sizes?.length) {
-    <section class="sf__group">
-      <h3 class="sf__group-title">Size</h3>
+    <details class="sf__group" open>
+      <summary class="sf__group-title">Size</summary>
       <div class="sf__chips">
         @for (size of options()!.sizes; track size) {
           <button
@@ -70,13 +58,13 @@
           >{{ size }}</button>
         }
       </div>
-    </section>
+    </details>
   }
 
   <!-- Colour -->
   @if (options()?.colors?.length) {
-    <section class="sf__group">
-      <h3 class="sf__group-title">Colour</h3>
+    <details class="sf__group" open>
+      <summary class="sf__group-title">Colour</summary>
       <div class="sf__colors">
         @for (c of options()!.colors; track c.name) {
           <button
@@ -93,8 +81,21 @@
           </button>
         }
       </div>
-    </section>
+    </details>
   }
+
+  <!-- Availability -->
+  <details class="sf__group" open>
+    <summary class="sf__group-title">Availability</summary>
+    <label class="sf__check">
+      <input
+        type="checkbox"
+        [checked]="state().inStock"
+        (change)="setInStock($any($event.target).checked)"
+      />
+      In stock only
+    </label>
+  </details>
 
   <button class="btn btn--primary btn--block hide-desktop" type="button" (click)="closeRequested.emit()">
     Show results
