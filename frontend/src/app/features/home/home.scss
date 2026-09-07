@@ -9,11 +9,16 @@
 .vip-band :is(.pc__name) { color: var(--ezi-ivory); }
 
 .vip-band__inner {
-  display: grid;
-  gap: var(--sp-4);
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
 
-  @include bp(md) { grid-template-columns: 220px minmax(0, 1fr); align-items: center; }
+  @include bp(md) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-6);
+  }
 }
 .vip-intro {
   display: flex;
@@ -32,22 +37,20 @@
 .vip-intro__sub { color: var(--ezi-silver); font-size: var(--fs-sm); }
 .vip-intro .btn { margin-top: var(--sp-2); }
 
+.vip-intro { flex: none; }
+
 .vip-cards {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: var(--sp-3);
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
   padding-block: 4px;
-}
-.vip-cards::-webkit-scrollbar { display: none; }
-.vip-cards > * {
-  scroll-snap-align: start;
-  flex: 0 0 clamp(150px, 40vw, 190px);
   min-width: 0;
 }
-@include bp(md) {
-  .vip-cards > * { flex-basis: calc((100% - 3 * var(--sp-3)) / 4); }
+.vip-cards > * {
+  flex: 0 1 200px;
+  min-width: 150px;
+  max-width: 220px;
 }
 
 /* ---- Social ---- */
