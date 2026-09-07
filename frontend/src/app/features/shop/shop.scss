@@ -56,21 +56,25 @@
 
 .shop__cats {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: var(--sp-2);
   padding-block: var(--sp-4);
   margin-bottom: var(--sp-4);
   border-block: 1px solid var(--border);
+  overflow-x: auto;
+  scrollbar-width: none;
 }
+.shop__cats::-webkit-scrollbar { display: none; }
 .shop__cats a {
-  padding: 8px 14px;
+  flex: none;
+  padding: 9px 18px;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-pill);
   font-family: var(--font-display);
   font-size: var(--fs-xs);
-  font-weight: 500;
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
   color: var(--text-muted);
   transition: all var(--dur-fast) var(--ease-out);
 }
@@ -80,11 +84,16 @@
   border-color: var(--accent);
   color: var(--accent-contrast);
 }
-.shop__cat--vip { color: var(--vip); border-color: color-mix(in srgb, var(--vip) 45%, transparent); }
-.shop__cat--vip.is-active {
-  background: transparent;
-  border-color: var(--vip);
+.shop__cat--vip {
   color: var(--vip);
+  border-color: color-mix(in srgb, var(--vip) 55%, transparent);
+  background: var(--ezi-gold-soft);
+}
+.shop__cat--vip:hover { border-color: var(--vip); color: var(--vip); }
+.shop__cat--vip.is-active {
+  background: var(--vip);
+  border-color: var(--vip);
+  color: var(--ezi-black);
   box-shadow: var(--ezi-gold-glow);
 }
 

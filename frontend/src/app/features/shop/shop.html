@@ -30,11 +30,12 @@
 
   <!-- Category quick nav -->
   <div class="shop__cats">
-    <a routerLink="/shop" [class.is-active]="!category()">All</a>
+    <a routerLink="/shop" [class.is-active]="!category() && !search()">All</a>
     @for (c of categories; track c.slug) {
       <a [routerLink]="['/shop', c.slug]" [class.is-active]="category() === c.slug">{{ c.label }}</a>
     }
-    <a [routerLink]="['/shop', 'vip']" class="shop__cat--vip" [class.is-active]="isVip()">VIP</a>
+    <a [routerLink]="['/shop', 'new-arrivals']" [class.is-active]="category() === 'new-arrivals'">New Arrivals</a>
+    <a [routerLink]="['/shop', 'vip']" class="shop__cat--vip" [class.is-active]="isVip()">VIP Collection</a>
   </div>
 
   <!-- Active filter chips -->
