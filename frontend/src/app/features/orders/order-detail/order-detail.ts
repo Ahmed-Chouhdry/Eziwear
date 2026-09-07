@@ -4,15 +4,17 @@ import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 import { ORDER_STATUS_LABEL } from '../../../core/models';
+import { SOCIAL_LINKS } from '../../../core/nav';
 import { OrderService } from '../../../core/services/order.service';
 import { OrderTimeline } from '../../../shared/components/order-timeline/order-timeline';
+import { SocialIcon } from '../../../shared/components/social-icon/social-icon';
 import { UiSpinner } from '../../../shared/components/ui-spinner/ui-spinner';
 import { PricePipe } from '../../../shared/pipes/price.pipe';
 
 @Component({
   selector: 'app-order-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe, PricePipe, OrderTimeline, UiSpinner],
+  imports: [RouterLink, DatePipe, PricePipe, OrderTimeline, SocialIcon, UiSpinner],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './order-detail.html',
   styleUrl: './order-detail.scss',
@@ -22,6 +24,7 @@ export class OrderDetail {
   private readonly orderApi = inject(OrderService);
 
   protected readonly statusLabel = ORDER_STATUS_LABEL;
+  protected readonly socials = SOCIAL_LINKS;
 
   protected readonly orderNumber = toSignal(
     this.route.paramMap.pipe(map((p) => p.get('orderNumber') ?? '')),

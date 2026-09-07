@@ -7,32 +7,106 @@
       <p class="text-muted">We couldn't find that order on your account.</p>
       <a class="btn btn--primary" routerLink="/account/orders">My orders</a>
     </div>
-  } @else {
-    @if (justPlaced()) {
-      <div class="od__thanks">
-        <span class="od__check" aria-hidden="true"></span>
-        <h1>Order Confirmed!</h1>
-        <p class="text-muted">Thank you for shopping with EZiWear.</p>
-        <div class="od__thanks-facts">
-          <span>Order <b>{{ order()!.orderNumber }}</b></span>
-          <span>Placed <b>{{ order()!.createdAt | date: 'mediumDate' }}</b></span>
-          @if (estimatedDelivery(); as est) {
-            <span>Estimated delivery
-              <b>{{ est.from | date: 'MMM d' }} – {{ est.to | date: 'MMM d' }}</b>
-            </span>
+  } @else if (justPlaced()) {
+
+    <!-- ================= ORDER CONFIRMATION ================= -->
+    <div class="oc">
+      <span class="od__check" aria-hidden="true"></span>
+      <h1 class="oc__title">Order Confirmed!</h1>
+      <p class="oc__sub text-muted">Thank you for shopping with EZiWear.</p>
+
+      <div class="oc__grid">
+        <div class="oc__main">
+          <div class="oc__box">
+            <span>Order Number: <b>{{ order()!.orderNumber }}</b></span>
+            <span>Order Date: <b>{{ order()!.createdAt | date: 'mediumDate' }}</b></span>
+            @if (estimatedDelivery(); as est) {
+              <span>Estimated Delivery: <b>{{ est.from | date: 'MMM d' }} – {{ est.to | date: 'MMM d' }}</b></span>
+            }
+          </div>
+
+          <ul class="oc__facts" role="list">
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6" /></svg>
+              Customer: <b>{{ order()!.ship.name }}</b>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z" /><circle cx="12" cy="10" r="2.5" /></svg>
+              Delivery Address: <b>{{ order()!.ship.address }}, {{ order()!.ship.city }}</b>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L20 18v-3l-5-2 2-4" /></svg>
+              Phone: <b>{{ order()!.ship.phone }}</b>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" /><circle cx="7.5" cy="18" r="1.6" /><circle cx="17.5" cy="18" r="1.6" /></svg>
+              Delivery Method: <b>Standard{{ order()!.shippingFee === 0 ? ' (Free)' : '' }}</b>
+            </li>
+          </ul>
+
+          <div class="oc__timeline">
+            <span class="oc__timeline-label">Order Timeline</span>
+            <order-timeline [status]="order()!.orderStatus" />
+          </div>
+
+          <div class="oc__cta">
+            <a class="btn btn--primary" [routerLink]="['/order', order()!.orderNumber]">Track Order</a>
+            <a class="btn btn--secondary" routerLink="/shop">Continue Shopping</a>
+          </div>
+        </div>
+
+        <aside class="oc__summary">
+          <h2 class="oc__summary-title">Order Summary</h2>
+          <ul class="oc__items" role="list">
+            @for (item of order()!.items; track $index) {
+              <li class="oc__item">
+                <span class="oc__item-thumb">
+                  @if (item.image) { <img [src]="item.image" [alt]="item.productName" loading="lazy" /> }
+                </span>
+                <span class="oc__item-info">
+                  <span class="oc__item-name">{{ item.productName }}</span>
+                  <span class="text-muted">{{ item.size }} · {{ item.color }} · Qty {{ item.quantity }}</span>
+                </span>
+                <span class="price">{{ item.subtotal | price }}</span>
+              </li>
+            }
+          </ul>
+          <div class="oc__totals">
+            <div class="od__row"><span>Subtotal</span><span class="price">{{ order()!.subtotal | price }}</span></div>
+            @if (order()!.discount > 0) {
+              <div class="od__row od__row--discount">
+                <span>Discount @if (order()!.couponCode) { ({{ order()!.couponCode }}) }</span>
+                <span>−{{ order()!.discount | price }}</span>
+              </div>
+            }
+            <div class="od__row text-muted">
+              <span>Shipping</span>
+              <span>{{ order()!.shippingFee === 0 ? 'Free' : (order()!.shippingFee | price) }}</span>
+            </div>
+            <div class="od__row oc__total"><span>Total</span><span>{{ order()!.total | price }}</span></div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="oc__social">
+        <span class="oc__social-label">Follow us &amp; share your order</span>
+        <div class="oc__social-row">
+          @for (s of socials; track s.platform) {
+            <a class="oc__social-link" [href]="s.url" target="_blank" rel="noopener noreferrer" [attr.aria-label]="s.platform">
+              <social-icon [name]="s.icon" />
+            </a>
           }
         </div>
-        <div class="od__thanks-cta">
-          <a class="btn btn--primary" [routerLink]="['/order', order()!.orderNumber]">Track Order</a>
-          <a class="btn btn--secondary" routerLink="/shop">Continue Shopping</a>
-        </div>
       </div>
-    } @else {
-      <nav class="od__crumbs" aria-label="Breadcrumb">
-        <a routerLink="/account/orders">My orders</a> <span aria-hidden="true">/</span>
-        <span>{{ order()!.orderNumber }}</span>
-      </nav>
-    }
+    </div>
+
+  } @else {
+
+    <!-- ================= ORDER DETAIL / TRACKING ================= -->
+    <nav class="od__crumbs" aria-label="Breadcrumb">
+      <a routerLink="/account/orders">My orders</a> <span aria-hidden="true">/</span>
+      <span>{{ order()!.orderNumber }}</span>
+    </nav>
 
     <div class="od__head">
       <div>
