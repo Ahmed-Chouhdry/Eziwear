@@ -37,7 +37,21 @@ export class AuthService {
   readonly user = this._user.asReadonly();
   readonly ready = this._ready.asReadonly();
   readonly isAuthenticated = computed(() => !!this._token());
-  readonly isAdmin = computed(() => this._user()?.role === 'admin');
+  // Prefer the loaded profile; fall back to the JWT payload so the admin guard
+  // still works if /auth/me hasn't resolved (or briefly fails) on a cold load.
+  readonly isAdmin = computed(
+    () => this._user()?.role === 'admin' || this.roleFromToken(this._token()) === 'admin',
+  );
+
+  private roleFromToken(token: string | null): string | null {
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return typeof payload?.role === 'string' ? payload.role : null;
+    } catch {
+      return null;
+    }
+  }
 
   /** Called once at startup — restores the session from a stored token. */
   init(): Observable<unknown> {

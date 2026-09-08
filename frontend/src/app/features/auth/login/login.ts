@@ -37,8 +37,9 @@ export class Login {
     this.auth.login({ identifier, password }).subscribe({
       next: (res) => {
         this.toast.success(`Welcome back, ${res.user.name.split(' ')[0]}.`);
-        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
-        this.router.navigateByUrl(returnUrl);
+        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+        // Admins land in the console; customers on the storefront.
+        this.router.navigateByUrl(returnUrl ?? (res.user.role === 'admin' ? '/admin' : '/'));
       },
       error: () => this.submitting.set(false),
       complete: () => this.submitting.set(false),
