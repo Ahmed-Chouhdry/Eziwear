@@ -13,15 +13,16 @@
   gap: var(--sp-6);
   grid-template-columns: 1fr;
 
-  @include bp(md) { grid-template-columns: minmax(320px, 480px) 1fr; gap: var(--sp-8); align-items: start; }
+  @include bp(md) { grid-template-columns: minmax(320px, 420px) 1fr; gap: var(--sp-6); align-items: start; }
+  @include bp(lg) { grid-template-columns: minmax(360px, 460px) 1fr; gap: var(--sp-7); }
 }
 
 /* ---- Gallery ---- */
 .pd__stage {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 4;
-  max-height: min(70vh, 640px);
+  aspect-ratio: 4 / 5;
+  max-height: min(58vh, 520px);
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--surface-inset);
@@ -94,7 +95,8 @@
 }
 
 /* ---- Info ---- */
-.pd__info { display: flex; flex-direction: column; gap: var(--sp-3); }
+.pd__info { display: flex; flex-direction: column; gap: var(--sp-2); }
+.pd__info .eyebrow { margin-bottom: calc(-1 * var(--sp-1)); }
 
 .pd__name { font-size: var(--fs-2xl); text-transform: uppercase; }
 
@@ -118,7 +120,7 @@
   gap: var(--sp-3);
   font-size: var(--fs-2xl);
 }
-.pd__desc { color: var(--text-muted); line-height: var(--lh-normal); max-width: 52ch; }
+.pd__desc { color: var(--text-muted); line-height: var(--lh-snug); max-width: 52ch; font-size: var(--fs-sm); }
 
 .pd__soldout-box {
   display: flex;
@@ -173,11 +175,12 @@
 .pd__qty button:disabled { opacity: 0.3; }
 .pd__qty span { font-family: var(--font-display); min-width: 20px; text-align: center; }
 
-.pd__buy-group { display: flex; flex-direction: column; gap: var(--sp-2); }
+.pd__buy-group { display: flex; flex-direction: column; gap: var(--sp-2); max-width: 460px; }
 .pd__buy-row { display: flex; gap: var(--sp-2); }
+.pd__buy-row .btn { font-size: var(--fs-xs); }
 .pd__wish-btn {
   flex: none;
-  width: 56px;
+  width: 46px;
   display: grid;
   place-items: center;
   border: 1px solid var(--accent);
@@ -185,7 +188,7 @@
   color: var(--accent);
   transition: background-color var(--dur-fast) var(--ease-out);
 }
-.pd__wish-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+.pd__wish-btn svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; }
 .pd__wish-btn:hover { background: var(--ezi-orange-soft); }
 .pd__wish-btn.is-saved { background: var(--ezi-orange-soft); }
 .pd__wish-btn.is-saved svg { fill: var(--accent); }
