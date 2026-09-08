@@ -133,8 +133,14 @@
   font-size: var(--fs-sm);
 }
 
+.pd__opts-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--sp-4) var(--sp-6);
+}
 .pd__opt { display: flex; flex-direction: column; gap: var(--sp-2); }
-.pd__opt-head { display: flex; align-items: baseline; justify-content: space-between; }
+.pd__opt-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-3); }
 .pd__opt-label {
   font-size: var(--fs-xs);
   font-weight: 600;
@@ -175,9 +181,8 @@
 .pd__qty button:disabled { opacity: 0.3; }
 .pd__qty span { font-family: var(--font-display); min-width: 20px; text-align: center; }
 
-.pd__buy-group { display: flex; flex-direction: column; gap: var(--sp-2); max-width: 460px; }
-.pd__buy-row { display: flex; gap: var(--sp-2); }
-.pd__buy-row .btn { font-size: var(--fs-xs); }
+.pd__buy-row { display: flex; flex-wrap: wrap; gap: var(--sp-2); max-width: 560px; }
+.pd__buy-row .btn { font-size: var(--fs-xs); flex: 1 1 140px; }
 .pd__wish-btn {
   flex: none;
   width: 46px;

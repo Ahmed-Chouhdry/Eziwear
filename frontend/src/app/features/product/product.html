@@ -98,6 +98,7 @@
             <span class="text-muted">Check back soon or explore similar pieces below.</span>
           </div>
         } @else {
+          <div class="pd__opts-row">
           <!-- Colour -->
           <div class="pd__opt">
             <span class="pd__opt-label">@if (selectedColor()) { Selected: <b>{{ selectedColor() }}</b> } @else { Colour }</span>
@@ -135,44 +136,35 @@
           </div>
 
           <!-- Quantity -->
-          <div class="pd__qty">
-            <button type="button" aria-label="Decrease" (click)="setQty(-1)" [disabled]="quantity() <= 1">−</button>
-            <span>{{ quantity() }}</span>
-            <button
-              type="button"
-              aria-label="Increase"
-              (click)="setQty(1)"
-              [disabled]="currentVariant() && quantity() >= currentVariant()!.stock"
-            >+</button>
+          <div class="pd__opt">
+            <span class="pd__opt-label">Quantity</span>
+            <div class="pd__qty">
+              <button type="button" aria-label="Decrease" (click)="setQty(-1)" [disabled]="quantity() <= 1">−</button>
+              <span>{{ quantity() }}</span>
+              <button
+                type="button"
+                aria-label="Increase"
+                (click)="setQty(1)"
+                [disabled]="currentVariant() && quantity() >= currentVariant()!.stock"
+              >+</button>
+            </div>
+          </div>
           </div>
 
-          <!-- Actions -->
-          <div class="pd__buy-group">
-            <div class="pd__buy-row">
-              <button class="btn btn--primary grow" type="button" (click)="addToCart(false)">Add to Cart</button>
-              <button
-                class="pd__wish-btn"
-                type="button"
-                [class.is-saved]="wishlist.has(product()!.id)"
-                [attr.aria-pressed]="wishlist.has(product()!.id)"
-                [attr.aria-label]="wishlist.has(product()!.id) ? 'Remove from wishlist' : 'Save to wishlist'"
-                (click)="toggleWishlist()"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 5c-2.5 4.5-9.5 9-9.5 9Z" /></svg>
-              </button>
-            </div>
-            <div class="pd__buy-row">
-              <button class="btn btn--gold grow" type="button" (click)="addToCart(true)">Buy Now</button>
-              <button
-                class="pd__wish-btn"
-                type="button"
-                [class.is-saved]="wishlist.has(product()!.id)"
-                [attr.aria-label]="wishlist.has(product()!.id) ? 'Remove from wishlist' : 'Save to wishlist'"
-                (click)="toggleWishlist()"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 5c-2.5 4.5-9.5 9-9.5 9Z" /></svg>
-              </button>
-            </div>
+          <!-- Actions — one line -->
+          <div class="pd__buy-row">
+            <button class="btn btn--primary grow" type="button" (click)="addToCart(false)">Add to Cart</button>
+            <button class="btn btn--gold grow" type="button" (click)="addToCart(true)">Buy Now</button>
+            <button
+              class="pd__wish-btn"
+              type="button"
+              [class.is-saved]="wishlist.has(product()!.id)"
+              [attr.aria-pressed]="wishlist.has(product()!.id)"
+              [attr.aria-label]="wishlist.has(product()!.id) ? 'Remove from wishlist' : 'Save to wishlist'"
+              (click)="toggleWishlist()"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 5c-2.5 4.5-9.5 9-9.5 9Z" /></svg>
+            </button>
           </div>
 
           <p class="pd__stock-line" [class.pd__stock-line--out]="stockNote()?.level === 'out'">
