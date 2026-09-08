@@ -17,11 +17,18 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--sp-3);
+  gap: var(--sp-2);
   text-align: center;
+  max-width: 960px;
+  margin-inline: auto;
 }
-.oc__title { font-size: var(--fs-4xl); text-transform: uppercase; line-height: 1.05; }
-.oc__sub { font-size: var(--fs-lg); }
+.oc__title {
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+.oc__sub { font-size: var(--fs-base); }
 
 .oc__grid {
   width: 100%;
@@ -31,12 +38,12 @@
   margin-top: var(--sp-4);
   text-align: start;
 
-  @include bp(md) { grid-template-columns: minmax(0, 1fr) 320px; align-items: start; }
+  @include bp(md) { grid-template-columns: minmax(0, 1fr) 300px; align-items: start; }
 }
 .oc__main {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-5);
+  gap: var(--sp-4);
   padding: var(--sp-5);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -45,11 +52,11 @@
 .oc__box {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: var(--sp-4);
+  gap: 4px;
+  padding: var(--sp-3) var(--sp-4);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
-  font-size: var(--fs-base);
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 .oc__box b { color: var(--text); }
