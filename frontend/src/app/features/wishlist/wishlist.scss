@@ -6,9 +6,20 @@
   gap: var(--sp-3);
   margin-bottom: var(--sp-5);
 }
-.wl__title { font-size: var(--fs-2xl); text-transform: uppercase; }
+.wl__title { font-size: var(--fs-xl); text-transform: uppercase; }
 .wl__count { color: var(--text-muted); font-weight: 400; }
-.wl__sort .select { min-height: 40px; min-width: 190px; }
+.wl__sort .select { min-height: 38px; min-width: 180px; }
+
+/* ---- Grid — compact cards ---- */
+.wl__grid {
+  display: grid;
+  gap: var(--sp-3);
+  grid-template-columns: repeat(2, 1fr);
+}
+@media (min-width: 481px) { .wl__grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 769px) { .wl__grid { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 1200px) { .wl__grid { grid-template-columns: repeat(5, 1fr); } }
+.wl__grid > * { min-width: 0; }
 
 /* ---- Card ---- */
 .wl__card {
@@ -59,14 +70,15 @@
 .wl__body {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-2);
+  gap: 6px;
   padding: var(--sp-3);
 }
 .wl__name {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-xs);
 }
+.wl__body .btn { --_h: 34px; font-size: var(--fs-2xs); }
 .wl__name:hover { color: var(--accent); }
 
 .wl__price-row {

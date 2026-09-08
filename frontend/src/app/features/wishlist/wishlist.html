@@ -28,7 +28,7 @@
       <a class="btn btn--primary" routerLink="/shop">Explore products</a>
     </div>
   } @else {
-    <div class="product-grid">
+    <div class="wl__grid">
       @for (item of items(); track item.productId) {
         <article class="wl__card">
           <a class="wl__media" [routerLink]="['/product', item.slug]">
