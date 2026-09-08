@@ -332,26 +332,20 @@
 
     <!-- Related -->
     @if (related().length) {
-      <section class="pd__related">
-        <h2 class="pd__section-title">You may also like</h2>
-        <div class="product-grid">
-          @for (r of related(); track r.id) {
-            <product-card [product]="r" />
-          }
-        </div>
-      </section>
+      <product-rail
+        title="You may also like"
+        [products]="related()"
+        (addToCart)="quickAdd.add($event)"
+      />
     }
 
     <!-- Recently viewed -->
     @if (recentlyViewed().length) {
-      <section class="pd__related">
-        <h2 class="pd__section-title">Recently viewed</h2>
-        <div class="product-grid">
-          @for (r of recentlyViewed(); track r.id) {
-            <product-card [product]="r" />
-          }
-        </div>
-      </section>
+      <product-rail
+        title="Recently viewed"
+        [products]="recentlyViewed()"
+        (addToCart)="quickAdd.add($event)"
+      />
     }
   }
 </div>

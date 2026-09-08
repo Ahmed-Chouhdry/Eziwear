@@ -11,9 +11,10 @@ import { CartService } from '../../core/services/cart.service';
 import { RecentlyViewedService } from '../../core/services/recently-viewed.service';
 import { Review, ReviewEligibility, ReviewService } from '../../core/services/review.service';
 import { ToastService } from '../../core/services/toast.service';
+import { QuickAddService } from '../../core/services/quick-add.service';
 import { UiService } from '../../core/services/ui.service';
 import { WishlistService } from '../../core/services/wishlist.service';
-import { ProductCard } from '../../shared/components/product-card/product-card';
+import { ProductRail } from '../../shared/components/product-rail/product-rail';
 import { UiBadge } from '../../shared/components/ui-badge/ui-badge';
 import { UiSkeleton } from '../../shared/components/ui-skeleton/ui-skeleton';
 import { PricePipe } from '../../shared/pipes/price.pipe';
@@ -21,7 +22,7 @@ import { PricePipe } from '../../shared/pipes/price.pipe';
 @Component({
   selector: 'app-product',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, ProductCard, UiBadge, UiSkeleton, PricePipe],
+  imports: [RouterLink, ReactiveFormsModule, ProductRail, UiBadge, UiSkeleton, PricePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './product.html',
   styleUrl: './product.scss',
@@ -37,6 +38,7 @@ export class ProductPage {
   private readonly fb = inject(FormBuilder);
   private readonly reviewApi = inject(ReviewService);
   private readonly recent = inject(RecentlyViewedService);
+  protected readonly quickAdd = inject(QuickAddService);
   protected readonly wishlist = inject(WishlistService);
   protected readonly auth = inject(AuthService);
 
