@@ -13,6 +13,7 @@ import { contentRoutes } from '../modules/content/content.routes.js';
 import { healthRoutes } from '../modules/health/health.routes.js';
 import { orderRoutes } from '../modules/orders/order.routes.js';
 import { reviewRoutes } from '../modules/reviews/review.routes.js';
+import { adminReturnRoutes, returnRoutes } from '../modules/returns/return.routes.js';
 import { uploadRoutes } from '../modules/uploads/upload.routes.js';
 import { wishlistRoutes } from '../modules/wishlist/wishlist.routes.js';
 
@@ -35,6 +36,8 @@ v1Router.use(reviewRoutes);
 v1Router.use(cartRoutes);
 v1Router.use(addressRoutes);
 v1Router.use(orderRoutes);
+v1Router.use(returnRoutes);
+v1Router.use(adminReturnRoutes);
 v1Router.use(wishlistRoutes);
 v1Router.use(adminRoutes);
 v1Router.use(adminProductRoutes);
