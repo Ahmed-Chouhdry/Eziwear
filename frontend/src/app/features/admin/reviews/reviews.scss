@@ -48,3 +48,6 @@
 .pill--pending { background: var(--ezi-gold-soft); color: var(--vip); }
 .pill--approved { background: var(--status-success-bg); color: var(--status-success); }
 .pill--rejected { background: var(--status-error-bg); color: var(--status-error); }
+
+.rv__imgs { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-2); }
+.rv__imgs img { width: 64px; height: 64px; object-fit: cover; border-radius: var(--radius-xs); border: 1px solid var(--border); }

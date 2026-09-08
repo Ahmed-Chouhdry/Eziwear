@@ -37,6 +37,13 @@
             </div>
             <div class="rv__stars" aria-hidden="true">{{ stars(r.rating) }}</div>
             @if (r.comment) { <p class="rv__comment">"{{ r.comment }}"</p> }
+            @if (r.images?.length) {
+              <div class="rv__imgs">
+                @for (img of r.images; track img) {
+                  <a [href]="img" target="_blank" rel="noopener noreferrer"><img [src]="img" alt="Customer photo" loading="lazy" /></a>
+                }
+              </div>
+            }
             <p class="text-muted rv__meta">{{ r.customerName }} · {{ r.createdAt | date: 'mediumDate' }}</p>
           </div>
           <div class="rv__actions">

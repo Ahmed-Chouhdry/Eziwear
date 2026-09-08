@@ -297,6 +297,25 @@
               <label class="field__label" for="review-comment">Your review <span class="field__hint">(optional)</span></label>
               <textarea class="textarea" id="review-comment" formControlName="comment" rows="3" maxlength="1000" placeholder="How was the fit, fabric, quality…"></textarea>
             </div>
+
+            <div class="field">
+              <label class="field__label">Add photos <span class="field__hint">(optional · up to 4)</span></label>
+              <div class="pd__review-photos">
+                @for (url of reviewPhotos(); track url) {
+                  <span class="pd__review-photo">
+                    <img [src]="url" alt="Review photo" />
+                    <button type="button" aria-label="Remove photo" (click)="removeReviewPhoto(url)">&times;</button>
+                  </span>
+                }
+                @if (reviewPhotos().length < 4) {
+                  <label class="pd__review-photo-add" [class.is-busy]="uploadingPhoto()">
+                    <input type="file" accept="image/*" (change)="onReviewPhoto($event)" [disabled]="uploadingPhoto()" hidden />
+                    {{ uploadingPhoto() ? '…' : '+' }}
+                  </label>
+                }
+              </div>
+            </div>
+
             <div class="pd__review-form-actions">
               <button class="btn btn--primary btn--sm" type="submit" [disabled]="submittingReview()">
                 {{ submittingReview() ? 'Submitting…' : 'Submit review' }}
@@ -317,6 +336,13 @@
                   <strong>{{ r.reviewerName }}</strong>
                 </div>
                 @if (r.comment) { <p class="pd__review-comment">{{ r.comment }}</p> }
+                @if (r.images.length) {
+                  <div class="pd__review-imgs">
+                    @for (img of r.images; track img) {
+                      <a [href]="img" target="_blank" rel="noopener noreferrer"><img [src]="img" alt="Customer photo" loading="lazy" /></a>
+                    }
+                  </div>
+                }
               </li>
             }
           </ul>

@@ -7,11 +7,25 @@ export interface AdminReviewListItem {
   id: number;
   rating: number;
   comment: string | null;
+  images: string[];
   status: 'pending' | 'approved' | 'rejected';
   customerName: string;
   productName: string;
   productSlug: string;
   createdAt: string;
+}
+
+function parseImages(raw: unknown): string[] {
+  if (Array.isArray(raw)) return raw.filter((x): x is string => typeof x === 'string');
+  if (typeof raw === 'string') {
+    try {
+      const p = JSON.parse(raw);
+      return Array.isArray(p) ? p.filter((x) => typeof x === 'string') : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
 }
 
 export const adminReviewService = {
@@ -36,6 +50,7 @@ export const adminReviewService = {
         'r.id',
         'r.rating',
         'r.comment',
+        'r.images',
         'r.status',
         'r.created_at as createdAt',
         'u.name as customerName',
@@ -43,7 +58,11 @@ export const adminReviewService = {
         'p.slug as productSlug',
       );
 
-    return paginate(rows as AdminReviewListItem[], total, q.page, q.pageSize);
+    const items = (rows as (AdminReviewListItem & { images: unknown })[]).map((r) => ({
+      ...r,
+      images: parseImages(r.images),
+    }));
+    return paginate(items, total, q.page, q.pageSize);
   },
 
   async updateStatus(id: number, status: 'approved' | 'rejected'): Promise<void> {

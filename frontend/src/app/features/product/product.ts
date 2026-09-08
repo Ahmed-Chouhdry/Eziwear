@@ -282,6 +282,8 @@ export class ProductPage {
 
   protected readonly reviewFormOpen = signal(false);
   protected readonly submittingReview = signal(false);
+  protected readonly reviewPhotos = signal<string[]>([]);
+  protected readonly uploadingPhoto = signal(false);
   protected readonly reviewForm = this.fb.nonNullable.group({
     rating: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
     comment: ['', [Validators.maxLength(1000)]],
@@ -290,6 +292,7 @@ export class ProductPage {
   openReviewForm(): void {
     const existing = this.myReview();
     this.reviewForm.reset({ rating: existing?.rating ?? 5, comment: existing?.comment ?? '' });
+    this.reviewPhotos.set(existing?.images ?? []);
     this.reviewFormOpen.set(true);
   }
   cancelReviewForm(): void {
@@ -299,13 +302,47 @@ export class ProductPage {
     this.reviewForm.controls.rating.setValue(n);
   }
 
+  async onReviewPhoto(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      this.toast.error('Please choose an image file.');
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      this.toast.error('Image must be under 8 MB.');
+      return;
+    }
+    if (this.reviewPhotos().length >= 4) {
+      this.toast.error('Up to 4 photos.');
+      return;
+    }
+    this.uploadingPhoto.set(true);
+    try {
+      const url = await firstValueFrom(this.reviewApi.uploadPhoto(file));
+      this.reviewPhotos.update((list) => [...list, url]);
+    } catch {
+      /* interceptor surfaced it */
+    } finally {
+      this.uploadingPhoto.set(false);
+    }
+  }
+
+  removeReviewPhoto(url: string): void {
+    this.reviewPhotos.update((list) => list.filter((u) => u !== url));
+  }
+
   async submitReview(): Promise<void> {
     const slug = this.slug();
     if (!slug || this.reviewForm.invalid) return;
     const v = this.reviewForm.getRawValue();
     this.submittingReview.set(true);
     try {
-      await firstValueFrom(this.reviewApi.submit(slug, v.rating, v.comment || undefined));
+      await firstValueFrom(
+        this.reviewApi.submit(slug, v.rating, v.comment || undefined, this.reviewPhotos()),
+      );
       this.toast.success('Thanks! Your review was submitted for moderation.');
       this.reviewFormOpen.set(false);
       this.mineRes.reload();

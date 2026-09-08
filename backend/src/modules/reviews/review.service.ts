@@ -8,9 +8,24 @@ export interface ReviewDto {
   id: number;
   rating: number;
   comment: string | null;
+  images: string[];
   status: ReviewRow['status'];
   reviewerName: string;
   createdAt: string;
+}
+
+/** MySQL JSON columns come back either parsed (array) or as a string. */
+function parseImages(raw: unknown): string[] {
+  if (Array.isArray(raw)) return raw.filter((x): x is string => typeof x === 'string');
+  if (typeof raw === 'string') {
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed.filter((x) => typeof x === 'string') : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
 }
 
 /** "Ahmed Khan" -> "Ahmed K." — keeps reviewer names public-friendly. */
@@ -41,6 +56,7 @@ function toDto(row: ReviewRow & { userName: string }): ReviewDto {
     id: row.id,
     rating: row.rating,
     comment: row.comment,
+    images: parseImages(row.images),
     status: row.status,
     reviewerName: displayName(row.userName),
     createdAt: row.created_at,
@@ -87,18 +103,26 @@ export const reviewService = {
       throw ApiError.forbidden('You can review a product once your order for it has been delivered');
     }
 
+    // MySQL JSON column — hand knex the serialised array.
+    const imagesJson = JSON.stringify(input.images ?? []) as unknown as string[];
     const existing = await db('reviews').where({ user_id: userId, product_id: product.id }).first();
     if (existing) {
       // Editing a review re-queues it for moderation.
       await db('reviews')
         .where({ id: existing.id })
-        .update({ rating: input.rating, comment: input.comment ?? null, status: 'pending' });
+        .update({
+          rating: input.rating,
+          comment: input.comment ?? null,
+          images: imagesJson,
+          status: 'pending',
+        });
     } else {
       await db('reviews').insert({
         user_id: userId,
         product_id: product.id,
         rating: input.rating,
         comment: input.comment ?? null,
+        images: imagesJson,
         status: 'pending',
       });
     }

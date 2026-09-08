@@ -209,6 +209,7 @@ export interface ReviewRow extends Timestamps {
   product_id: number;
   rating: number;
   comment: string | null;
+  images: string[] | null;
   status: ReviewStatus;
 }
 

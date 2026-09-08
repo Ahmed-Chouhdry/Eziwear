@@ -13,6 +13,7 @@ export const createReviewSchema = z.object({
     .max(1000)
     .optional()
     .or(z.literal('').transform(() => undefined)),
+  images: z.array(z.string().url()).max(4).optional(),
 });
 
 export type ReviewListQuery = z.infer<typeof reviewListQuerySchema>;

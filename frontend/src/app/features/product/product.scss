@@ -396,6 +396,51 @@
 .pd__rate-star.is-on { color: var(--vip); }
 .pd__review-form-actions { display: flex; gap: var(--sp-3); }
 
+.pd__review-photos { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.pd__review-photo,
+.pd__review-photo-add {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  flex: none;
+}
+.pd__review-photo img { width: 100%; height: 100%; object-fit: cover; }
+.pd__review-photo button {
+  position: absolute;
+  inset-block-start: 2px;
+  inset-inline-end: 2px;
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--overlay);
+  color: var(--ezi-ivory);
+  font-size: 13px;
+  line-height: 1;
+}
+.pd__review-photo-add {
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--border-strong);
+  color: var(--text-muted);
+  font-size: var(--fs-xl);
+  cursor: pointer;
+}
+.pd__review-photo-add:hover { border-color: var(--accent); color: var(--accent); }
+.pd__review-photo-add.is-busy { pointer-events: none; opacity: 0.6; }
+
+.pd__review-imgs { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-1); }
+.pd__review-imgs img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
 .pd__review-list {
   display: flex;
   flex-direction: column;

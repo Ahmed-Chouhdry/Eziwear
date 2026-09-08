@@ -70,3 +70,16 @@ uploadRoutes.delete(
     ok(res, { deleted: true });
   }),
 );
+
+/** Customer-facing: upload a single photo to attach to a product review. */
+uploadRoutes.post(
+  '/reviews/upload',
+  authenticate,
+  single('file'),
+  asyncHandler(async (req: Request, res: Response) => {
+    if (!cloudinaryConfigured) throw ApiError.internal('Image upload is not configured');
+    if (!req.file) throw ApiError.badRequest('No file uploaded');
+    const result = await uploadStream(req.file.buffer, 'reviews');
+    created(res, { url: result.secure_url, publicId: result.public_id }, 'Image uploaded');
+  }),
+);

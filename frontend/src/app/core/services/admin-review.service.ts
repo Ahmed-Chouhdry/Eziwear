@@ -9,6 +9,7 @@ export interface AdminReviewListItem {
   id: number;
   rating: number;
   comment: string | null;
+  images: string[];
   status: ReviewStatus;
   customerName: string;
   productName: string;
