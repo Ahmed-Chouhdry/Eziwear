@@ -70,6 +70,18 @@ export const routes: Routes = [
               import('./features/account/addresses/addresses').then((m) => m.Addresses),
             title: 'Addresses — EZiWear',
           },
+          {
+            path: 'returns',
+            loadComponent: () =>
+              import('./features/returns/returns-list/returns-list').then((m) => m.ReturnsList),
+            title: 'My Returns — EZiWear',
+          },
+          {
+            path: 'returns/:id',
+            loadComponent: () =>
+              import('./features/returns/return-detail/return-detail').then((m) => m.ReturnDetail),
+            title: 'Return — EZiWear',
+          },
         ],
       },
       {
@@ -77,6 +89,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/orders/order-detail/order-detail').then((m) => m.OrderDetail),
         title: 'Order — EZiWear',
+        canActivate: [authGuard],
+      },
+      {
+        path: 'returns/new/:orderId',
+        loadComponent: () =>
+          import('./features/returns/return-request/return-request').then((m) => m.ReturnRequest),
+        title: 'Return items — EZiWear',
         canActivate: [authGuard],
       },
       {
@@ -180,6 +199,22 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/admin/orders/order-detail/order-detail').then((m) => m.AdminOrderDetail),
         title: 'Order — Admin',
+      },
+      {
+        path: 'returns',
+        loadComponent: () =>
+          import('./features/admin/returns/admin-return-list/admin-return-list').then(
+            (m) => m.AdminReturnList,
+          ),
+        title: 'Returns — Admin',
+      },
+      {
+        path: 'returns/:id',
+        loadComponent: () =>
+          import('./features/admin/returns/admin-return-detail/admin-return-detail').then(
+            (m) => m.AdminReturnDetail,
+          ),
+        title: 'Return — Admin',
       },
       {
         path: 'customers',

@@ -1,0 +1,60 @@
+<div class="rd">
+  @if (loading()) {
+    <div class="rd__loading"><ui-spinner [size]="28" [accent]="true" /></div>
+  } @else if (r(); as ret) {
+    <nav class="rd__crumbs"><a routerLink="/account/returns">My returns</a> <span>/</span> Return #{{ ret.id }}</nav>
+
+    <header class="rd__head">
+      <div>
+        <h1 class="rd__title">Return #{{ ret.id }}</h1>
+        <p class="text-muted">Order {{ ret.orderNumber }} · requested {{ ret.requestedAt | date: 'mediumDate' }} · {{ ret.resolutionType }}</p>
+      </div>
+      <span class="badge"
+        [class.badge--in-stock]="ret.status === 'refunded' || ret.status === 'closed' || ret.status === 'exchanged'"
+        [class.badge--out-stock]="ret.status === 'rejected' || ret.status === 'cancelled'"
+        [class.badge--sale]="!['refunded','closed','exchanged','rejected','cancelled'].includes(ret.status)">
+        {{ label[ret.status] }}
+      </span>
+    </header>
+
+    @if (ret.status === 'rejected' && ret.rejectionReason) {
+      <p class="rd__reject">Rejected: {{ ret.rejectionReason }}</p>
+    }
+    @if (ret.refundAmount != null) {
+      <p class="rd__refund">Refund of {{ ret.refundAmount | price }} via {{ ret.refundMethod }} — {{ ret.refundStatus }}.</p>
+    }
+
+    <div class="rd__grid">
+      <section class="rd__panel">
+        <h2 class="rd__panel-title">Items</h2>
+        <ul class="rd__items" role="list">
+          @for (it of ret.items; track it.id) {
+            <li class="rd__item">
+              <div>
+                <strong>{{ it.productName }}</strong>
+                <div class="text-muted">{{ it.size }} · {{ it.color }} · Qty {{ it.quantity }} · {{ it.reason.replace('_', ' ') }}</div>
+                @if (it.comment) { <div class="rd__comment">"{{ it.comment }}"</div> }
+                @if (it.photoUrl) { <a class="rd__photo" [href]="it.photoUrl" target="_blank" rel="noopener"><img [src]="it.photoUrl" alt="" /></a> }
+              </div>
+              <span class="badge"
+                [class.badge--in-stock]="it.itemStatus === 'accepted'"
+                [class.badge--out-stock]="it.itemStatus === 'rejected'"
+                [class.badge--muted]="it.itemStatus === 'pending'">{{ it.itemStatus }}</span>
+            </li>
+          }
+        </ul>
+
+        @if (ret.status === 'requested') {
+          <button class="btn btn--secondary btn--sm" type="button" [disabled]="cancelling()" (click)="cancel()">
+            {{ cancelling() ? 'Cancelling…' : 'Cancel request' }}
+          </button>
+        }
+      </section>
+
+      <section class="rd__panel">
+        <h2 class="rd__panel-title">Status</h2>
+        <return-timeline [history]="ret.history" />
+      </section>
+    </div>
+  }
+</div>

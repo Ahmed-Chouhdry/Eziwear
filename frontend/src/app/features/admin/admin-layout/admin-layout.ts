@@ -21,6 +21,7 @@ export class AdminLayout {
     { label: 'Products', path: '/admin/products', icon: '▤' },
     { label: 'Categories', path: '/admin/categories', icon: '▦' },
     { label: 'Orders', path: '/admin/orders', icon: '▧' },
+    { label: 'Returns', path: '/admin/returns', icon: '⟲' },
     { label: 'Customers', path: '/admin/customers', icon: '◍' },
     { label: 'Sliders & Ads', path: '/admin/sliders', icon: '▭' },
     { label: 'Coupons', path: '/admin/coupons', icon: '⬡' },

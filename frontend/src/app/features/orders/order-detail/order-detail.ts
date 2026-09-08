@@ -6,6 +6,7 @@ import { map } from 'rxjs';
 import { ORDER_STATUS_LABEL } from '../../../core/models';
 import { SOCIAL_LINKS } from '../../../core/nav';
 import { OrderService } from '../../../core/services/order.service';
+import { ReturnService } from '../../../core/services/return.service';
 import { OrderTimeline } from '../../../shared/components/order-timeline/order-timeline';
 import { SocialIcon } from '../../../shared/components/social-icon/social-icon';
 import { UiSpinner } from '../../../shared/components/ui-spinner/ui-spinner';
@@ -22,6 +23,7 @@ import { PricePipe } from '../../../shared/pipes/price.pipe';
 export class OrderDetail {
   private readonly route = inject(ActivatedRoute);
   private readonly orderApi = inject(OrderService);
+  private readonly returnApi = inject(ReturnService);
 
   protected readonly statusLabel = ORDER_STATUS_LABEL;
   protected readonly socials = SOCIAL_LINKS;
@@ -43,6 +45,16 @@ export class OrderDetail {
   protected readonly loading = computed(() => this.res.isLoading());
   protected readonly error = computed(() => this.res.error() != null);
   protected readonly order = computed(() => this.res.value());
+
+  /** Only ask the API about returns for delivered / returned orders. */
+  private readonly eligRes = rxResource({
+    params: () => {
+      const o = this.order();
+      return o && (o.orderStatus === 'delivered' || o.orderStatus === 'returned') ? o.id : undefined;
+    },
+    stream: ({ params }) => this.returnApi.eligibility(params),
+  });
+  protected readonly returnEligibility = computed(() => this.eligRes.value());
 
   /** Rough delivery window: 2–5 working days from the order date. */
   protected readonly estimatedDelivery = computed(() => {

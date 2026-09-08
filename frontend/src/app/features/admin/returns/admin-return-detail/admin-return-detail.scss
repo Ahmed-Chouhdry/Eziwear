@@ -1,0 +1,37 @@
+@use '../../../../../styles/breakpoints' as *;
+
+.ard__loading { display: grid; place-items: center; padding: var(--sp-8) 0; }
+.ard__crumbs { font-size: var(--fs-xs); color: var(--text-faint); margin-bottom: var(--sp-3); }
+.ard__crumbs a:hover { color: var(--accent); }
+.ard__crumbs span { margin-inline: 6px; }
+.ard__head {
+  display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between;
+  gap: var(--sp-3); margin-bottom: var(--sp-3);
+}
+.ard__head h1 { font-size: var(--fs-xl); text-transform: uppercase; }
+.ard__refund { color: var(--status-success); font-size: var(--fs-sm); margin-bottom: var(--sp-3); }
+
+.ard__grid {
+  display: grid; gap: var(--sp-4); grid-template-columns: 1fr;
+  @include bp(lg) { grid-template-columns: minmax(0, 1fr) 320px; align-items: start; }
+}
+.ard__main { display: flex; flex-direction: column; gap: var(--sp-4); }
+.ard__side { display: flex; flex-direction: column; gap: var(--sp-4); }
+.ard__panel { padding: var(--sp-5); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); }
+.ard__panel-title { font-size: var(--fs-base); text-transform: uppercase; margin-bottom: var(--sp-3); }
+
+.ard__items { display: flex; flex-direction: column; gap: var(--sp-3); }
+.ard__item {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-3);
+  padding-bottom: var(--sp-3); border-bottom: 1px solid var(--border);
+}
+.ard__item:last-child { border-bottom: none; }
+.ard__item-info { display: flex; flex-direction: column; gap: 2px; font-size: var(--fs-sm); }
+.ard__comment { color: var(--text-muted); }
+.ard__photo img { width: 64px; height: 64px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-top: 4px; }
+.ard__item-actions { display: flex; flex-direction: column; align-items: flex-end; gap: var(--sp-2); flex: none; }
+
+.ard__actions { display: flex; flex-direction: column; gap: var(--sp-2); }
+.ard__field { display: flex; flex-direction: column; gap: 4px; margin-top: var(--sp-2); }
+.ard__hint { font-size: var(--fs-xs); }
+.ard__panel textarea { margin-bottom: var(--sp-2); }

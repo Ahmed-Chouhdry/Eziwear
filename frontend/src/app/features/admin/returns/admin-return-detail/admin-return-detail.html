@@ -1,0 +1,105 @@
+<div class="ard">
+  @if (loading()) {
+    <div class="ard__loading"><ui-spinner [size]="28" [accent]="true" /></div>
+  } @else if (r(); as ret) {
+    <nav class="ard__crumbs"><a routerLink="/admin/returns">Returns</a> <span>/</span> #{{ ret.id }}</nav>
+
+    <header class="ard__head">
+      <div>
+        <h1>Return #{{ ret.id }}</h1>
+        <p class="text-muted">
+          Order {{ ret.orderNumber }} · {{ ret.customerName }} ({{ ret.customerEmail }})
+          · requested {{ ret.requestedAt | date: 'medium' }} · {{ ret.resolutionType }}
+        </p>
+      </div>
+      <span class="badge"
+        [class.badge--in-stock]="['refunded','closed','exchanged'].includes(ret.status)"
+        [class.badge--out-stock]="['rejected','cancelled'].includes(ret.status)"
+        [class.badge--sale]="!['refunded','closed','exchanged','rejected','cancelled'].includes(ret.status)">
+        {{ label[ret.status] }}
+      </span>
+    </header>
+
+    @if (ret.refundAmount != null) {
+      <p class="ard__refund">Refunded {{ ret.refundAmount | price }} via {{ ret.refundMethod }} ({{ ret.refundStatus }}).</p>
+    }
+
+    <div class="ard__grid">
+      <div class="ard__main">
+        <!-- Items + inspection -->
+        <section class="ard__panel">
+          <h2 class="ard__panel-title">Items</h2>
+          <ul class="ard__items" role="list">
+            @for (it of ret.items; track it.id) {
+              <li class="ard__item">
+                <div class="ard__item-info">
+                  <strong>{{ it.productName }}</strong>
+                  <span class="text-muted">{{ it.size }} · {{ it.color }} · Qty {{ it.quantity }} · {{ it.unitPrice | price }} · {{ it.reason.replace('_', ' ') }}</span>
+                  @if (it.comment) { <span class="ard__comment">"{{ it.comment }}"</span> }
+                  @if (it.photoUrl) { <a class="ard__photo" [href]="it.photoUrl" target="_blank" rel="noopener"><img [src]="it.photoUrl" alt="" /></a> }
+                  @if (it.conditionNotes) { <span class="text-muted">Condition: {{ it.conditionNotes }}</span> }
+                </div>
+                <div class="ard__item-actions">
+                  <span class="badge"
+                    [class.badge--in-stock]="it.itemStatus === 'accepted'"
+                    [class.badge--out-stock]="it.itemStatus === 'rejected'"
+                    [class.badge--muted]="it.itemStatus === 'pending'">{{ it.itemStatus }}</span>
+                  @if (canInspect()) {
+                    <button class="btn btn--primary btn--sm" type="button" [disabled]="busy()" (click)="inspect(it.id, 'accepted', '')">Accept</button>
+                    <button class="btn btn--secondary btn--sm" type="button" [disabled]="busy()" (click)="inspect(it.id, 'rejected', '')">Reject</button>
+                  }
+                </div>
+              </li>
+            }
+          </ul>
+        </section>
+
+        <!-- Admin notes -->
+        <section class="ard__panel">
+          <h2 class="ard__panel-title">Internal notes</h2>
+          <textarea class="textarea" rows="3" [ngModel]="ret.adminNotes ?? notes()" (ngModelChange)="notes.set($event)"></textarea>
+          <button class="btn btn--secondary btn--sm" type="button" [disabled]="busy()" (click)="saveNotes()">Save notes</button>
+        </section>
+      </div>
+
+      <aside class="ard__side">
+        <!-- Actions -->
+        <section class="ard__panel">
+          <h2 class="ard__panel-title">Actions</h2>
+          <div class="ard__actions">
+            @if (canApprove()) { <button class="btn btn--primary btn--sm btn--block" [disabled]="busy()" (click)="approve()">Approve</button> }
+            @if (canReject()) {
+              <input class="input" placeholder="Rejection reason" [ngModel]="rejectReason()" (ngModelChange)="rejectReason.set($event)" />
+              <button class="btn btn--danger btn--sm btn--block" [disabled]="busy()" (click)="reject()">Reject</button>
+            }
+            @if (canPickup()) { <button class="btn btn--secondary btn--sm btn--block" [disabled]="busy()" (click)="logistics('awaiting_pickup')">Mark awaiting pickup</button> }
+            @if (canReceive()) { <button class="btn btn--secondary btn--sm btn--block" [disabled]="busy()" (click)="logistics('received')">Mark received</button> }
+
+            @if (ret.status === 'inspected') {
+              <label class="ard__field">
+                <span class="field__label">Refund method</span>
+                <select class="select" [ngModel]="refundMethod()" (ngModelChange)="refundMethod.set($event)">
+                  <option value="store_credit">Store credit</option>
+                  <option value="bank_transfer">Bank transfer</option>
+                  <option value="original_payment">Original payment</option>
+                </select>
+              </label>
+              <button class="btn btn--primary btn--sm btn--block" [disabled]="busy() || !canRefund()" (click)="refund()">
+                Process refund
+              </button>
+              @if (!canRefund()) { <span class="text-muted ard__hint">Inspect every item first.</span> }
+            }
+            @if (['requested','approved','awaiting_pickup','received','inspected'].indexOf(ret.status) === -1) {
+              <p class="text-muted ard__hint">This return is closed — no further action.</p>
+            }
+          </div>
+        </section>
+
+        <section class="ard__panel">
+          <h2 class="ard__panel-title">History</h2>
+          <return-timeline [history]="ret.history" />
+        </section>
+      </aside>
+    </div>
+  }
+</div>

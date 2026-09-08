@@ -1,0 +1,85 @@
+<div class="container section rr">
+  <nav class="rr__crumbs"><a routerLink="/account/returns">My returns</a> <span>/</span> New request</nav>
+  <h1 class="rr__title">Return items</h1>
+
+  @if (loading()) {
+    <div class="rr__loading"><ui-spinner [size]="28" [accent]="true" /></div>
+  } @else if (elig(); as e) {
+    @if (!e.eligible) {
+      <div class="rr__blocked">
+        <p><strong>This order can't be returned.</strong></p>
+        <p class="text-muted">{{ e.reason }}</p>
+        <a class="btn btn--secondary" routerLink="/account/orders">Back to orders</a>
+      </div>
+    } @else {
+      <p class="rr__sub text-muted">
+        Order {{ e.orderNumber }} · return window closes
+        {{ e.returnWindowEndsAt ? (e.returnWindowEndsAt | date: 'mediumDate') : '—' }}
+      </p>
+
+      <ul class="rr__items" role="list">
+        @for (it of e.items; track it.orderItemId) {
+          <li class="rr__item" [class.is-selected]="line(it.orderItemId).selected">
+            <label class="rr__pick">
+              <input type="checkbox" [ngModel]="line(it.orderItemId).selected"
+                (ngModelChange)="patchLine(it.orderItemId, { selected: $event })" />
+              <span class="rr__item-name">{{ it.productName }}</span>
+              <span class="text-muted">{{ it.size }} · {{ it.color }} · {{ it.unitPrice | price }}</span>
+            </label>
+
+            @if (line(it.orderItemId).selected) {
+              <div class="rr__fields">
+                <label class="field">
+                  <span class="field__label">Quantity (max {{ it.returnableQuantity }})</span>
+                  <input class="input" type="number" min="1" [max]="it.returnableQuantity"
+                    [ngModel]="line(it.orderItemId).quantity"
+                    (ngModelChange)="patchLine(it.orderItemId, { quantity: +$event })" />
+                </label>
+                <label class="field">
+                  <span class="field__label">Reason</span>
+                  <select class="select" [ngModel]="line(it.orderItemId).reason"
+                    (ngModelChange)="patchLine(it.orderItemId, { reason: $event })">
+                    <option value="" disabled>Choose a reason…</option>
+                    @for (r of reasons; track r.value) { <option [value]="r.value">{{ r.label }}</option> }
+                  </select>
+                </label>
+                <label class="field rr__field--wide">
+                  <span class="field__label">Comment <span class="field__hint">(optional)</span></span>
+                  <textarea class="textarea" rows="2" [ngModel]="line(it.orderItemId).comment"
+                    (ngModelChange)="patchLine(it.orderItemId, { comment: $event })"></textarea>
+                </label>
+              </div>
+            }
+          </li>
+        }
+      </ul>
+
+      <div class="rr__block">
+        <span class="field__label">Photos <span class="field__hint">(optional · up to 4)</span></span>
+        <div class="rr__photos">
+          @for (url of photos(); track url) {
+            <span class="rr__photo"><img [src]="url" alt="" /><button type="button" (click)="removePhoto(url)">&times;</button></span>
+          }
+          @if (photos().length < 4) {
+            <label class="rr__photo-add" [class.is-busy]="uploading()">
+              <input type="file" accept="image/*" hidden (change)="onPhoto($event)" [disabled]="uploading()" />
+              {{ uploading() ? '…' : '+' }}
+            </label>
+          }
+        </div>
+      </div>
+
+      <div class="rr__block">
+        <span class="field__label">Resolution</span>
+        <div class="rr__resolution">
+          <label><input type="radio" name="res" value="refund" [ngModel]="resolution()" (ngModelChange)="resolution.set($event)" /> Refund</label>
+          <label><input type="radio" name="res" value="exchange" [ngModel]="resolution()" (ngModelChange)="resolution.set($event)" /> Exchange</label>
+        </div>
+      </div>
+
+      <button class="btn btn--primary btn--lg" type="button" [disabled]="!canSubmit() || submitting()" (click)="submit()">
+        {{ submitting() ? 'Submitting…' : 'Submit return request' }}
+      </button>
+    }
+  }
+</div>

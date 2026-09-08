@@ -185,6 +185,14 @@
     </div>
 
     <div class="od__actions">
+      @if (returnEligibility(); as re) {
+        @if (re.eligible) {
+          <a class="btn btn--primary" [routerLink]="['/returns/new', order()!.id]">Return items</a>
+        } @else if (re.reason) {
+          <button class="btn btn--secondary" type="button" disabled>Return items</button>
+          <span class="od__return-note text-muted">{{ re.reason }}</span>
+        }
+      }
       <a class="btn btn--secondary" routerLink="/account/orders">All orders</a>
       <a class="btn btn--ghost" routerLink="/shop">Continue shopping</a>
     </div>
