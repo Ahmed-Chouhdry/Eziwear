@@ -135,8 +135,10 @@
             </div>
           </div>
 
-          <!-- Quantity -->
-          <div class="pd__opt">
+          </div>
+
+          <!-- Quantity — own line below colour/size -->
+          <div class="pd__opt pd__opt--qty">
             <span class="pd__opt-label">Quantity</span>
             <div class="pd__qty">
               <button type="button" aria-label="Decrease" (click)="setQty(-1)" [disabled]="quantity() <= 1">−</button>
@@ -148,7 +150,6 @@
                 [disabled]="currentVariant() && quantity() >= currentVariant()!.stock"
               >+</button>
             </div>
-          </div>
           </div>
 
           <!-- Actions — one line -->
