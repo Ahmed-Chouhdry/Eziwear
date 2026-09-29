@@ -6,7 +6,6 @@ import { CartService } from '../../core/services/cart.service';
 import { CatalogService } from '../../core/services/catalog.service';
 import { ToastService } from '../../core/services/toast.service';
 import { WishlistItem, WishlistService } from '../../core/services/wishlist.service';
-import { UiEmptyState } from '../../shared/components/ui-empty-state/ui-empty-state';
 import { PricePipe } from '../../shared/pipes/price.pipe';
 
 type SortKey = 'newest' | 'price-asc' | 'price-desc';
@@ -14,7 +13,7 @@ type SortKey = 'newest' | 'price-asc' | 'price-desc';
 @Component({
   selector: 'app-wishlist',
   standalone: true,
-  imports: [RouterLink, FormsModule, UiEmptyState, PricePipe],
+  imports: [RouterLink, FormsModule, PricePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './wishlist.html',
   styleUrl: './wishlist.scss',

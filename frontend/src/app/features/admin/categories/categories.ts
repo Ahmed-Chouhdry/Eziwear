@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
@@ -9,13 +9,15 @@ import {
 } from '../../../core/services/admin-category.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { UiEmptyState } from '../../../shared/components/ui-empty-state/ui-empty-state';
 import { UiImageUpload } from '../../../shared/components/ui-image-upload/ui-image-upload';
+import { UiModal } from '../../../shared/components/ui-modal/ui-modal';
 import { UiSkeleton } from '../../../shared/components/ui-skeleton/ui-skeleton';
 
 @Component({
   selector: 'app-admin-categories',
   standalone: true,
-  imports: [ReactiveFormsModule, UiSkeleton, UiImageUpload],
+  imports: [ReactiveFormsModule, UiSkeleton, UiImageUpload, UiModal, UiEmptyState],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './categories.html',
   styleUrl: './categories.scss',
@@ -29,6 +31,23 @@ export class Categories {
   protected readonly res = rxResource({ stream: () => this.api.list() });
   protected readonly loading = () => this.res.isLoading();
   protected readonly categories = () => this.res.value() ?? [];
+
+  protected readonly search = signal('');
+  protected readonly filtered = computed(() => {
+    const q = this.search().trim().toLowerCase();
+    const all = this.categories();
+    return q ? all.filter((c) => c.name.toLowerCase().includes(q)) : all;
+  });
+
+  protected readonly stats = computed(() => {
+    const all = this.categories();
+    return {
+      total: all.length,
+      active: all.filter((c) => c.status === 'active').length,
+      inactive: all.filter((c) => c.status === 'inactive').length,
+      products: all.reduce((sum, c) => sum + c.productCount, 0),
+    };
+  });
 
   protected readonly editingId = signal<number | 'new' | null>(null);
   protected readonly saving = signal(false);
