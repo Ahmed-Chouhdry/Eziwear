@@ -22,17 +22,19 @@
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 5;
-  max-height: min(58vh, 520px);
+  max-height: min(80vh, 680px);
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--surface-inset);
   border: 1px solid var(--card-border);
+
+  @include bp-max(xs) { aspect-ratio: 3 / 4; max-height: 60vh; }
 }
 .pd__stage.is-zoomable { cursor: zoom-in; }
 .pd__stage-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: transform var(--dur-base) var(--ease-out);
 }
 @media (hover: hover) and (min-width: 769px) {
