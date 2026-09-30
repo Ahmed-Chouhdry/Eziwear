@@ -1,10 +1,11 @@
+import { randomBytes } from 'node:crypto';
 import type { Knex } from 'knex';
 import { db } from '../../config/db.js';
-import type { CouponRow } from '../../database/types.js';
+import type { CouponRow, OrderRow } from '../../database/types.js';
 import { ApiError } from '../../utils/api-error.js';
 import { computeTotals, round2 } from '../../utils/pricing.js';
 import { toOrderDto, type OrderDto } from './order.dto.js';
-import type { CreateOrderInput } from './order.schemas.js';
+import type { CreateGuestOrderInput, CreateOrderInput } from './order.schemas.js';
 
 interface CartLine {
   cartItemId: number;
@@ -51,6 +52,39 @@ async function loadCartForUpdate(trx: Knex.Transaction, userId: number): Promise
   return rows as CartLine[];
 }
 
+async function loadGuestLines(
+  trx: Knex.Transaction,
+  items: CreateGuestOrderInput['items'],
+): Promise<CartLine[]> {
+  const qtyByVariant = new Map<number, number>();
+  for (const i of items) qtyByVariant.set(i.variantId, (qtyByVariant.get(i.variantId) ?? 0) + i.quantity);
+
+  const rows = await trx('product_variants as v')
+    .join('products as p', 'p.id', 'v.product_id')
+    .whereIn('v.id', [...qtyByVariant.keys()])
+    .forUpdate('v')
+    .select(
+      'v.id as variantId',
+      'v.product_id as productId',
+      'v.size',
+      'v.color',
+      'v.stock',
+      'p.name as productName',
+      'p.price',
+      'p.sale_price as salePrice',
+      'p.status',
+    );
+
+  if (rows.length !== qtyByVariant.size) {
+    throw ApiError.conflict('Some items in your cart are no longer available');
+  }
+  return rows.map((r) => ({
+    ...(r as Omit<CartLine, 'cartItemId' | 'quantity'>),
+    cartItemId: 0,
+    quantity: qtyByVariant.get(r.variantId as number) as number,
+  }));
+}
+
 async function resolveCoupon(
   trx: Knex.Transaction,
   code: string,
@@ -81,106 +115,57 @@ export const orderService = {
   async create(userId: number, input: CreateOrderInput): Promise<OrderDto> {
     return db.transaction(async (trx) => {
       const lines = await loadCartForUpdate(trx, userId);
-      if (lines.length === 0) throw ApiError.badRequest('Your cart is empty');
-
-      // stock + availability re-check
-      for (const line of lines) {
-        if (line.status !== 'published') {
-          throw ApiError.conflict(`${line.productName} is no longer available`);
-        }
-        if (line.stock < line.quantity) {
-          throw ApiError.conflict(
-            `Only ${line.stock} of ${line.productName} (${line.size} · ${line.color}) left in stock`,
-          );
-        }
-      }
-
-      const subtotal = round2(
-        lines.reduce((sum, l) => sum + unitPriceOf(l) * l.quantity, 0),
-      );
-
-      // coupon
-      let couponRow: CouponRow | null = null;
-      let discount = 0;
-      if (input.couponCode) {
-        const resolved = await resolveCoupon(trx, input.couponCode, subtotal);
-        couponRow = resolved.coupon;
-        discount = resolved.discount;
-      }
-
-      const totals = computeTotals(subtotal, discount);
-
-      // shipping address
       const ship = await resolveShipping(trx, userId, input);
-
-      // create the order (number derived from id)
-      const [insertedId] = await trx('orders').insert({
-        user_id: userId,
-        order_number: 'PENDING',
-        address_id: input.addressId ?? null,
-        coupon_id: couponRow?.id ?? null,
-        ship_name: ship.name,
-        ship_phone: ship.phone,
-        ship_address: ship.address,
-        ship_city: ship.city,
-        ship_area: ship.area,
-        ship_postal_code: ship.postalCode,
-        subtotal: totals.subtotal,
-        discount: totals.discount,
-        shipping_fee: totals.shippingFee,
-        total: totals.total,
-        payment_method: 'cod',
-        payment_status: 'pending',
-        order_status: 'pending',
-        notes: input.notes ?? null,
+      const { orderNumber } = await placeOrder(trx, {
+        userId,
+        lines,
+        ship,
+        addressId: input.addressId ?? null,
+        couponCode: input.couponCode,
+        notes: input.notes,
+        guest: null,
       });
 
-      const orderId = Number(insertedId);
-      const orderNumber = `EZI-${100000 + orderId}`;
-      await trx('orders').where({ id: orderId }).update({ order_number: orderNumber });
-
-      // order items (denormalised)
-      await trx('order_items').insert(
-        lines.map((l) => {
-          const unit = unitPriceOf(l);
-          return {
-            order_id: orderId,
-            product_id: l.productId,
-            variant_id: l.variantId,
-            product_name: l.productName,
-            size: l.size,
-            color: l.color,
-            quantity: l.quantity,
-            unit_price: unit,
-            subtotal: round2(unit * l.quantity),
-          };
-        }),
-      );
-
-      // decrement stock
-      for (const l of lines) {
-        await trx('product_variants')
-          .where({ id: l.variantId })
-          .decrement('stock', l.quantity);
-      }
-
-      // coupon usage
-      if (couponRow) {
-        await trx('coupons').where({ id: couponRow.id }).increment('used_count', 1);
-      }
-
-      // status history + clear cart
-      await trx('order_status_history').insert({
-        order_id: orderId,
-        status: 'pending',
-        note: 'Order placed',
-        changed_by: userId,
-      });
       const cart = await trx('carts').where({ user_id: userId }).first();
       if (cart) await trx('cart_items').where({ cart_id: cart.id }).del();
 
       return this.getByNumber(userId, orderNumber, trx);
     });
+  },
+
+  async createGuest(input: CreateGuestOrderInput): Promise<OrderDto & { guestToken: string }> {
+    const guestToken = randomBytes(24).toString('hex');
+    const orderNumber = await db.transaction(async (trx) => {
+      const lines = await loadGuestLines(trx, input.items);
+      const a = input.address;
+      const placed = await placeOrder(trx, {
+        userId: null,
+        lines,
+        ship: {
+          name: a.name,
+          phone: a.phone,
+          address: a.address,
+          city: a.city,
+          area: a.area ?? null,
+          postalCode: a.postalCode ?? null,
+        },
+        addressId: null,
+        couponCode: input.couponCode,
+        notes: input.notes,
+        guest: { email: input.email, token: guestToken },
+      });
+      return placed.orderNumber;
+    });
+    return { ...(await this.getGuest(orderNumber, guestToken)), guestToken };
+  },
+
+  async getGuest(orderNumber: string, token: string): Promise<OrderDto> {
+    const order = await db('orders')
+      .where({ order_number: orderNumber, guest_token: token })
+      .whereNull('user_id')
+      .first();
+    if (!order) throw ApiError.notFound('Order not found');
+    return loadOrderDto(db, order);
   },
 
   async list(userId: number): Promise<Array<Pick<OrderDto, 'orderNumber' | 'total' | 'orderStatus' | 'paymentStatus' | 'createdAt'> & { itemCount: number; firstItem: string; firstImage: string | null }>> {
@@ -218,27 +203,134 @@ export const orderService = {
     const order = await q('orders').where({ order_number: orderNumber, user_id: userId }).first();
     if (!order) throw ApiError.notFound('Order not found');
 
-    const [items, timeline] = await Promise.all([
-      q('order_items as oi')
-        .leftJoin('products as p', 'p.id', 'oi.product_id')
-        .where('oi.order_id', order.id)
-        .orderBy('oi.id', 'asc')
-        .select('oi.*', 'p.slug')
-        .select(
-          db.raw(
-            `(SELECT image_url FROM product_images WHERE product_id = oi.product_id ORDER BY sort_order LIMIT 1) as image`,
-          ),
-        ),
-      q('order_status_history').where({ order_id: order.id }).orderBy('id', 'asc'),
-    ]);
-
-    const coupon = order.coupon_id
-      ? await q('coupons').where({ id: order.coupon_id }).first()
-      : null;
-
-    return toOrderDto({ ...order, coupon_code: coupon?.code ?? null }, items, timeline);
+    return loadOrderDto(q, order);
   },
 };
+
+interface ShipInfo {
+  name: string;
+  phone: string;
+  address: string;
+  city: string;
+  area: string | null;
+  postalCode: string | null;
+}
+
+async function placeOrder(
+  trx: Knex.Transaction,
+  o: {
+    userId: number | null;
+    lines: CartLine[];
+    ship: ShipInfo;
+    addressId: number | null;
+    couponCode: string | undefined;
+    notes: string | undefined;
+    guest: { email: string; token: string } | null;
+  },
+): Promise<{ orderId: number; orderNumber: string }> {
+  const { lines } = o;
+  if (lines.length === 0) throw ApiError.badRequest('Your cart is empty');
+
+  for (const line of lines) {
+    if (line.status !== 'published') {
+      throw ApiError.conflict(`${line.productName} is no longer available`);
+    }
+    if (line.stock < line.quantity) {
+      throw ApiError.conflict(
+        `Only ${line.stock} of ${line.productName} (${line.size} · ${line.color}) left in stock`,
+      );
+    }
+  }
+
+  const subtotal = round2(lines.reduce((sum, l) => sum + unitPriceOf(l) * l.quantity, 0));
+
+  let couponRow: CouponRow | null = null;
+  let discount = 0;
+  if (o.couponCode) {
+    const resolved = await resolveCoupon(trx, o.couponCode, subtotal);
+    couponRow = resolved.coupon;
+    discount = resolved.discount;
+  }
+  const totals = computeTotals(subtotal, discount);
+
+  const [insertedId] = await trx('orders').insert({
+    user_id: o.userId,
+    guest_email: o.guest?.email ?? null,
+    guest_token: o.guest?.token ?? null,
+    order_number: 'PENDING',
+    address_id: o.addressId,
+    coupon_id: couponRow?.id ?? null,
+    ship_name: o.ship.name,
+    ship_phone: o.ship.phone,
+    ship_address: o.ship.address,
+    ship_city: o.ship.city,
+    ship_area: o.ship.area,
+    ship_postal_code: o.ship.postalCode,
+    subtotal: totals.subtotal,
+    discount: totals.discount,
+    shipping_fee: totals.shippingFee,
+    total: totals.total,
+    payment_method: 'cod',
+    payment_status: 'pending',
+    order_status: 'pending',
+    notes: o.notes ?? null,
+  });
+
+  const orderId = Number(insertedId);
+  const orderNumber = `EZI-${100000 + orderId}`;
+  await trx('orders').where({ id: orderId }).update({ order_number: orderNumber });
+
+  await trx('order_items').insert(
+    lines.map((l) => {
+      const unit = unitPriceOf(l);
+      return {
+        order_id: orderId,
+        product_id: l.productId,
+        variant_id: l.variantId,
+        product_name: l.productName,
+        size: l.size,
+        color: l.color,
+        quantity: l.quantity,
+        unit_price: unit,
+        subtotal: round2(unit * l.quantity),
+      };
+    }),
+  );
+
+  for (const l of lines) {
+    await trx('product_variants').where({ id: l.variantId }).decrement('stock', l.quantity);
+  }
+  if (couponRow) {
+    await trx('coupons').where({ id: couponRow.id }).increment('used_count', 1);
+  }
+
+  await trx('order_status_history').insert({
+    order_id: orderId,
+    status: 'pending',
+    note: o.guest ? 'Order placed (guest checkout)' : 'Order placed',
+    changed_by: o.userId,
+  });
+
+  return { orderId, orderNumber };
+}
+
+async function loadOrderDto(q: Knex | Knex.Transaction, order: OrderRow): Promise<OrderDto> {
+  const [items, timeline] = await Promise.all([
+    q('order_items as oi')
+      .leftJoin('products as p', 'p.id', 'oi.product_id')
+      .where('oi.order_id', order.id)
+      .orderBy('oi.id', 'asc')
+      .select('oi.*', 'p.slug')
+      .select(
+        db.raw(
+          `(SELECT image_url FROM product_images WHERE product_id = oi.product_id ORDER BY sort_order LIMIT 1) as image`,
+        ),
+      ),
+    q('order_status_history').where({ order_id: order.id }).orderBy('id', 'asc'),
+  ]);
+  const coupon = order.coupon_id ? await q('coupons').where({ id: order.coupon_id }).first() : null;
+  return toOrderDto({ ...order, coupon_code: coupon?.code ?? null }, items, timeline);
+}
 
 async function resolveShipping(
   trx: Knex.Transaction,

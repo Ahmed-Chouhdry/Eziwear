@@ -128,7 +128,9 @@ export interface CouponRow extends Timestamps {
 
 export interface OrderRow extends Timestamps {
   id: number;
-  user_id: number;
+  user_id: number | null;
+  guest_email: string | null;
+  guest_token: string | null;
   order_number: string;
   address_id: number | null;
   coupon_id: number | null;

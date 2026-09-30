@@ -212,3 +212,17 @@
 }
 .co__fineprint { font-size: var(--fs-xs); text-align: center; }
 .co__fineprint a { color: var(--accent); text-decoration: underline; }
+
+.co__guest {
+  margin: 0 0 var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--border, rgba(127, 127, 127, 0.3));
+  border-radius: var(--radius-md, 10px);
+  font-size: var(--fs-sm);
+  color: var(--text-muted, inherit);
+
+  a {
+    color: var(--ezi-orange);
+    font-weight: 600;
+  }
+}

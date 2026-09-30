@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
+import { authGuard, orderViewGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
@@ -34,7 +34,6 @@ export const routes: Routes = [
         path: 'checkout',
         loadComponent: () => import('./features/checkout/checkout').then((m) => m.Checkout),
         title: 'Checkout — EZiWear',
-        canActivate: [authGuard],
       },
       {
         path: 'wishlist',
@@ -89,7 +88,7 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/orders/order-detail/order-detail').then((m) => m.OrderDetail),
         title: 'Order — EZiWear',
-        canActivate: [authGuard],
+        canActivate: [orderViewGuard],
       },
       {
         path: 'returns/new/:orderId',

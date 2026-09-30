@@ -24,7 +24,14 @@
             <h2>Shipping address</h2>
           </header>
 
-          @if (addresses.addresses().length) {
+          @if (isGuest()) {
+            <p class="co__guest">
+              Checking out as a guest — we'll use your email and phone to confirm and deliver your order.
+              Have an account? <a routerLink="/auth/login" [queryParams]="{ returnUrl: '/checkout' }">Sign in</a>
+            </p>
+          }
+
+          @if (!isGuest() && addresses.addresses().length) {
             <div class="co__addresses">
               @for (a of addresses.addresses(); track a.id) {
                 <label class="co__addr" [class.is-selected]="!addingNew() && selectedAddressId() === a.id">
@@ -45,12 +52,22 @@
             </div>
           }
 
-          @if (!addingNew()) {
+          @if (!addingNew() && !isGuest()) {
             <button class="co__add-toggle" type="button" (click)="startAddNew()">+ Add a new address</button>
           } @else {
             <form class="co__form" [formGroup]="form">
-              @if (addresses.addresses().length) {
+              @if (!isGuest() && addresses.addresses().length) {
                 <button class="co__add-toggle" type="button" (click)="cancelAddNew()">← Use a saved address</button>
+              }
+              @if (isGuest()) {
+                <div class="field" [class.field--error]="form.controls.email.touched && form.controls.email.invalid">
+                  <label class="field__label" for="co-email">Email</label>
+                  <input class="input" id="co-email" type="email" formControlName="email" autocomplete="email"
+                    inputmode="email" placeholder="you@example.com" />
+                  @if (form.controls.email.touched && form.controls.email.invalid) {
+                    <span class="field__hint">Enter a valid email address</span>
+                  }
+                </div>
               }
               <div class="co__grid">
                 <div class="field" [class.field--error]="form.controls.name.touched && form.controls.name.invalid">
@@ -83,10 +100,12 @@
                   <input class="input" id="co-postal" formControlName="postalCode" autocomplete="postal-code" inputmode="numeric" />
                 </div>
               </div>
-              <label class="co__check">
-                <input type="checkbox" formControlName="saveAddress" />
-                Save this address for next time
-              </label>
+              @if (!isGuest()) {
+                <label class="co__check">
+                  <input type="checkbox" formControlName="saveAddress" />
+                  Save this address for next time
+                </label>
+              }
             </form>
           }
         </section>

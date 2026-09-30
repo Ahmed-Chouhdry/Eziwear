@@ -131,12 +131,12 @@ export const adminService = {
 
   async recentOrders(limit = 8): Promise<RecentOrder[]> {
     const rows = await db('orders as o')
-      .join('users as u', 'u.id', 'o.user_id')
+      .leftJoin('users as u', 'u.id', 'o.user_id')
       .orderBy('o.id', 'desc')
       .limit(limit)
       .select(
         'o.order_number as orderNumber',
-        'u.name as customer',
+        db.raw('COALESCE(u.name, o.ship_name) as customer'),
         'o.total',
         'o.order_status as orderStatus',
         'o.payment_status as paymentStatus',

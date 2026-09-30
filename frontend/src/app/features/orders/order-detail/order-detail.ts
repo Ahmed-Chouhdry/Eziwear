@@ -5,6 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 import { ORDER_STATUS_LABEL } from '../../../core/models';
 import { SOCIAL_LINKS } from '../../../core/nav';
+import { AuthService } from '../../../core/services/auth.service';
 import { OrderService } from '../../../core/services/order.service';
 import { ReturnService } from '../../../core/services/return.service';
 import { OrderTimeline } from '../../../shared/components/order-timeline/order-timeline';
@@ -24,6 +25,7 @@ export class OrderDetail {
   private readonly route = inject(ActivatedRoute);
   private readonly orderApi = inject(OrderService);
   private readonly returnApi = inject(ReturnService);
+  private readonly auth = inject(AuthService);
 
   protected readonly statusLabel = ORDER_STATUS_LABEL;
   protected readonly socials = SOCIAL_LINKS;
@@ -37,9 +39,20 @@ export class OrderDetail {
     { initialValue: false },
   );
 
+  /** Guests view their order with the access token issued at checkout. */
+  protected readonly token = toSignal(
+    this.route.queryParamMap.pipe(map((p) => p.get('token'))),
+    { initialValue: null },
+  );
+  protected readonly isGuestView = computed(() => !this.auth.isAuthenticated() && !!this.token());
+  protected readonly trackQuery = computed(() => (this.isGuestView() ? { token: this.token() } : {}));
+
   private readonly res = rxResource({
-    params: () => this.orderNumber(),
-    stream: ({ params }) => this.orderApi.get(params),
+    params: () => ({ number: this.orderNumber(), token: this.isGuestView() ? this.token() : null }),
+    stream: ({ params }) =>
+      params.token
+        ? this.orderApi.getGuest(params.number, params.token)
+        : this.orderApi.get(params.number),
   });
 
   protected readonly loading = computed(() => this.res.isLoading());
@@ -50,7 +63,7 @@ export class OrderDetail {
   private readonly eligRes = rxResource({
     params: () => {
       const o = this.order();
-      return o && (o.orderStatus === 'delivered' || o.orderStatus === 'returned') ? o.id : undefined;
+      return o && !this.isGuestView() && (o.orderStatus === 'delivered' || o.orderStatus === 'returned') ? o.id : undefined;
     },
     stream: ({ params }) => this.returnApi.eligibility(params),
   });

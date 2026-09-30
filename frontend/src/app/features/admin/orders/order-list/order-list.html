@@ -49,7 +49,7 @@
               <td><a class="ol__link mono" [routerLink]="['/admin/orders', o.orderNumber]">{{ o.orderNumber }}</a></td>
               <td>
                 {{ o.customer }}
-                <div class="text-muted ol__email">{{ o.customerEmail }}</div>
+                <div class="text-muted ol__email">{{ o.customerEmail }}@if (o.isGuest) { · <strong>Guest</strong>}</div>
               </td>
               <td>{{ o.itemCount }}</td>
               <td>{{ o.total | price }}</td>

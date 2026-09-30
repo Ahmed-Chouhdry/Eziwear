@@ -24,8 +24,31 @@ export const createOrderSchema = z
     path: ['address'],
   });
 
+export const createGuestOrderSchema = z.object({
+  email: z.string().trim().toLowerCase().email('Enter a valid email').max(160),
+  address: inlineAddress,
+  items: z
+    .array(
+      z.object({
+        variantId: z.coerce.number().int().positive(),
+        quantity: z.coerce.number().int().min(1).max(20),
+      }),
+    )
+    .min(1, 'Your cart is empty')
+    .max(50),
+  shippingMethod: z.enum(['standard']).default('standard'),
+  paymentMethod: z.enum(['cod']).default('cod'),
+  couponCode: z.string().trim().min(1).max(40).optional(),
+  notes: z.string().trim().max(500).optional(),
+});
+
+export const guestOrderQuerySchema = z.object({
+  token: z.string().trim().min(16).max(64),
+});
+
 export const orderNumberParamSchema = z.object({
   orderNumber: z.string().trim().min(3).max(32),
 });
 
 export type CreateOrderInput = z.infer<typeof createOrderSchema>;
+export type CreateGuestOrderInput = z.infer<typeof createGuestOrderSchema>;

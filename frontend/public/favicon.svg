@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Background -->
+  <rect width="64" height="64" rx="14" fill="#F9F6F0"/>
+  
+  <!-- "E" in Black -->
+  <text 
+    x="22" 
+    y="44" 
+    font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" 
+    font-weight="900" 
+    font-size="32" 
+    fill="#111111" 
+    text-anchor="middle">E</text>
+    
+  <!-- "W" in Terracotta -->
+  <text 
+    x="44" 
+    y="44" 
+    font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" 
+    font-weight="900" 
+    font-size="32" 
+    fill="#C86A37" 
+    text-anchor="middle">W</text>
+</svg>

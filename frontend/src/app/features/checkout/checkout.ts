@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CreateOrderPayload } from '../../core/models';
 import { AddressService } from '../../core/services/address.service';
+import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
 import { OrderService } from '../../core/services/order.service';
 import { ToastService } from '../../core/services/toast.service';
@@ -23,15 +24,19 @@ export class Checkout {
   private readonly router = inject(Router);
   private readonly orders = inject(OrderService);
   private readonly toast = inject(ToastService);
+  private readonly auth = inject(AuthService);
   protected readonly cart = inject(CartService);
   protected readonly addresses = inject(AddressService);
 
+  /** Not signed in → order as a guest (email + phone required, no saved addresses). */
+  protected readonly isGuest = computed(() => !this.auth.isAuthenticated());
   protected readonly loading = signal(true);
   protected readonly placing = signal(false);
   protected readonly selectedAddressId = signal<number | null>(null);
   protected readonly addingNew = signal(false);
 
   protected readonly form = this.fb.nonNullable.group({
+    email: [''],
     name: ['', [Validators.required, Validators.minLength(2)]],
     phone: ['', [Validators.required, Validators.pattern(/^[0-9+()\-\s]{7,20}$/)]],
     address: ['', [Validators.required, Validators.minLength(5)]],
@@ -64,6 +69,21 @@ export class Checkout {
       void this.router.navigate(['/cart']);
       return;
     }
+
+    if (this.isGuest()) {
+      const email = this.form.controls.email;
+      email.setValidators([Validators.required, Validators.email]);
+      email.updateValueAndValidity();
+      await this.cart.revalidate();
+      if (this.cart.items().length === 0) {
+        void this.router.navigate(['/cart']);
+        return;
+      }
+      this.addingNew.set(true);
+      this.loading.set(false);
+      return;
+    }
+
     await Promise.all([this.addresses.load(), this.cart.revalidate()]);
 
     if (this.cart.items().length === 0) {
@@ -98,6 +118,11 @@ export class Checkout {
 
   async placeOrder(): Promise<void> {
     if (!this.canPlace() || this.placing()) return;
+
+    if (this.isGuest()) {
+      this.placeGuestOrder();
+      return;
+    }
 
     const payload: CreateOrderPayload = {
       paymentMethod: 'cod',
@@ -136,5 +161,43 @@ export class Checkout {
         void this.cart.revalidate();
       },
     });
+  }
+
+  private placeGuestOrder(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    const v = this.form.getRawValue();
+    this.placing.set(true);
+    this.orders
+      .createGuest({
+        email: v.email.trim(),
+        address: {
+          name: v.name,
+          phone: v.phone,
+          address: v.address,
+          city: v.city,
+          area: v.area || undefined,
+          postalCode: v.postalCode || undefined,
+        },
+        items: this.cart.items().map((i) => ({ variantId: i.variantId, quantity: i.quantity })),
+        paymentMethod: 'cod',
+        shippingMethod: 'standard',
+        couponCode: this.cart.coupon()?.code,
+        notes: this.notes.value?.trim() || undefined,
+      })
+      .subscribe({
+        next: (order) => {
+          this.cart.clearAfterOrder();
+          void this.router.navigate(['/order', order.orderNumber], {
+            queryParams: { placed: 1, token: order.guestToken },
+          });
+        },
+        error: () => {
+          this.placing.set(false);
+          void this.cart.revalidate();
+        },
+      });
   }
 }

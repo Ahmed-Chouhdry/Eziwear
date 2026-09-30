@@ -9,6 +9,7 @@ export interface AdminOrderListItem {
   orderNumber: string;
   customer: string;
   customerEmail: string;
+  isGuest: boolean;
   total: number;
   itemCount: number;
   orderStatus: OrderStatus;
@@ -47,13 +48,16 @@ async function audit(
 
 export const adminOrderService = {
   async list(q: OrderListQuery): Promise<Paginated<AdminOrderListItem>> {
-    const base = db('orders as o').join('users as u', 'u.id', 'o.user_id');
+    const base = db('orders as o').leftJoin('users as u', 'u.id', 'o.user_id');
     if (q.search) {
       base.where((b) =>
         b
           .where('o.order_number', 'like', `%${q.search}%`)
           .orWhere('u.name', 'like', `%${q.search}%`)
-          .orWhere('u.email', 'like', `%${q.search}%`),
+          .orWhere('u.email', 'like', `%${q.search}%`)
+          .orWhere('o.ship_name', 'like', `%${q.search}%`)
+          .orWhere('o.guest_email', 'like', `%${q.search}%`)
+          .orWhere('o.ship_phone', 'like', `%${q.search}%`),
       );
     }
     if (q.status) base.where('o.order_status', q.status);
@@ -69,8 +73,9 @@ export const adminOrderService = {
       .offset((q.page - 1) * q.pageSize)
       .select(
         'o.order_number as orderNumber',
-        'u.name as customer',
-        'u.email as customerEmail',
+        db.raw('COALESCE(u.name, o.ship_name) as customer'),
+        db.raw("COALESCE(u.email, o.guest_email, '') as customerEmail"),
+        db.raw('(o.user_id IS NULL) as isGuest'),
         'o.total',
         'o.order_status as orderStatus',
         'o.payment_status as paymentStatus',
@@ -83,6 +88,7 @@ export const adminOrderService = {
 
     const items = (rows as (AdminOrderListItem & { total: number | string })[]).map((r) => ({
       ...r,
+      isGuest: Boolean(Number(r.isGuest)),
       total: Number(r.total),
       itemCount: Number(r.itemCount),
     }));

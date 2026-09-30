@@ -7,6 +7,7 @@ export interface AdminOrderListItem {
   orderNumber: string;
   customer: string;
   customerEmail: string;
+  isGuest: boolean;
   total: number;
   itemCount: number;
   orderStatus: OrderStatus;

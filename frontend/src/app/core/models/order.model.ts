@@ -67,6 +67,25 @@ export interface OrderSummary {
   firstImage: string | null;
 }
 
+export interface CreateGuestOrderPayload {
+  email: string;
+  address: {
+    name: string;
+    phone: string;
+    address: string;
+    city: string;
+    area?: string;
+    postalCode?: string;
+  };
+  items: { variantId: number; quantity: number }[];
+  shippingMethod?: 'standard';
+  paymentMethod: 'cod';
+  couponCode?: string;
+  notes?: string;
+}
+
+export type GuestOrder = Order & { guestToken: string };
+
 export interface CreateOrderPayload {
   addressId?: number;
   address?: {

@@ -4,8 +4,12 @@
   } @else if (error() || !order()) {
     <div class="od__missing">
       <h1>Order not found</h1>
-      <p class="text-muted">We couldn't find that order on your account.</p>
-      <a class="btn btn--primary" routerLink="/account/orders">My orders</a>
+      <p class="text-muted">We couldn't find that order.</p>
+      @if (isGuestView()) {
+        <a class="btn btn--primary" routerLink="/shop">Continue shopping</a>
+      } @else {
+        <a class="btn btn--primary" routerLink="/account/orders">My orders</a>
+      }
     </div>
   } @else if (justPlaced()) {
 
@@ -50,7 +54,7 @@
           </div>
 
           <div class="oc__cta">
-            <a class="btn btn--primary" [routerLink]="['/order', order()!.orderNumber]">Track Order</a>
+            <a class="btn btn--primary" [routerLink]="['/order', order()!.orderNumber]" [queryParams]="trackQuery()">Track Order</a>
             <a class="btn btn--secondary" routerLink="/shop">Continue Shopping</a>
           </div>
         </div>
@@ -104,7 +108,9 @@
 
     <!-- ================= ORDER DETAIL / TRACKING ================= -->
     <nav class="od__crumbs" aria-label="Breadcrumb">
-      <a routerLink="/account/orders">My orders</a> <span aria-hidden="true">/</span>
+      @if (!isGuestView()) {
+        <a routerLink="/account/orders">My orders</a> <span aria-hidden="true">/</span>
+      }
       <span>{{ order()!.orderNumber }}</span>
     </nav>
 
@@ -193,7 +199,9 @@
           <span class="od__return-note text-muted">{{ re.reason }}</span>
         }
       }
-      <a class="btn btn--secondary" routerLink="/account/orders">All orders</a>
+      @if (!isGuestView()) {
+        <a class="btn btn--secondary" routerLink="/account/orders">All orders</a>
+      }
       <a class="btn btn--ghost" routerLink="/shop">Continue shopping</a>
     </div>
   }
