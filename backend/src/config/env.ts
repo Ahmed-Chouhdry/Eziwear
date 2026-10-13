@@ -35,6 +35,22 @@ const schema = z.object({
   RATE_LIMIT_MAX: z.coerce.number().int().positive().default(300),
   AUTH_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(10),
 
+  // Outgoing email (order confirmations, discount notices). Optional: when
+  // SMTP_* is unset, emails are skipped and only logged.
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.coerce.number().int().positive().default(587),
+  SMTP_SECURE: z
+    .enum(['true', 'false'])
+    .optional()
+    .transform((v) => (v === undefined ? undefined : v === 'true')),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASSWORD: z.string().optional(),
+  MAIL_FROM: z.string().optional(),
+  /** Public storefront URL used for links inside emails. */
+  APP_URL: z.string().url().default('http://localhost:4310'),
+  /** Public API base (no /api/v1), used for unsubscribe links in emails. */
+  PUBLIC_API_URL: z.string().url().optional(),
+
   CLOUDINARY_CLOUD_NAME: z.string().optional(),
   CLOUDINARY_API_KEY: z.string().optional(),
   CLOUDINARY_API_SECRET: z.string().optional(),

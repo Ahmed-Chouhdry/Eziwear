@@ -13,7 +13,12 @@ import {
   updatePaymentStatusSchema,
 } from './order.schemas.js';
 import { adminCustomerService } from './customer.service.js';
-import { customerListQuerySchema, idParamSchema, updateCustomerStatusSchema } from './customer.schemas.js';
+import {
+  customerListQuerySchema,
+  idParamSchema,
+  updateCustomerDiscountSchema,
+  updateCustomerStatusSchema,
+} from './customer.schemas.js';
 
 function adminId(req: Request): number {
   if (!req.user) throw ApiError.unauthorized();
@@ -92,5 +97,14 @@ adminOrderManagementRoutes.patch(
   asyncHandler(async (req: Request, res: Response) => {
     await adminCustomerService.updateStatus(Number(req.params['id']), req.body.status);
     ok(res, { updated: true }, 'Customer status updated');
+  }),
+);
+
+adminOrderManagementRoutes.patch(
+  '/admin/customers/:id/discount',
+  validate({ params: idParamSchema, body: updateCustomerDiscountSchema }),
+  asyncHandler(async (req: Request, res: Response) => {
+    await adminCustomerService.updateDiscount(Number(req.params['id']), req.body.discountPercent);
+    ok(res, { updated: true }, 'Customer discount updated');
   }),
 );

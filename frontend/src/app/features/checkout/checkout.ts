@@ -24,7 +24,7 @@ export class Checkout {
   private readonly router = inject(Router);
   private readonly orders = inject(OrderService);
   private readonly toast = inject(ToastService);
-  private readonly auth = inject(AuthService);
+  protected readonly auth = inject(AuthService);
   protected readonly cart = inject(CartService);
   protected readonly addresses = inject(AddressService);
 

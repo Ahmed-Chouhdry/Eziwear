@@ -6,6 +6,8 @@ import { adminCategoryRoutes } from '../modules/admin/category.routes.js';
 import { adminContentRoutes } from '../modules/admin/content.routes.js';
 import { adminOrderManagementRoutes } from '../modules/admin/order-management.routes.js';
 import { adminMarketingRoutes } from '../modules/admin/marketing.routes.js';
+import { adminOfferRoutes } from '../modules/admin/offer.routes.js';
+import { mailRoutes } from '../modules/mail/mail.routes.js';
 import { authRoutes } from '../modules/auth/auth.routes.js';
 import { cartRoutes } from '../modules/cart/cart.routes.js';
 import { catalogRoutes } from '../modules/catalog/catalog.routes.js';
@@ -29,6 +31,7 @@ import { wishlistRoutes } from '../modules/wishlist/wishlist.routes.js';
 export const v1Router = Router();
 
 v1Router.use(healthRoutes);
+v1Router.use(mailRoutes); // public (unsubscribe) — keep above routers that apply auth globally
 v1Router.use('/auth', authRoutes);
 v1Router.use(catalogRoutes);
 v1Router.use(contentRoutes);
@@ -45,6 +48,7 @@ v1Router.use(adminCategoryRoutes);
 v1Router.use(adminContentRoutes);
 v1Router.use(adminOrderManagementRoutes);
 v1Router.use(adminMarketingRoutes);
+v1Router.use(adminOfferRoutes);
 v1Router.use(uploadRoutes);
 
 v1Router.get('/', (_req, res) => {

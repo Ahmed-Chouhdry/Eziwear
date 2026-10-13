@@ -1,5 +1,7 @@
 import { db } from '../../config/db.js';
 import { ApiError } from '../../utils/api-error.js';
+import { sendMail } from '../mail/mailer.js';
+import { customerDiscountMail } from '../mail/templates.js';
 import { paginate, type Paginated } from '../../utils/response.js';
 import type { CustomerListQuery } from './customer.schemas.js';
 
@@ -9,6 +11,7 @@ export interface AdminCustomerListItem {
   email: string;
   phone: string | null;
   status: 'active' | 'suspended';
+  discountPercent: number;
   orderCount: number;
   totalSpent: number;
   createdAt: string;
@@ -49,7 +52,7 @@ export const adminCustomerService = {
       .orderBy('id', 'desc')
       .limit(q.pageSize)
       .offset((q.page - 1) * q.pageSize)
-      .select('id', 'name', 'email', 'phone', 'status', 'created_at as createdAt')
+      .select('id', 'name', 'email', 'phone', 'status', 'discount_percent', 'created_at as createdAt')
       .select(
         db.raw(
           `(SELECT COUNT(*) FROM orders WHERE orders.user_id = users.id AND orders.order_status NOT IN (${EXCLUDED.map(() => '?').join(',')})) as order_count`,
@@ -65,6 +68,7 @@ export const adminCustomerService = {
       rows as (Omit<AdminCustomerListItem, 'orderCount' | 'totalSpent'> & {
         order_count: number;
         total_spent: number;
+        discount_percent: number;
       })[]
     ).map((r) => ({
       id: r.id,
@@ -72,6 +76,7 @@ export const adminCustomerService = {
       email: r.email,
       phone: r.phone,
       status: r.status,
+      discountPercent: Number(r.discount_percent),
       createdAt: r.createdAt,
       orderCount: Number(r.order_count),
       totalSpent: Number(r.total_spent),
@@ -104,12 +109,30 @@ export const adminCustomerService = {
       email: user.email,
       phone: user.phone,
       status: user.status,
+      discountPercent: Number(user.discount_percent),
       createdAt: user.created_at,
       orderCount: Number(aggregate?.c ?? 0),
       totalSpent: Number(aggregate?.s ?? 0),
       addresses: addresses.map((a) => ({ ...a, isDefault: !!a.isDefault })),
       orders: orders.map((o) => ({ ...o, total: Number(o.total) })),
     };
+  },
+
+  async updateDiscount(id: number, discountPercent: number): Promise<void> {
+    const user = await db('users').where({ id, role: 'customer' }).first();
+    if (!user) throw ApiError.notFound('Customer not found');
+    const changed = Number(user.discount_percent) !== discountPercent;
+    await db('users').where({ id }).update({ discount_percent: discountPercent });
+    if (changed) {
+      const agg = await db('orders')
+        .where({ user_id: id })
+        .whereNotIn('order_status', EXCLUDED)
+        .select(db.raw('COUNT(*) as c'), db.raw('COALESCE(SUM(total),0) as s'))
+        .first<{ c: number; s: number }>();
+      sendMail(
+        customerDiscountMail(user.email, user.name, discountPercent, Number(agg?.s ?? 0), Number(agg?.c ?? 0)),
+      );
+    }
   },
 
   async updateStatus(id: number, status: 'active' | 'suspended'): Promise<void> {

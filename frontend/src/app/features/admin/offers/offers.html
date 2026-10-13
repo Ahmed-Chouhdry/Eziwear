@@ -1,0 +1,61 @@
+<div class="of">
+  <header class="of__head">
+    <div>
+      <h1 class="of__title">Offer emails</h1>
+      <p class="text-muted">Send an offer or announcement to your registered customers.</p>
+    </div>
+    @if (audience(); as a) {
+      <div class="of__stats">
+        <span><strong>{{ a.recipients }}</strong> will receive it</span>
+        @if (a.unsubscribed > 0) { <span class="text-muted">{{ a.unsubscribed }} unsubscribed</span> }
+      </div>
+    }
+  </header>
+
+  @if (audience() && !audience()!.emailConfigured) {
+    <p class="of__warn">Email (SMTP) is not configured on the server — add SMTP settings to <code>.env</code> first.</p>
+  }
+
+  <form class="of__form" [formGroup]="form" (submit)="$event.preventDefault()">
+    <div class="field" [class.field--error]="form.controls.subject.touched && form.controls.subject.invalid">
+      <label class="field__label" for="of-subject">Email subject</label>
+      <input id="of-subject" class="input" formControlName="subject" placeholder="Weekend sale — flat 20% off" />
+    </div>
+    <div class="field" [class.field--error]="form.controls.headline.touched && form.controls.headline.invalid">
+      <label class="field__label" for="of-headline">Headline (inside the email)</label>
+      <input id="of-headline" class="input" formControlName="headline" placeholder="Our biggest sale of the season" />
+    </div>
+    <div class="field" [class.field--error]="form.controls.message.touched && form.controls.message.invalid">
+      <label class="field__label" for="of-message">Message</label>
+      <textarea id="of-message" class="textarea" rows="6" formControlName="message"
+        placeholder="Write your offer. Leave a blank line to start a new paragraph."></textarea>
+    </div>
+    <div class="of__grid">
+      <div class="field">
+        <label class="field__label" for="of-code">Coupon code <span class="field__hint">(optional)</span></label>
+        <input id="of-code" class="input" formControlName="couponCode" placeholder="WELCOME10" />
+      </div>
+      <div class="field">
+        <label class="field__label" for="of-cta">Button text</label>
+        <input id="of-cta" class="input" formControlName="ctaLabel" />
+      </div>
+    </div>
+    <div class="field">
+      <label class="field__label" for="of-url">Button link <span class="field__hint">(optional — defaults to the shop)</span></label>
+      <input id="of-url" class="input" formControlName="ctaUrl" placeholder="https://…" />
+    </div>
+
+    <div class="of__actions">
+      <button class="btn btn--secondary" type="button" [disabled]="sending()" (click)="sendTest()">
+        Send test to me
+      </button>
+      <button class="btn btn--primary" type="button"
+        [disabled]="sending() || !audience()?.emailConfigured" (click)="sendAll()">
+        {{ sending() ? 'Sending…' : 'Send to all customers' }}
+      </button>
+    </div>
+    <p class="text-muted of__note">
+      Every offer email includes an unsubscribe link. Customers who unsubscribe are skipped automatically.
+    </p>
+  </form>
+</div>

@@ -3,7 +3,10 @@ import type { Knex } from 'knex';
 import { db } from '../../config/db.js';
 import type { CouponRow, OrderRow } from '../../database/types.js';
 import { ApiError } from '../../utils/api-error.js';
+import { env } from '../../config/env.js';
 import { computeTotals, round2 } from '../../utils/pricing.js';
+import { sendMail } from '../mail/mailer.js';
+import { orderConfirmationMail } from '../mail/templates.js';
 import { toOrderDto, type OrderDto } from './order.dto.js';
 import type { CreateGuestOrderInput, CreateOrderInput } from './order.schemas.js';
 
@@ -113,10 +116,10 @@ async function resolveCoupon(
 
 export const orderService = {
   async create(userId: number, input: CreateOrderInput): Promise<OrderDto> {
-    return db.transaction(async (trx) => {
+    const result = await db.transaction(async (trx) => {
       const lines = await loadCartForUpdate(trx, userId);
       const ship = await resolveShipping(trx, userId, input);
-      const { orderNumber } = await placeOrder(trx, {
+      const placed = await placeOrder(trx, {
         userId,
         lines,
         ship,
@@ -129,8 +132,21 @@ export const orderService = {
       const cart = await trx('carts').where({ user_id: userId }).first();
       if (cart) await trx('cart_items').where({ cart_id: cart.id }).del();
 
-      return this.getByNumber(userId, orderNumber, trx);
+      const dto = await this.getByNumber(userId, placed.orderNumber, trx);
+      return { dto, placed };
     });
+
+    const user = await db('users').where({ id: userId }).first('email');
+    if (user?.email) {
+      sendMail(
+        orderConfirmationMail(user.email, result.dto, {
+          customerDiscountPercent: result.placed.customerPercent,
+          customerDiscountAmount: result.placed.customerDiscount,
+          trackUrl: `${env.APP_URL}/order/${result.dto.orderNumber}`,
+        }),
+      );
+    }
+    return result.dto;
   },
 
   async createGuest(input: CreateGuestOrderInput): Promise<OrderDto & { guestToken: string }> {
@@ -156,7 +172,15 @@ export const orderService = {
       });
       return placed.orderNumber;
     });
-    return { ...(await this.getGuest(orderNumber, guestToken)), guestToken };
+    const dto = await this.getGuest(orderNumber, guestToken);
+    sendMail(
+      orderConfirmationMail(input.email, dto, {
+        customerDiscountPercent: 0,
+        customerDiscountAmount: 0,
+        trackUrl: `${env.APP_URL}/order/${orderNumber}?token=${guestToken}`,
+      }),
+    );
+    return { ...dto, guestToken };
   },
 
   async getGuest(orderNumber: string, token: string): Promise<OrderDto> {
@@ -227,7 +251,7 @@ async function placeOrder(
     notes: string | undefined;
     guest: { email: string; token: string } | null;
   },
-): Promise<{ orderId: number; orderNumber: string }> {
+): Promise<{ orderId: number; orderNumber: string; customerDiscount: number; customerPercent: number }> {
   const { lines } = o;
   if (lines.length === 0) throw ApiError.badRequest('Your cart is empty');
 
@@ -251,7 +275,19 @@ async function placeOrder(
     couponRow = resolved.coupon;
     discount = resolved.discount;
   }
-  const totals = computeTotals(subtotal, discount);
+
+  // Admin-granted customer discount (% off the subtotal), stacked with any coupon.
+  let customerDiscount = 0;
+  let customerPercent = 0;
+  if (o.userId != null) {
+    const u = await trx('users').where({ id: o.userId }).first('discount_percent');
+    const pct = Number(u?.discount_percent ?? 0);
+    if (pct > 0) {
+      customerPercent = pct;
+      customerDiscount = round2((subtotal * pct) / 100);
+    }
+  }
+  const totals = computeTotals(subtotal, customerDiscount + discount);
 
   const [insertedId] = await trx('orders').insert({
     user_id: o.userId,
@@ -307,11 +343,15 @@ async function placeOrder(
   await trx('order_status_history').insert({
     order_id: orderId,
     status: 'pending',
-    note: o.guest ? 'Order placed (guest checkout)' : 'Order placed',
+    note: o.guest
+      ? 'Order placed (guest checkout)'
+      : customerDiscount > 0
+        ? `Order placed (customer discount ${customerDiscount})`
+        : 'Order placed',
     changed_by: o.userId,
   });
 
-  return { orderId, orderNumber };
+  return { orderId, orderNumber, customerDiscount, customerPercent };
 }
 
 async function loadOrderDto(q: Knex | Knex.Transaction, order: OrderRow): Promise<OrderDto> {

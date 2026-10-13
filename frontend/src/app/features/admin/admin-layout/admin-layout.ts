@@ -25,6 +25,7 @@ export class AdminLayout {
     { label: 'Customers', path: '/admin/customers', icon: '◍' },
     { label: 'Sliders & Ads', path: '/admin/sliders', icon: '▭' },
     { label: 'Coupons', path: '/admin/coupons', icon: '⬡' },
+    { label: 'Offer emails', path: '/admin/offers', icon: '✉' },
     { label: 'Reviews', path: '/admin/reviews', icon: '★' },
   ];
 }

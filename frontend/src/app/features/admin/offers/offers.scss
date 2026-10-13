@@ -1,0 +1,36 @@
+@use '../../../../styles/breakpoints' as *;
+
+.of__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
+  flex-wrap: wrap;
+}
+.of__title { font-size: var(--fs-2xl); text-transform: uppercase; }
+.of__stats { display: flex; flex-direction: column; gap: var(--sp-1); text-align: right; }
+.of__warn {
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--ezi-orange);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--sp-4);
+}
+.of__form {
+  padding: var(--sp-5);
+  background: var(--card-bg);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  max-width: 680px;
+}
+.of__grid {
+  display: grid;
+  gap: var(--sp-4);
+  grid-template-columns: 1fr;
+  @include bp(xs) { grid-template-columns: 1fr 1fr; }
+}
+.of__actions { display: flex; gap: var(--sp-3); flex-wrap: wrap; }
+.of__note { font-size: var(--fs-xs); }

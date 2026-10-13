@@ -13,4 +13,8 @@ export const updateCustomerStatusSchema = z.object({
   status: z.enum(['active', 'suspended']),
 });
 
+export const updateCustomerDiscountSchema = z.object({
+  discountPercent: z.coerce.number().min(0).max(90),
+});
+
 export type CustomerListQuery = z.infer<typeof customerListQuerySchema>;

@@ -52,10 +52,16 @@
             <span>Subtotal</span>
             <span class="price">{{ cart.totals().subtotal | price }}</span>
           </div>
-          @if (cart.totals().discount > 0) {
+          @if (cart.totals().customerDiscount > 0) {
+            <div class="cd__row cd__row--discount">
+              <span>Your discount ({{ auth.user()?.discountPercent }}%)</span>
+              <span>−{{ cart.totals().customerDiscount | price }}</span>
+            </div>
+          }
+          @if (cart.totals().discount - cart.totals().customerDiscount > 0) {
             <div class="cd__row cd__row--discount">
               <span>Discount @if (cart.coupon(); as c) { ({{ c.code }}) }</span>
-              <span>−{{ cart.totals().discount | price }}</span>
+              <span>−{{ cart.totals().discount - cart.totals().customerDiscount | price }}</span>
             </div>
           }
           <div class="cd__row cd__row--muted">

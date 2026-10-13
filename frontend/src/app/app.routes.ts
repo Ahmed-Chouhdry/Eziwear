@@ -235,6 +235,11 @@ export const routes: Routes = [
         title: 'Coupons — Admin',
       },
       {
+        path: 'offers',
+        loadComponent: () => import('./features/admin/offers/offers').then((m) => m.Offers),
+        title: 'Offer emails — Admin',
+      },
+      {
         path: 'reviews',
         loadComponent: () => import('./features/admin/reviews/reviews').then((m) => m.Reviews),
         title: 'Reviews — Admin',

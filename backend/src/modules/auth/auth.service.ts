@@ -23,6 +23,7 @@ export interface PublicUser {
   phone: string | null;
   role: 'customer' | 'admin';
   status: 'active' | 'suspended';
+  discountPercent: number;
   createdAt: string;
 }
 
@@ -36,6 +37,7 @@ function toPublic(u: UserRow): PublicUser {
     phone: u.phone,
     role: u.role,
     status: u.status,
+    discountPercent: Number(u.discount_percent ?? 0),
     createdAt: u.created_at,
   };
 }

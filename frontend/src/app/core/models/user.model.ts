@@ -7,6 +7,8 @@ export interface User {
   phone?: string;
   role: UserRole;
   status: 'active' | 'suspended';
+  /** % off every order, granted by an admin. */
+  discountPercent?: number;
   createdAt?: string;
 }
 

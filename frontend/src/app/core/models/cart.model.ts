@@ -17,7 +17,10 @@ export interface CartItem {
 
 export interface CartTotals {
   subtotal: number;
+  /** Total discount = customerDiscount + coupon part. */
   discount: number;
+  /** Admin-granted customer discount (included in `discount`). */
+  customerDiscount: number;
   shippingFee: number;
   total: number;
 }

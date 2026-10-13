@@ -1,4 +1,7 @@
 import { db } from '../../config/db.js';
+import { env } from '../../config/env.js';
+import { sendMail } from '../mail/mailer.js';
+import { orderStatusMail } from '../mail/templates.js';
 import type { OrderStatus } from '../../database/types.js';
 import { ApiError } from '../../utils/api-error.js';
 import { paginate, type Paginated } from '../../utils/response.js';
@@ -123,7 +126,7 @@ export const adminOrderService = {
     orderNumber: string,
     input: UpdateOrderStatusInput,
   ): Promise<OrderDto> {
-    return db.transaction(async (trx) => {
+    const result = await db.transaction(async (trx) => {
       const order = await trx('orders').where({ order_number: orderNumber }).first();
       if (!order) throw ApiError.notFound('Order not found');
 
@@ -185,8 +188,31 @@ export const adminOrderService = {
         order.coupon_id ? trx('coupons').where({ id: order.coupon_id }).first() : null,
       ]);
       const fresh = await trx('orders').where({ id: order.id }).first();
-      return toOrderDto({ ...fresh!, coupon_code: coupon?.code ?? null }, items, timeline);
+      return {
+        dto: toOrderDto({ ...fresh!, coupon_code: coupon?.code ?? null }, items, timeline),
+        order: fresh!,
+      };
     });
+
+    // Tell the customer (member or guest) about the new status. Never blocks.
+    const { order } = result;
+    const to = order.user_id
+      ? (await db('users').where({ id: order.user_id }).first('email'))?.email
+      : order.guest_email;
+    if (to) {
+      const trackUrl = order.user_id
+        ? `${env.APP_URL}/order/${order.order_number}`
+        : `${env.APP_URL}/order/${order.order_number}?token=${order.guest_token}`;
+      const mail = orderStatusMail(to, {
+        orderNumber: order.order_number,
+        name: order.ship_name,
+        total: order.total,
+        status: order.order_status,
+        trackUrl,
+      });
+      if (mail) sendMail(mail);
+    }
+    return result.dto;
   },
 
   async updatePaymentStatus(

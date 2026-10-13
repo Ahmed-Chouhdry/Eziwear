@@ -1,6 +1,7 @@
 import type { Knex } from 'knex';
 import { db } from '../../config/db.js';
 import { ApiError } from '../../utils/api-error.js';
+import { RETURN_WINDOW_DAYS } from '../../utils/policy.js';
 import { paginate, type Paginated } from '../../utils/response.js';
 import type {
   AdminListQuery,
@@ -10,8 +11,6 @@ import type {
   RefundInput,
   RejectInput,
 } from './return.schemas.js';
-
-const RETURN_WINDOW_DAYS = Number(process.env['RETURN_WINDOW_DAYS'] ?? 7);
 
 type ReturnStatus =
   | 'requested'

@@ -28,6 +28,8 @@ export interface UserRow extends Timestamps {
   role: Role;
   status: 'active' | 'suspended';
   email_verified_at: string | null;
+  discount_percent: number;
+  marketing_opt_out: boolean;
 }
 
 export interface AddressRow extends Timestamps {

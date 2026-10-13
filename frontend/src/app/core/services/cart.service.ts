@@ -55,12 +55,16 @@ export class CartService {
   readonly totals = computed<CartTotals>(() => {
     const subtotal = this.subtotal();
     const coupon = this._coupon();
-    const discount = coupon ? Math.min(coupon.discount, subtotal) : 0;
+    const pct = this.auth.user()?.discountPercent ?? 0;
+    const customerDiscount = pct > 0 ? round2((subtotal * pct) / 100) : 0;
+    const couponPart = coupon ? Math.min(coupon.discount, subtotal - customerDiscount) : 0;
+    const discount = customerDiscount + couponPart;
     const net = subtotal - discount;
     const shippingFee = net > 0 && net < FREE_SHIPPING ? FLAT_SHIPPING : 0;
     return {
       subtotal: round2(subtotal),
       discount: round2(discount),
+      customerDiscount: round2(customerDiscount),
       shippingFee,
       total: round2(net + shippingFee),
     };

@@ -1,3 +1,4 @@
+import { AuthService } from '../../core/services/auth.service';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -21,6 +22,7 @@ import { PricePipe } from '../../shared/pipes/price.pipe';
 })
 export class CartPage {
   protected readonly cart = inject(CartService);
+  protected readonly auth = inject(AuthService);
   private readonly wishlist = inject(WishlistService);
   private readonly catalog = inject(CatalogService);
   private readonly quickAdd = inject(QuickAddService);

@@ -9,6 +9,7 @@ export interface AdminCustomerListItem {
   email: string;
   phone: string | null;
   status: 'active' | 'suspended';
+  discountPercent: number;
   orderCount: number;
   totalSpent: number;
   createdAt: string;
@@ -42,6 +43,10 @@ export class AdminCustomerService {
 
   get(id: number): Observable<AdminCustomerDetail> {
     return this.api.get<AdminCustomerDetail>(`admin/customers/${id}`);
+  }
+
+  updateDiscount(id: number, discountPercent: number): Observable<{ updated: boolean }> {
+    return this.api.patch<{ updated: boolean }>(`admin/customers/${id}/discount`, { discountPercent });
   }
 
   updateStatus(id: number, status: 'active' | 'suspended'): Observable<{ updated: boolean }> {

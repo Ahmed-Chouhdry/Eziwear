@@ -1,3 +1,4 @@
+import { AuthService } from '../../core/services/auth.service';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CartService } from '../../core/services/cart.service';
@@ -14,6 +15,7 @@ import { PricePipe } from '../../shared/pipes/price.pipe';
 })
 export class CartDrawer {
   protected readonly cart = inject(CartService);
+  protected readonly auth = inject(AuthService);
   protected readonly ui = inject(UiService);
 
   close(): void {
