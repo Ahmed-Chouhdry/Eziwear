@@ -60,7 +60,7 @@ export class AdminOrderDetail {
 
   protected readonly canEditDiscount = computed(() => {
     const s = this.order()?.orderStatus;
-    return s === 'pending' || s === 'confirmed' || s === 'processing';
+    return !!s && s !== 'cancelled' && s !== 'returned';
   });
 
   /** The discount the admin has typed, converted to Rs and % of the subtotal. */
@@ -114,6 +114,16 @@ export class AdminOrderDetail {
   async setStatus(status: OrderStatus): Promise<void> {
     const o = this.order();
     if (!o) return;
+    // A discount that was typed but never applied would be silently lost — ask first.
+    const pending = this.discPreview();
+    if (pending?.valid && pending.amount > 0 && pending.amount !== o.discount) {
+      if (confirm(`You entered a discount of Rs ${pending.amount} (${pending.percent}%) but did not apply it.
+
+OK = apply it now, Cancel = go back.`)) {
+        this.applyDiscount();
+      }
+      return;
+    }
     let note: string | undefined;
     if (status === 'cancelled' || status === 'returned') {
       note = prompt(`Add a note for marking this order "${status}" (optional):`) ?? undefined;

@@ -35,8 +35,8 @@ const TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
 
 const RESTOCK_ON: OrderStatus[] = ['cancelled', 'returned'];
 
-/** Discount can still be adjusted until the parcel has left. */
-const DISCOUNT_EDITABLE: OrderStatus[] = ['pending', 'confirmed', 'processing'];
+/** Discount can be set/corrected any time except on cancelled or returned orders (even after delivery). */
+const DISCOUNT_EDITABLE: OrderStatus[] = ['pending', 'confirmed', 'processing', 'shipped', 'delivered'];
 
 async function audit(
   adminId: number,
@@ -221,7 +221,7 @@ export const adminOrderService = {
 
   /**
    * Replace the order's discount with an admin-chosen one (Rs amount or % of subtotal)
-   * and recompute shipping + total. Only while the order hasn't shipped yet.
+   * and recompute shipping + total.
    */
   async updateDiscount(
     adminId: number,
