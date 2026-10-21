@@ -43,6 +43,10 @@ export class AdminOrderService {
     });
   }
 
+  updateDiscount(orderNumber: string, mode: 'amount' | 'percent', value: number): Observable<Order> {
+    return this.api.patch<Order>(`admin/orders/${encodeURIComponent(orderNumber)}/discount`, { mode, value });
+  }
+
   updatePaymentStatus(orderNumber: string, paymentStatus: PaymentStatus): Observable<Order> {
     return this.api.patch<Order>(`admin/orders/${encodeURIComponent(orderNumber)}/payment-status`, {
       paymentStatus,

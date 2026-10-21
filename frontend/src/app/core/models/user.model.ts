@@ -9,6 +9,8 @@ export interface User {
   status: 'active' | 'suspended';
   /** % off every order, granted by an admin. */
   discountPercent?: number;
+  /** Flat Rs off every order (used when discountPercent is 0). */
+  discountAmount?: number;
   createdAt?: string;
 }
 

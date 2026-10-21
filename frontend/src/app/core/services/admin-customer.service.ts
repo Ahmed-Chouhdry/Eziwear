@@ -10,6 +10,7 @@ export interface AdminCustomerListItem {
   phone: string | null;
   status: 'active' | 'suspended';
   discountPercent: number;
+  discountAmount: number;
   orderCount: number;
   totalSpent: number;
   createdAt: string;
@@ -34,6 +35,7 @@ export interface AdminGuestListItem {
   totalSpent: number;
   lastOrderAt: string;
   discountPercent: number;
+  discountAmount: number;
 }
 
 export interface AdminCustomerListQuery {
@@ -55,16 +57,16 @@ export class AdminCustomerService {
     return this.api.get<Paginated<AdminGuestListItem>>('admin/guests', { ...query });
   }
 
-  updateGuestDiscount(email: string, discountPercent: number): Observable<{ updated: boolean }> {
-    return this.api.patch<{ updated: boolean }>('admin/guests/discount', { email, discountPercent });
+  updateGuestDiscount(email: string, discountPercent: number, discountAmount: number): Observable<{ updated: boolean }> {
+    return this.api.patch<{ updated: boolean }>('admin/guests/discount', { email, discountPercent, discountAmount });
   }
 
   get(id: number): Observable<AdminCustomerDetail> {
     return this.api.get<AdminCustomerDetail>(`admin/customers/${id}`);
   }
 
-  updateDiscount(id: number, discountPercent: number): Observable<{ updated: boolean }> {
-    return this.api.patch<{ updated: boolean }>(`admin/customers/${id}/discount`, { discountPercent });
+  updateDiscount(id: number, discountPercent: number, discountAmount: number): Observable<{ updated: boolean }> {
+    return this.api.patch<{ updated: boolean }>(`admin/customers/${id}/discount`, { discountPercent, discountAmount });
   }
 
   updateStatus(id: number, status: 'active' | 'suspended'): Observable<{ updated: boolean }> {

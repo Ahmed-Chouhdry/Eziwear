@@ -9,6 +9,7 @@ import { adminOrderService } from './order.service.js';
 import {
   orderListQuerySchema,
   orderNumberParamSchema,
+  updateOrderDiscountSchema,
   updateOrderStatusSchema,
   updatePaymentStatusSchema,
 } from './order.schemas.js';
@@ -62,6 +63,18 @@ adminOrderManagementRoutes.patch(
 );
 
 adminOrderManagementRoutes.patch(
+  '/admin/orders/:orderNumber/discount',
+  validate({ params: orderNumberParamSchema, body: updateOrderDiscountSchema }),
+  asyncHandler(async (req: Request, res: Response) => {
+    ok(
+      res,
+      await adminOrderService.updateDiscount(adminId(req), req.params['orderNumber'] as string, req.body),
+      'Order discount updated',
+    );
+  }),
+);
+
+adminOrderManagementRoutes.patch(
   '/admin/orders/:orderNumber/payment-status',
   validate({ params: orderNumberParamSchema, body: updatePaymentStatusSchema }),
   asyncHandler(async (req: Request, res: Response) => {
@@ -90,7 +103,7 @@ adminOrderManagementRoutes.patch(
   '/admin/guests/discount',
   validate({ body: updateGuestDiscountSchema }),
   asyncHandler(async (req: Request, res: Response) => {
-    await adminCustomerService.updateGuestDiscount(req.body.email, req.body.discountPercent);
+    await adminCustomerService.updateGuestDiscount(req.body.email, req.body.discountPercent, req.body.discountAmount);
     ok(res, { updated: true }, 'Guest discount updated');
   }),
 );
@@ -125,7 +138,11 @@ adminOrderManagementRoutes.patch(
   '/admin/customers/:id/discount',
   validate({ params: idParamSchema, body: updateCustomerDiscountSchema }),
   asyncHandler(async (req: Request, res: Response) => {
-    await adminCustomerService.updateDiscount(Number(req.params['id']), req.body.discountPercent);
+    await adminCustomerService.updateDiscount(
+      Number(req.params['id']),
+      req.body.discountPercent,
+      req.body.discountAmount,
+    );
     ok(res, { updated: true }, 'Customer discount updated');
   }),
 );

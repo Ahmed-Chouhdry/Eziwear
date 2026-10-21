@@ -56,7 +56,9 @@ export class CartService {
     const subtotal = this.subtotal();
     const coupon = this._coupon();
     const pct = this.auth.user()?.discountPercent ?? 0;
-    const customerDiscount = pct > 0 ? round2((subtotal * pct) / 100) : 0;
+    const amt = this.auth.user()?.discountAmount ?? 0;
+    const customerDiscount =
+      pct > 0 ? round2((subtotal * pct) / 100) : amt > 0 ? round2(Math.min(amt, subtotal)) : 0;
     const couponPart = coupon ? Math.min(coupon.discount, subtotal - customerDiscount) : 0;
     const discount = customerDiscount + couponPart;
     const net = subtotal - discount;

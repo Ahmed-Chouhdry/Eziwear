@@ -26,6 +26,8 @@ export class CustomerDetail {
   protected readonly updating = signal(false);
   protected readonly savingDiscount = signal(false);
   protected readonly discountInput = signal<string | null>(null);
+  /** null = follow what's saved on the customer (Rs if an amount is set, else %). */
+  private readonly modeOverride = signal<'percent' | 'amount' | null>(null);
 
   /** Quick-pick presets shown as chips. */
   protected readonly presets = [0, 5, 10, 15, 20];
@@ -43,8 +45,19 @@ export class CustomerDetail {
   protected readonly loading = computed(() => this.res.isLoading());
   protected readonly customer = computed(() => this.res.value());
 
+  protected readonly mode = computed<'percent' | 'amount'>(
+    () => this.modeOverride() ?? ((this.customer()?.discountAmount ?? 0) > 0 ? 'amount' : 'percent'),
+  );
+
+  protected setMode(m: 'percent' | 'amount'): void {
+    this.modeOverride.set(m);
+    this.discountInput.set(null);
+  }
+
   protected discountValue(): string {
-    return this.discountInput() ?? String(this.customer()?.discountPercent ?? 0);
+    const c = this.customer();
+    const saved = this.mode() === 'amount' ? c?.discountAmount : c?.discountPercent;
+    return this.discountInput() ?? String(saved ?? 0);
   }
 
   protected onDiscountInput(event: Event): void {
@@ -55,15 +68,19 @@ export class CustomerDetail {
     const c = this.customer();
     if (!c) return;
     const value = Number(raw ?? this.discountValue());
-    if (!Number.isFinite(value) || value < 0 || value > 90) {
-      this.toast.error('Enter a discount between 0 and 90%.');
+    const isAmount = this.mode() === 'amount';
+    if (!Number.isFinite(value) || value < 0 || (!isAmount && value > 90)) {
+      this.toast.error(isAmount ? 'Enter a valid amount.' : 'Enter a discount between 0 and 90%.');
       return;
     }
     this.savingDiscount.set(true);
-    this.api.updateDiscount(c.id, value).subscribe({
+    this.api.updateDiscount(c.id, isAmount ? 0 : value, isAmount ? value : 0).subscribe({
       next: () => {
-        this.toast.success(value > 0 ? `${value}% discount set for ${c.name}.` : 'Discount removed.');
+        this.toast.success(
+          value > 0 ? `${isAmount ? 'Rs ' + value : value + '%'} discount set for ${c.name}.` : 'Discount removed.',
+        );
         this.discountInput.set(null);
+        this.modeOverride.set(null);
         this.res.reload();
       },
       error: () => this.savingDiscount.set(false),

@@ -21,5 +21,13 @@ export const updatePaymentStatusSchema = z.object({
   paymentStatus: z.enum(['pending', 'paid', 'failed', 'refunded']),
 });
 
+/** Admin sets the order's total discount either as a Rs amount or as a % of the subtotal. */
+export const updateOrderDiscountSchema = z.object({
+  mode: z.enum(['amount', 'percent']),
+  value: z.coerce.number().min(0),
+  note: z.string().trim().max(255).optional(),
+});
+
+export type UpdateOrderDiscountInput = z.infer<typeof updateOrderDiscountSchema>;
 export type OrderListQuery = z.infer<typeof orderListQuerySchema>;
 export type UpdateOrderStatusInput = z.infer<typeof updateOrderStatusSchema>;

@@ -78,3 +78,12 @@
   padding-top: var(--sp-2);
   border-top: 1px solid var(--border);
 }
+
+.aod__disc { margin-top: var(--sp-4); padding-top: var(--sp-4); border-top: 1px solid var(--border); }
+.aod__disc-title { font-size: var(--fs-sm); text-transform: uppercase; letter-spacing: var(--tracking-wide); margin-bottom: var(--sp-3); }
+.aod__disc-modes { display: flex; gap: var(--sp-2); margin-bottom: var(--sp-3); flex-wrap: wrap; }
+.aod__disc-form { display: flex; gap: var(--sp-2); }
+.aod__disc-form .input { flex: 1; min-width: 0; }
+.aod__disc-preview { margin-top: var(--sp-3); font-size: var(--fs-sm); }
+.aod__disc-preview--bad { color: var(--status-error); }
+.aod__disc-hint { margin-top: var(--sp-2); font-size: var(--fs-xs); }

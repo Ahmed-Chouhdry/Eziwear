@@ -98,13 +98,40 @@
             <div class="aod__row"><span>Subtotal</span><span class="price">{{ order()!.subtotal | price }}</span></div>
             @if (order()!.discount > 0) {
               <div class="aod__row aod__row--discount">
-                <span>Discount @if (order()!.couponCode) { ({{ order()!.couponCode }}) }</span>
+                <span>Discount ({{ currentPercent() }}%)@if (order()!.couponCode) { · {{ order()!.couponCode }} }</span>
                 <span>−{{ order()!.discount | price }}</span>
               </div>
             }
             <div class="aod__row text-muted"><span>Shipping</span><span>{{ order()!.shippingFee === 0 ? 'Free' : (order()!.shippingFee | price) }}</span></div>
             <div class="aod__row aod__row--total"><span>Total</span><span class="price">{{ order()!.total | price }}</span></div>
           </div>
+
+          @if (canEditDiscount()) {
+            <div class="aod__disc">
+              <h3 class="aod__disc-title">Give a discount</h3>
+              <div class="aod__disc-modes">
+                <button class="chip" type="button" [class.is-active]="discMode() === 'amount'" (click)="setDiscMode('amount')">Amount (Rs)</button>
+                <button class="chip" type="button" [class.is-active]="discMode() === 'percent'" (click)="setDiscMode('percent')">Percentage (%)</button>
+              </div>
+              <form class="aod__disc-form" (submit)="$event.preventDefault(); applyDiscount()">
+                <input class="input" type="number" min="0" step="any" inputmode="decimal"
+                  [placeholder]="discMode() === 'amount' ? 'e.g. 1000' : 'e.g. 10'"
+                  [value]="discInput()" (input)="onDiscInput($event)" />
+                <button class="btn btn--primary" type="submit" [disabled]="updating() || !discPreview()">Apply</button>
+              </form>
+              @if (discPreview(); as p) {
+                @if (p.valid) {
+                  <p class="aod__disc-preview">
+                    {{ order()!.subtotal | price }} − {{ p.amount | price }} = <strong>{{ p.newSubtotal | price }}</strong>
+                    <span class="text-muted">({{ p.percent }}% off)</span>
+                  </p>
+                } @else {
+                  <p class="aod__disc-preview aod__disc-preview--bad">More than the order subtotal.</p>
+                }
+              }
+              <p class="text-muted aod__disc-hint">Replaces the current discount. Delivery is recalculated.</p>
+            </div>
+          }
         </section>
       </div>
     </div>

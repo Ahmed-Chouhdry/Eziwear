@@ -281,16 +281,25 @@ async function placeOrder(
   let customerDiscount = 0;
   let customerPercent = 0;
   let pct = 0;
+  let amt = 0;
   if (o.userId != null) {
-    const u = await trx('users').where({ id: o.userId }).first('discount_percent');
+    const u = await trx('users').where({ id: o.userId }).first('discount_percent', 'discount_amount');
     pct = Number(u?.discount_percent ?? 0);
+    amt = Number(u?.discount_amount ?? 0);
   } else if (o.guest) {
-    const g = await trx('guest_discounts').where({ email: o.guest.email.toLowerCase() }).first('discount_percent');
+    const g = await trx('guest_discounts')
+      .where({ email: o.guest.email.toLowerCase() })
+      .first('discount_percent', 'discount_amount');
     pct = Number(g?.discount_percent ?? 0);
+    amt = Number(g?.discount_amount ?? 0);
   }
   if (pct > 0) {
     customerPercent = pct;
     customerDiscount = round2((subtotal * pct) / 100);
+  } else if (amt > 0) {
+    // Flat Rs off each order (never more than the order itself).
+    customerDiscount = round2(Math.min(amt, subtotal));
+    customerPercent = subtotal > 0 ? round2((customerDiscount / subtotal) * 100) : 0;
   }
   const totals = computeTotals(subtotal, customerDiscount + discount);
 

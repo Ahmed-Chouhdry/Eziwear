@@ -60,16 +60,19 @@ export class CustomerList {
   setStatus(v: string): void { this.status.set(v); this.page.set(1); }
   goToPage(p: number): void { this.page.set(p); }
 
-  saveGuestDiscount(email: string, raw: string): void {
+  saveGuestDiscount(email: string, raw: string, mode: string): void {
     const value = Number(raw);
-    if (!Number.isFinite(value) || value < 0 || value > 90) {
-      this.toast.error('Enter a discount between 0 and 90%.');
+    const isAmount = mode === 'amount';
+    if (!Number.isFinite(value) || value < 0 || (!isAmount && value > 90)) {
+      this.toast.error(isAmount ? 'Enter a valid amount.' : 'Enter a discount between 0 and 90%.');
       return;
     }
     this.savingEmail.set(email);
-    this.customers.updateGuestDiscount(email, value).subscribe({
+    this.customers.updateGuestDiscount(email, isAmount ? 0 : value, isAmount ? value : 0).subscribe({
       next: () => {
-        this.toast.success(value > 0 ? `${value}% discount set for ${email}.` : 'Discount removed.');
+        this.toast.success(
+          value > 0 ? `${isAmount ? 'Rs ' + value : value + '%'} discount set for ${email}.` : 'Discount removed.',
+        );
         this.guestRes.reload();
       },
       error: () => this.savingEmail.set(null),

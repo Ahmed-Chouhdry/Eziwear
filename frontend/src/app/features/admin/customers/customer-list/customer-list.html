@@ -50,9 +50,12 @@
                 <td>{{ g.totalSpent | price }}</td>
                 <td class="text-muted">{{ g.lastOrderAt | date: 'mediumDate' }}</td>
                 <td>
-                  <form class="cl__discount" (submit)="$event.preventDefault(); saveGuestDiscount(g.email, pct.value)">
-                    <input #pct class="input cl__pct" type="number" min="0" max="90" step="1" [value]="g.discountPercent" />
-                    <span class="text-muted">%</span>
+                  <form class="cl__discount" (submit)="$event.preventDefault(); saveGuestDiscount(g.email, pct.value, mode.value)">
+                    <input #pct class="input cl__pct" type="number" min="0" step="any" [value]="g.discountAmount > 0 ? g.discountAmount : g.discountPercent" />
+                    <select #mode class="select cl__mode">
+                      <option value="percent" [selected]="g.discountAmount <= 0">%</option>
+                      <option value="amount" [selected]="g.discountAmount > 0">Rs</option>
+                    </select>
                     <button class="btn btn--primary btn--sm" type="submit" [disabled]="savingEmail() === g.email">Save</button>
                   </form>
                 </td>

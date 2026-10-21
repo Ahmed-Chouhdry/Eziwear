@@ -54,7 +54,7 @@
           </div>
           @if (cart.totals().customerDiscount > 0) {
             <div class="cd__row cd__row--discount">
-              <span>Your discount ({{ auth.user()?.discountPercent }}%)</span>
+              <span>Your discount@if ((auth.user()?.discountPercent ?? 0) > 0) { ({{ auth.user()?.discountPercent }}%) }</span>
               <span>−{{ cart.totals().customerDiscount | price }}</span>
             </div>
           }

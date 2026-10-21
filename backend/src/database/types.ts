@@ -29,6 +29,7 @@ export interface UserRow extends Timestamps {
   status: 'active' | 'suspended';
   email_verified_at: string | null;
   discount_percent: number;
+  discount_amount: number;
   marketing_opt_out: boolean;
 }
 

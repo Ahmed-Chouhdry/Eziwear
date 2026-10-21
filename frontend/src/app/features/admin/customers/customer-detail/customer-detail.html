@@ -48,13 +48,19 @@
         Automatically taken off every order this customer places (stacks with coupons).
         @if (customer()!.discountPercent > 0) {
           Currently <strong>{{ customer()!.discountPercent }}%</strong>.
+        } @else if (customer()!.discountAmount > 0) {
+          Currently <strong>Rs {{ customer()!.discountAmount }}</strong> off every order.
         } @else {
           No discount set.
         }
       </p>
+      <div class="cd__presets">
+        <button class="chip" type="button" [class.is-active]="mode() === 'percent'" (click)="setMode('percent')">Percentage (%)</button>
+        <button class="chip" type="button" [class.is-active]="mode() === 'amount'" (click)="setMode('amount')">Amount (Rs)</button>
+      </div>
       <div class="cd__discount-row">
         <div class="cd__presets">
-          @for (p of presets; track p) {
+          @for (p of (mode() === 'percent' ? presets : []); track p) {
             <button class="chip" type="button" [class.is-active]="+discountValue() === p"
               [disabled]="savingDiscount()" (click)="saveDiscount('' + p)">
               {{ p === 0 ? 'None' : p + '%' }}
@@ -62,8 +68,8 @@
           }
         </div>
         <form class="cd__discount-form" (submit)="$event.preventDefault(); saveDiscount()">
-          <label class="field__label" for="cd-disc">Custom %</label>
-          <input id="cd-disc" class="input" type="number" min="0" max="90" step="0.5"
+          <label class="field__label" for="cd-disc">{{ mode() === 'amount' ? 'Rs off per order' : 'Custom %' }}</label>
+          <input id="cd-disc" class="input" type="number" min="0" [attr.max]="mode() === 'percent' ? 90 : null" step="any"
             [value]="discountValue()" (input)="onDiscountInput($event)" />
           <button class="btn btn--primary" type="submit" [disabled]="savingDiscount()">Save</button>
         </form>

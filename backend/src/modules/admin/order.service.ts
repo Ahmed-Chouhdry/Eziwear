@@ -6,7 +6,8 @@ import type { OrderStatus } from '../../database/types.js';
 import { ApiError } from '../../utils/api-error.js';
 import { paginate, type Paginated } from '../../utils/response.js';
 import { toOrderDto, type OrderDto } from '../orders/order.dto.js';
-import type { OrderListQuery, UpdateOrderStatusInput } from './order.schemas.js';
+import { computeTotals, round2 } from '../../utils/pricing.js';
+import type { OrderListQuery, UpdateOrderDiscountInput, UpdateOrderStatusInput } from './order.schemas.js';
 
 export interface AdminOrderListItem {
   orderNumber: string;
@@ -33,6 +34,9 @@ const TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
 };
 
 const RESTOCK_ON: OrderStatus[] = ['cancelled', 'returned'];
+
+/** Discount can still be adjusted until the parcel has left. */
+const DISCOUNT_EDITABLE: OrderStatus[] = ['pending', 'confirmed', 'processing'];
 
 async function audit(
   adminId: number,
@@ -213,6 +217,54 @@ export const adminOrderService = {
       if (mail) sendMail(mail);
     }
     return result.dto;
+  },
+
+  /**
+   * Replace the order's discount with an admin-chosen one (Rs amount or % of subtotal)
+   * and recompute shipping + total. Only while the order hasn't shipped yet.
+   */
+  async updateDiscount(
+    adminId: number,
+    orderNumber: string,
+    input: UpdateOrderDiscountInput,
+  ): Promise<OrderDto> {
+    await db.transaction(async (trx) => {
+      const order = await trx('orders').where({ order_number: orderNumber }).first();
+      if (!order) throw ApiError.notFound('Order not found');
+      if (!DISCOUNT_EDITABLE.includes(order.order_status as OrderStatus)) {
+        throw ApiError.badRequest(`Can't change the discount of a ${order.order_status} order`);
+      }
+
+      const subtotal = Number(order.subtotal);
+      if (input.mode === 'percent' && input.value > 100) {
+        throw ApiError.badRequest('Percentage must be between 0 and 100');
+      }
+      const raw = input.mode === 'percent' ? (subtotal * input.value) / 100 : input.value;
+      if (raw > subtotal) throw ApiError.badRequest('Discount cannot be more than the order subtotal');
+
+      const discount = round2(raw);
+      const totals = computeTotals(subtotal, discount);
+      await trx('orders').where({ id: order.id }).update({
+        discount: totals.discount,
+        shipping_fee: totals.shippingFee,
+        total: totals.total,
+      });
+
+      const percent = subtotal > 0 ? round2((discount / subtotal) * 100) : 0;
+      await trx('order_status_history').insert({
+        order_id: order.id,
+        status: order.order_status,
+        note: input.note ?? `Discount set to Rs ${discount} (${percent}%) by admin`,
+        changed_by: adminId,
+      });
+      await audit(adminId, 'order.discount', order.id, {
+        mode: input.mode,
+        value: input.value,
+        from: Number(order.discount),
+        to: discount,
+      });
+    });
+    return this.get(orderNumber);
   },
 
   async updatePaymentStatus(

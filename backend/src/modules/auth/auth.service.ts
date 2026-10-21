@@ -24,6 +24,7 @@ export interface PublicUser {
   role: 'customer' | 'admin';
   status: 'active' | 'suspended';
   discountPercent: number;
+  discountAmount: number;
   createdAt: string;
 }
 
@@ -38,6 +39,7 @@ function toPublic(u: UserRow): PublicUser {
     role: u.role,
     status: u.status,
     discountPercent: Number(u.discount_percent ?? 0),
+    discountAmount: Number(u.discount_amount ?? 0),
     createdAt: u.created_at,
   };
 }

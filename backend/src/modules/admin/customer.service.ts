@@ -13,6 +13,7 @@ export interface AdminGuestListItem {
   totalSpent: number;
   lastOrderAt: string;
   discountPercent: number;
+  discountAmount: number;
 }
 
 export interface AdminCustomerListItem {
@@ -22,6 +23,7 @@ export interface AdminCustomerListItem {
   phone: string | null;
   status: 'active' | 'suspended';
   discountPercent: number;
+  discountAmount: number;
   orderCount: number;
   totalSpent: number;
   createdAt: string;
@@ -62,7 +64,7 @@ export const adminCustomerService = {
       .orderBy('id', 'desc')
       .limit(q.pageSize)
       .offset((q.page - 1) * q.pageSize)
-      .select('id', 'name', 'email', 'phone', 'status', 'discount_percent', 'created_at as createdAt')
+      .select('id', 'name', 'email', 'phone', 'status', 'discount_percent', 'discount_amount', 'created_at as createdAt')
       .select(
         db.raw(
           `(SELECT COUNT(*) FROM orders WHERE orders.user_id = users.id AND orders.order_status NOT IN (${EXCLUDED.map(() => '?').join(',')})) as order_count`,
@@ -79,6 +81,7 @@ export const adminCustomerService = {
         order_count: number;
         total_spent: number;
         discount_percent: number;
+        discount_amount: number;
       })[]
     ).map((r) => ({
       id: r.id,
@@ -87,6 +90,7 @@ export const adminCustomerService = {
       phone: r.phone,
       status: r.status,
       discountPercent: Number(r.discount_percent),
+      discountAmount: Number(r.discount_amount ?? 0),
       createdAt: r.createdAt,
       orderCount: Number(r.order_count),
       totalSpent: Number(r.total_spent),
@@ -120,6 +124,7 @@ export const adminCustomerService = {
       phone: user.phone,
       status: user.status,
       discountPercent: Number(user.discount_percent),
+      discountAmount: Number(user.discount_amount ?? 0),
       createdAt: user.created_at,
       orderCount: Number(aggregate?.c ?? 0),
       totalSpent: Number(aggregate?.s ?? 0),
@@ -128,11 +133,12 @@ export const adminCustomerService = {
     };
   },
 
-  async updateDiscount(id: number, discountPercent: number): Promise<void> {
+  async updateDiscount(id: number, discountPercent: number, discountAmount: number): Promise<void> {
     const user = await db('users').where({ id, role: 'customer' }).first();
     if (!user) throw ApiError.notFound('Customer not found');
-    const changed = Number(user.discount_percent) !== discountPercent;
-    await db('users').where({ id }).update({ discount_percent: discountPercent });
+    const changed =
+      Number(user.discount_percent) !== discountPercent || Number(user.discount_amount ?? 0) !== discountAmount;
+    await db('users').where({ id }).update({ discount_percent: discountPercent, discount_amount: discountAmount });
     if (changed) {
       const agg = await db('orders')
         .where({ user_id: id })
@@ -140,7 +146,7 @@ export const adminCustomerService = {
         .select(db.raw('COUNT(*) as c'), db.raw('COALESCE(SUM(total),0) as s'))
         .first<{ c: number; s: number }>();
       sendMail(
-        customerDiscountMail(user.email, user.name, discountPercent, Number(agg?.s ?? 0), Number(agg?.c ?? 0)),
+        customerDiscountMail(user.email, user.name, discountPercent, Number(agg?.s ?? 0), Number(agg?.c ?? 0), discountAmount),
       );
     }
   },
@@ -183,6 +189,7 @@ export const adminCustomerService = {
         ),
         db.raw('MAX(o.created_at) as last_order_at'),
         db.raw('MAX(gd.discount_percent) as discount_percent'),
+        db.raw('MAX(gd.discount_amount) as discount_amount'),
       )
       .orderByRaw('MAX(o.id) DESC')
       .limit(q.pageSize)
@@ -197,6 +204,7 @@ export const adminCustomerService = {
         total_spent: number;
         last_order_at: string;
         discount_percent: number | null;
+        discount_amount: number | null;
       }[]
     ).map((r) => ({
       email: r.email,
@@ -206,19 +214,23 @@ export const adminCustomerService = {
       totalSpent: Number(r.total_spent),
       lastOrderAt: r.last_order_at,
       discountPercent: Number(r.discount_percent ?? 0),
+      discountAmount: Number(r.discount_amount ?? 0),
     }));
 
     return paginate(items, total, q.page, q.pageSize);
   },
 
-  async updateGuestDiscount(email: string, discountPercent: number): Promise<void> {
+  async updateGuestDiscount(email: string, discountPercent: number, discountAmount: number): Promise<void> {
     const seen = await db('orders').whereNull('user_id').whereRaw('LOWER(guest_email) = ?', [email]).first('id', 'ship_name');
     if (!seen) throw ApiError.notFound('Guest not found');
 
     const existing = await db('guest_discounts').where({ email }).first();
-    const changed = Number(existing?.discount_percent ?? 0) !== discountPercent;
-    if (existing) await db('guest_discounts').where({ email }).update({ discount_percent: discountPercent });
-    else await db('guest_discounts').insert({ email, discount_percent: discountPercent });
+    const changed =
+      Number(existing?.discount_percent ?? 0) !== discountPercent ||
+      Number(existing?.discount_amount ?? 0) !== discountAmount;
+    const values = { discount_percent: discountPercent, discount_amount: discountAmount };
+    if (existing) await db('guest_discounts').where({ email }).update(values);
+    else await db('guest_discounts').insert({ email, ...values });
 
     if (changed) {
       const agg = await db('orders')
@@ -228,7 +240,7 @@ export const adminCustomerService = {
         .select(db.raw('COUNT(*) as c'), db.raw('COALESCE(SUM(total),0) as s'))
         .first<{ c: number; s: number }>();
       sendMail(
-        customerDiscountMail(email, seen.ship_name, discountPercent, Number(agg?.s ?? 0), Number(agg?.c ?? 0)),
+        customerDiscountMail(email, seen.ship_name, discountPercent, Number(agg?.s ?? 0), Number(agg?.c ?? 0), discountAmount),
       );
     }
   },

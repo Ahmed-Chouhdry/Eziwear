@@ -216,10 +216,14 @@ export function customerDiscountMail(
   percent: number,
   totalSpent = 0,
   orderCount = 0,
+  amount = 0,
 ): MailMessage {
   const shopUrl = `${env.APP_URL}/shop`;
+  // Either a percentage or a flat Rs amount off every order.
+  const flat = percent <= 0 && amount > 0;
+  const off = flat ? rs(amount) : `${percent}%`;
 
-  if (percent <= 0) {
+  if (percent <= 0 && amount <= 0) {
     return {
       to,
       subject: 'Your EZiWear discount was updated',
@@ -232,7 +236,7 @@ export function customerDiscountMail(
   }
 
   const example = 5000;
-  const saved = Math.round((example * percent) / 100);
+  const saved = flat ? Math.min(amount, example) : Math.round((example * percent) / 100);
   const loyalty =
     orderCount > 0
       ? `<p style="margin:0 0 16px">You've placed <strong>${orderCount}</strong> order${orderCount === 1 ? '' : 's'} with us (<strong>${rs(totalSpent)}</strong> in total) — this discount is our way of saying <strong>thank you</strong> for being a loyal customer.</p>`
@@ -243,13 +247,13 @@ export function customerDiscountMail(
 ${loyalty}
 <div style="margin:0 0 20px;padding:20px;border-radius:12px;background:${INK};color:#fff;text-align:center">
 <div style="font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#d4d4d8">Your personal discount</div>
-<div style="font-size:44px;font-weight:700;color:${ORANGE};line-height:1.2">${percent}% OFF</div>
+<div style="font-size:44px;font-weight:700;color:${ORANGE};line-height:1.2">${off} OFF</div>
 <div style="font-size:13px;color:#d4d4d8">on every EZiWear order</div>
 </div>
 <h3 style="margin:0 0 8px;font-size:15px">How it works</h3>
 <ul style="margin:0 0 16px;padding-left:18px;color:#3f3f46;font-size:14px;line-height:1.7">
 <li><strong>Sign in</strong> to your EZiWear account and shop as usual.</li>
-<li>Your <strong>${percent}%</strong> is taken off your cart <strong>automatically</strong> — no code needed. You'll see it as "Your discount (${percent}%)" at checkout.</li>
+<li>Your <strong>${off}</strong> is taken off your cart <strong>automatically</strong> — no code needed. You'll see it as "Your discount" at checkout.</li>
 <li>It <strong>stacks with coupon codes</strong>, so you can save even more.</li>
 <li>Delivery is <strong>free over ${rs(FREE_SHIPPING_THRESHOLD)}</strong> (calculated after your discount).</li>
 <li>It applies to <strong>every order</strong> you place while signed in — it doesn't expire.</li>
@@ -260,14 +264,14 @@ ${button(shopUrl, 'Start shopping')}`;
 
   return {
     to,
-    subject: `You've unlocked ${percent}% off every EZiWear order`,
-    html: shell(`You've unlocked ${percent}% off`, body),
+    subject: `You've unlocked ${off} off every EZiWear order`,
+    html: shell(`You've unlocked ${off} off`, body),
     text: [
       `Hi ${name},`,
       orderCount > 0
         ? `Thank you for being a loyal customer (${orderCount} orders, ${rs(totalSpent)}).`
         : 'Thank you for being part of EZiWear.',
-      `Your account now has a ${percent}% discount on every order, applied automatically at checkout when you're signed in.`,
+      `Your account now has a ${off} discount on every order, applied automatically at checkout when you're signed in.`,
       'It stacks with coupon codes. Delivery is free over ' + rs(FREE_SHIPPING_THRESHOLD) + ' (after discount).',
       `Example: on ${rs(example)} you save ${rs(saved)}.`,
       `Shop: ${shopUrl}`,

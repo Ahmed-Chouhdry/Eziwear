@@ -3,7 +3,8 @@
 
 .cl__tabs { display: flex; gap: var(--sp-2); margin-bottom: var(--sp-4); flex-wrap: wrap; }
 .cl__discount { display: flex; align-items: center; gap: var(--sp-2); }
-.cl__pct { width: 80px; }
+.cl__pct { width: 90px; }
+.cl__mode { width: 64px; min-width: 0; }
 
 .cl__filters { display: flex; gap: var(--sp-3); margin-bottom: var(--sp-4); flex-wrap: wrap; }
 .cl__search { max-width: 340px; flex: 1; }
