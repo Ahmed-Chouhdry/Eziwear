@@ -148,6 +148,7 @@ export const adminCustomerService = {
   /** Guest-checkout shoppers (no account), grouped by email, with any admin-set discount. */
   async listGuests(q: GuestListQuery): Promise<Paginated<AdminGuestListItem>> {
     const base = db('orders as o')
+      .leftJoin('guest_discounts as gd', 'gd.email', db.raw('LOWER(o.guest_email)'))
       .whereNull('o.user_id')
       .whereNotNull('o.guest_email')
       .groupByRaw('LOWER(o.guest_email)');
@@ -181,9 +182,7 @@ export const adminCustomerService = {
           EXCLUDED,
         ),
         db.raw('MAX(o.created_at) as last_order_at'),
-        db.raw(
-          '(SELECT gd.discount_percent FROM guest_discounts gd WHERE gd.email = LOWER(o.guest_email)) as discount_percent',
-        ),
+        db.raw('MAX(gd.discount_percent) as discount_percent'),
       )
       .orderByRaw('MAX(o.id) DESC')
       .limit(q.pageSize)
