@@ -26,6 +26,16 @@ export interface AdminCustomerDetail extends AdminCustomerListItem {
   }[];
 }
 
+export interface AdminGuestListItem {
+  email: string;
+  name: string;
+  phone: string | null;
+  orderCount: number;
+  totalSpent: number;
+  lastOrderAt: string;
+  discountPercent: number;
+}
+
 export interface AdminCustomerListQuery {
   search?: string;
   status?: 'active' | 'suspended';
@@ -39,6 +49,14 @@ export class AdminCustomerService {
 
   list(query: AdminCustomerListQuery): Observable<Paginated<AdminCustomerListItem>> {
     return this.api.get<Paginated<AdminCustomerListItem>>('admin/customers', { ...query });
+  }
+
+  listGuests(query: { search?: string; page?: number; pageSize?: number }): Observable<Paginated<AdminGuestListItem>> {
+    return this.api.get<Paginated<AdminGuestListItem>>('admin/guests', { ...query });
+  }
+
+  updateGuestDiscount(email: string, discountPercent: number): Observable<{ updated: boolean }> {
+    return this.api.patch<{ updated: boolean }>('admin/guests/discount', { email, discountPercent });
   }
 
   get(id: number): Observable<AdminCustomerDetail> {

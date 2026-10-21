@@ -151,7 +151,7 @@ export const orderService = {
 
   async createGuest(input: CreateGuestOrderInput): Promise<OrderDto & { guestToken: string }> {
     const guestToken = randomBytes(24).toString('hex');
-    const orderNumber = await db.transaction(async (trx) => {
+    const placed = await db.transaction(async (trx) => {
       const lines = await loadGuestLines(trx, input.items);
       const a = input.address;
       const placed = await placeOrder(trx, {
@@ -170,13 +170,14 @@ export const orderService = {
         notes: input.notes,
         guest: { email: input.email, token: guestToken },
       });
-      return placed.orderNumber;
+      return placed;
     });
+    const { orderNumber } = placed;
     const dto = await this.getGuest(orderNumber, guestToken);
     sendMail(
       orderConfirmationMail(input.email, dto, {
-        customerDiscountPercent: 0,
-        customerDiscountAmount: 0,
+        customerDiscountPercent: placed.customerPercent,
+        customerDiscountAmount: placed.customerDiscount,
         trackUrl: `${env.APP_URL}/order/${orderNumber}?token=${guestToken}`,
       }),
     );
@@ -279,13 +280,17 @@ async function placeOrder(
   // Admin-granted customer discount (% off the subtotal), stacked with any coupon.
   let customerDiscount = 0;
   let customerPercent = 0;
+  let pct = 0;
   if (o.userId != null) {
     const u = await trx('users').where({ id: o.userId }).first('discount_percent');
-    const pct = Number(u?.discount_percent ?? 0);
-    if (pct > 0) {
-      customerPercent = pct;
-      customerDiscount = round2((subtotal * pct) / 100);
-    }
+    pct = Number(u?.discount_percent ?? 0);
+  } else if (o.guest) {
+    const g = await trx('guest_discounts').where({ email: o.guest.email.toLowerCase() }).first('discount_percent');
+    pct = Number(g?.discount_percent ?? 0);
+  }
+  if (pct > 0) {
+    customerPercent = pct;
+    customerDiscount = round2((subtotal * pct) / 100);
   }
   const totals = computeTotals(subtotal, customerDiscount + discount);
 

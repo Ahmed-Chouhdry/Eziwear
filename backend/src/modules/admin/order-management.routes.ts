@@ -15,9 +15,11 @@ import {
 import { adminCustomerService } from './customer.service.js';
 import {
   customerListQuerySchema,
+  guestListQuerySchema,
   idParamSchema,
   updateCustomerDiscountSchema,
   updateCustomerStatusSchema,
+  updateGuestDiscountSchema,
 } from './customer.schemas.js';
 
 function adminId(req: Request): number {
@@ -28,6 +30,7 @@ function adminId(req: Request): number {
 export const adminOrderManagementRoutes = Router();
 adminOrderManagementRoutes.use('/admin/orders', authenticate, requireRole('admin'));
 adminOrderManagementRoutes.use('/admin/customers', authenticate, requireRole('admin'));
+adminOrderManagementRoutes.use('/admin/guests', authenticate, requireRole('admin'));
 
 // ---- Orders ----
 adminOrderManagementRoutes.get(
@@ -71,6 +74,24 @@ adminOrderManagementRoutes.patch(
       ),
       'Payment status updated',
     );
+  }),
+);
+
+// ---- Guests (checked out without an account) ----
+adminOrderManagementRoutes.get(
+  '/admin/guests',
+  validate({ query: guestListQuerySchema }),
+  asyncHandler(async (req: Request, res: Response) => {
+    ok(res, await adminCustomerService.listGuests(req.query as never));
+  }),
+);
+
+adminOrderManagementRoutes.patch(
+  '/admin/guests/discount',
+  validate({ body: updateGuestDiscountSchema }),
+  asyncHandler(async (req: Request, res: Response) => {
+    await adminCustomerService.updateGuestDiscount(req.body.email, req.body.discountPercent);
+    ok(res, { updated: true }, 'Guest discount updated');
   }),
 );
 

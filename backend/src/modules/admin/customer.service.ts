@@ -3,7 +3,17 @@ import { ApiError } from '../../utils/api-error.js';
 import { sendMail } from '../mail/mailer.js';
 import { customerDiscountMail } from '../mail/templates.js';
 import { paginate, type Paginated } from '../../utils/response.js';
-import type { CustomerListQuery } from './customer.schemas.js';
+import type { CustomerListQuery, GuestListQuery } from './customer.schemas.js';
+
+export interface AdminGuestListItem {
+  email: string;
+  name: string;
+  phone: string | null;
+  orderCount: number;
+  totalSpent: number;
+  lastOrderAt: string;
+  discountPercent: number;
+}
 
 export interface AdminCustomerListItem {
   id: number;
@@ -131,6 +141,95 @@ export const adminCustomerService = {
         .first<{ c: number; s: number }>();
       sendMail(
         customerDiscountMail(user.email, user.name, discountPercent, Number(agg?.s ?? 0), Number(agg?.c ?? 0)),
+      );
+    }
+  },
+
+  /** Guest-checkout shoppers (no account), grouped by email, with any admin-set discount. */
+  async listGuests(q: GuestListQuery): Promise<Paginated<AdminGuestListItem>> {
+    const base = db('orders as o')
+      .whereNull('o.user_id')
+      .whereNotNull('o.guest_email')
+      .groupByRaw('LOWER(o.guest_email)');
+    if (q.search) {
+      base.where((b) =>
+        b.where('o.guest_email', 'like', `%${q.search}%`).orWhere('o.ship_name', 'like', `%${q.search}%`).orWhere(
+          'o.ship_phone',
+          'like',
+          `%${q.search}%`,
+        ),
+      );
+    }
+
+    const countRows = await db
+      .from(base.clone().select(db.raw('LOWER(o.guest_email) as e')).as('g'))
+      .count<{ n: number }[]>({ n: '*' });
+    const total = Number(countRows[0]?.n ?? 0);
+
+    const rows = await base
+      .clone()
+      .select(
+        db.raw('LOWER(o.guest_email) as email'),
+        db.raw('SUBSTRING_INDEX(GROUP_CONCAT(o.ship_name ORDER BY o.id DESC SEPARATOR "\\n"), "\\n", 1) as name'),
+        db.raw('SUBSTRING_INDEX(GROUP_CONCAT(o.ship_phone ORDER BY o.id DESC SEPARATOR "\\n"), "\\n", 1) as phone'),
+        db.raw(
+          `SUM(CASE WHEN o.order_status NOT IN (${EXCLUDED.map(() => '?').join(',')}) THEN 1 ELSE 0 END) as order_count`,
+          EXCLUDED,
+        ),
+        db.raw(
+          `COALESCE(SUM(CASE WHEN o.order_status NOT IN (${EXCLUDED.map(() => '?').join(',')}) THEN o.total ELSE 0 END), 0) as total_spent`,
+          EXCLUDED,
+        ),
+        db.raw('MAX(o.created_at) as last_order_at'),
+        db.raw(
+          '(SELECT gd.discount_percent FROM guest_discounts gd WHERE gd.email = LOWER(o.guest_email)) as discount_percent',
+        ),
+      )
+      .orderByRaw('MAX(o.id) DESC')
+      .limit(q.pageSize)
+      .offset((q.page - 1) * q.pageSize);
+
+    const items = (
+      rows as unknown as {
+        email: string;
+        name: string;
+        phone: string | null;
+        order_count: number;
+        total_spent: number;
+        last_order_at: string;
+        discount_percent: number | null;
+      }[]
+    ).map((r) => ({
+      email: r.email,
+      name: r.name,
+      phone: r.phone,
+      orderCount: Number(r.order_count),
+      totalSpent: Number(r.total_spent),
+      lastOrderAt: r.last_order_at,
+      discountPercent: Number(r.discount_percent ?? 0),
+    }));
+
+    return paginate(items, total, q.page, q.pageSize);
+  },
+
+  async updateGuestDiscount(email: string, discountPercent: number): Promise<void> {
+    const seen = await db('orders').whereNull('user_id').whereRaw('LOWER(guest_email) = ?', [email]).first('id', 'ship_name');
+    if (!seen) throw ApiError.notFound('Guest not found');
+
+    const existing = await db('guest_discounts').where({ email }).first();
+    const changed = Number(existing?.discount_percent ?? 0) !== discountPercent;
+    if (existing) await db('guest_discounts').where({ email }).update({ discount_percent: discountPercent });
+    else await db('guest_discounts').insert({ email, discount_percent: discountPercent });
+
+    if (changed) {
+      const agg = await db('orders')
+        .whereNull('user_id')
+        .whereRaw('LOWER(guest_email) = ?', [email])
+        .whereNotIn('order_status', EXCLUDED)
+        .select(db.raw('COUNT(*) as c'), db.raw('COALESCE(SUM(total),0) as s'))
+        .first<{ c: number; s: number }>();
+      sendMail(
+        customerDiscountMail(email, seen.ship_name, discountPercent, Number(agg?.s ?? 0), Number(agg?.c ?? 0)),
       );
     }
   },
